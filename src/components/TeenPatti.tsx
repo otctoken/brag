@@ -143,7 +143,6 @@ import D13 from "../assets/pokerpng/13D.png";
 import H13 from "../assets/pokerpng/13H.png";
 // @ts-ignore
 import S13 from "../assets/pokerpng/13S.png";
-import { console } from "inspector";
 
 let GlbPcardsID = 0;
 let GlbDcardsID = 0;
@@ -760,7 +759,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   function lookSeeCrads(listC, pokers) {
     let listB: number[] = [];
     for (let i = 0; i < 3; i++) {
-      const number1 = pokers[listC[i]]; // 将字符转换为数
+      const number1 = pokers[listC[i]]; // 将字符转换为数字
       listB.push(number1); // 将数字加入数组
     }
     const [values, suit, type] = getCardsType(listB);
@@ -794,8 +793,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       CountdownD1 <= 0 &&
       CountdownP1 == 0
     ) {
-      console.log(111, CountdownD1);
-      console.log(222, CountdownP1);
       setGet_timeout_bets(true);
     }
     if (ante > maxbet) {
@@ -1109,7 +1106,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   }, [account?.address]);
   useEffect(() => {
     getRoomlist(); // 在组件挂载时执行函数 aaa
-  }, []); // 空依赖数组确保这个 effect 组件挂载时运行一次
+  }, []); // 空依赖数组确保这个 effect 只在组件挂载时运行一次
 
   useEffect(() => {
     if (selected == "usdc") {
@@ -2687,9 +2684,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${
-                        item.hasMoved ? item.initialX : -1500
-                      }px, ${item.hasMoved ? item.initialY : 350}px)`,
+                      transform: `translate(${item.hasMoved ? item.initialX : -1500
+                        }px, ${item.hasMoved ? item.initialY : 350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
@@ -3048,8 +3044,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                           alignItems: "center", // 垂直居中对齐
                         }}
                       >
-                        Max single bet after seeing {maxbet * 2}{" "}
-                        {selected.toUpperCase()}
+                        Max single bet after seeing {maxbet * 2} {selected.toUpperCase()}
                       </span>
                     </div>
 
@@ -3108,9 +3103,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${
-                        item.hasMoved ? item.initialX : -1500
-                      }px, ${item.hasMoved ? item.initialY : -350}px)`,
+                      transform: `translate(${item.hasMoved ? item.initialX : -1500
+                        }px, ${item.hasMoved ? item.initialY : -350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
