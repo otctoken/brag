@@ -797,7 +797,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     ) {
       setGet_timeout_bets(true);
     } else {
-      setGet_timeout_bets(false);
+      setGet_timeout_bets(false); //试试
     }
     if (ante > maxbet) {
       setMaxbet(ante);
