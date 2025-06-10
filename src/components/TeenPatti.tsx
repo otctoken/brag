@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { bls12_381 } from "@noble/curves/bls12-381";
-import { updatapoint } from "../pointfunction";
+// import { updatapoint } from "../pointfunction";
 // @ts-ignore
 import suilogo from "../assets/suilogo8.svg";
 // @ts-ignore
@@ -786,8 +786,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     anteRef.current = ante;
     betsuiRef.current = betsui;
     winAndBlindDRef.current = winAndBlindD;
-    console.log(CountdownD1);
-    console.log(CountdownP1);
+
     if (
       (winAndBlindD == "Blind" || winAndBlindD == "Seen") &&
       !beforegame1 &&
@@ -1769,7 +1768,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           } else {
             setLooksui(looksui);
             setActionAndResultP("Call");
-            updatapoint(response.digest);
+            // updatapoint(response.digest);
           }
         }
       } catch (error) {
@@ -1838,7 +1837,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           } else {
             setLooksui(looksui);
             setActionAndResultP("Rasie");
-            updatapoint(response.digest);
+            // updatapoint(response.digest);
           }
         }
       } catch (error) {
@@ -1931,7 +1930,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             setGet_fold_bets(false);
             setGet_timeout_bets(false);
             setLookCarditemsp(randomPoker);
-            updatapoint(response.digest);
+            // updatapoint(response.digest);
           }
         }
       } catch (error) {
