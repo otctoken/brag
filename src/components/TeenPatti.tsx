@@ -997,6 +997,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               // console.log(100000005);
               if (addBan > 0 && addBan != AddbetP1) {
                 setAddbetP1((prevAnte) => prevAnte + addBan);
+              } else {
+                setAddbetD1(AddbetP1);
               }
             }
           }
