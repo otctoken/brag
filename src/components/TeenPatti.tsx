@@ -925,10 +925,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           if (betsuiRef.current != suibet) {
             setBetsui(suibet);
           }
-          console.log(ban);
-          console.log(AddbetP1Ref.current);
-          console.log(AddbetD1Ref.current);
+          console.log("ban:", ban);
+          console.log("AddbetP1:", AddbetP1Ref.current);
+          console.log("AddbetD1:", AddbetD1Ref.current);
           const addBan = ban - AddbetP1Ref.current - AddbetD1Ref.current;
+          console.log("addBan:", addBan);
 
           if (data.player1 == account.address) {
             if (addrD1Ref.current == "0x0") {
