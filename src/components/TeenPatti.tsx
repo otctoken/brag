@@ -549,9 +549,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
   const account = useCurrentAccount();
 
-  useEffect(() => {
-    console.log("AddbetP1 updated:", AddbetP1);
-  }, [AddbetP1]);
+  // useEffect(() => {
+  //   console.log("AddbetP1 updated:", AddbetP1);
+  // }, [AddbetP1]);
 
   function InitAll() {
     handleMoveAndClear();
@@ -993,11 +993,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               setCountdownP1(0);
 
               // console.log(100000005);
-              if (addBan > 0) {
-                console.log("5:", AddbetP1);
-                console.log("5:", addBan);
+              if (addBan > 0 && addBan != AddbetP1) {
                 setAddbetP1((prevAnte) => prevAnte + addBan);
-                console.log("6:", ante);
               }
             }
           }
