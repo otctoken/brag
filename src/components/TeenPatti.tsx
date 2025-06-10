@@ -549,6 +549,10 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
   const account = useCurrentAccount();
 
+  useEffect(() => {
+    console.log("AddbetP1 updated:", AddbetP1);
+  }, [AddbetP1]);
+
   function InitAll() {
     handleMoveAndClear();
     setBeforegame1(true);
