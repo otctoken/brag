@@ -126,29 +126,27 @@ const App: React.FC = () => {
 
   const getbalangolbal = async () => {
     if (account) {
-      setTimeout(async () => {
-        try {
-          const [suiBal, usdcBal] = await Promise.all([
-            client.getBalance({
-              owner: account.address,
-            }),
-            client.getBalance({
-              owner: account.address,
-              coinType: usdcTYPE,
-            }),
-          ]);
+      try {
+        const [suiBal, usdcBal] = await Promise.all([
+          client.getBalance({
+            owner: account.address,
+          }),
+          client.getBalance({
+            owner: account.address,
+            coinType: usdcTYPE,
+          }),
+        ]);
 
-          const sui = (parseFloat(suiBal.totalBalance) / 1e9).toFixed(2); // SUI 精度9位
-          const usdc = (parseFloat(usdcBal.totalBalance) / 1e6).toFixed(2); // USDC 精度6位
-          setBalance(sui);
-          setBalanceusdc(usdc);
-        } catch (error) {
-          console.error("Failed to fetch balance:", error);
-          alert(
-            "Unable to fetch balance. Please check your network connection and try again."
-          );
-        }
-      }, 50); // 2000 毫秒的延迟
+        const sui = (parseFloat(suiBal.totalBalance) / 1e9).toFixed(2); // SUI 精度9位
+        const usdc = (parseFloat(usdcBal.totalBalance) / 1e6).toFixed(2); // USDC 精度6位
+        setBalance(sui);
+        setBalanceusdc(usdc);
+      } catch (error) {
+        console.error("Failed to fetch balance:", error);
+        alert(
+          "Unable to fetch balance. Please check your network connection and try again."
+        );
+      }
     } else {
       console.log("Account is not available");
     }
