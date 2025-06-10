@@ -13,7 +13,6 @@ const Dosc = () => {
           borderRadius: "16px",
         }}
       >
-
         <section>
           <h2>
             <span style={{ color: "rgb(10, 172, 83)" }}>
@@ -69,8 +68,14 @@ const Dosc = () => {
             </li>
             <li>Single bet limit:Blind bet Max 100,seen bet Max 200.</li>
             <li>No limit on total bets.</li>
-            <li>Players may not wager more than the Max Bet in a single betting round.</li>
-            <li>There is no limit on the bet amount when requesting a showdown.</li>
+            <li>
+              Players may not wager more than the Max Bet in a single betting
+              round.
+            </li>
+            <li>
+              There is no limit on the bet amount when requesting a showdown.
+            </li>
+            <li>Do not leave the page during the game.</li>
           </ul>
           <p>(House fee: 0.5%)</p>
           <p>(VIP House fee: 0.1%)</p>
@@ -79,7 +84,6 @@ const Dosc = () => {
             style={{ color: "#2299ff" }}
             href="https://www.tradeport.xyz/sui/collection/0xc8544a17c09eb59aff99596bf3e1c9c766b0b13eb7e7c71b613cf0f77c090f6e?tab=mint&bottomTab=trades"
           >
-
             Hold NFT to get VIP benefits
           </a>
           <p>
@@ -93,7 +97,6 @@ const Dosc = () => {
             </a>
           </p>
         </section>
-
       </div>
     </div>
   );
