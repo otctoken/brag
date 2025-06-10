@@ -1573,12 +1573,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             setBeforegame1(false);
             setBeforegame2(false);
             setRoomNum(num);
-            setAddbetP1(bet / decimals);
-            setAddbetD1(bet / decimals);
+            setAddbetP1(ante);
+            setAddbetD1(ante);
             setLookCard(false);
             setKeep(false);
             initbutton();
-            setCountdownD1(2);
+            setCountdownD1(59);
 
             //玩家扑克..............................
             //对手扑克............................
