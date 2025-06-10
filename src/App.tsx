@@ -148,7 +148,7 @@ const App: React.FC = () => {
             "Unable to fetch balance. Please check your network connection and try again."
           );
         }
-      }, 2000); // 2000 毫秒的延迟
+      }, 50); // 2000 毫秒的延迟
     } else {
       console.log("Account is not available");
     }
