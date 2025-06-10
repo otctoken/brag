@@ -549,9 +549,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
   const account = useCurrentAccount();
 
-  // useEffect(() => {
-  //   console.log("AddbetP1 updated:", AddbetP1);
-  // }, [AddbetP1]);
+  useEffect(() => {
+    console.log("AddbetP1 updated:", AddbetD1);
+  }, [AddbetD1]);
 
   function InitAll() {
     handleMoveAndClear();
@@ -873,13 +873,13 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
       try {
         if (data.stage > 9) {
+          console.log("1:", AddbetD1);
           setAddbetD1(0);
           setAddbetP1(0);
+          console.log("2:", AddbetD1);
           if (data.stage == 10) {
             setBetsuiVol(ante);
-            console.log("1:", AddbetP1);
             setAddbetP1(ante);
-            console.log("2:", ante);
           }
         }
         const currentTimeInMilliseconds = Date.now();
@@ -951,16 +951,16 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               setActionAndResultD(Daction);
 
               if (addBan > 0) {
+                console.log("3:", AddbetD1);
                 setAddbetD1((prevAnte) => prevAnte + addBan);
+                console.log("4:", AddbetD1);
               }
             } else {
               setCountdownD1(downTime);
               setCountdownP1(0);
 
               if (addBan > 0) {
-                console.log("3:", AddbetP1);
                 setAddbetP1((prevAnte) => prevAnte + addBan);
-                console.log("4:", ante);
               }
             }
           } else if (data.player2 == account.address) {
@@ -986,7 +986,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               setActionAndResultD(Daction);
               // console.log(100000004);
               if (addBan > 0) {
+                console.log("3:", AddbetD1);
                 setAddbetD1((prevAnte) => prevAnte + addBan);
+                console.log("4:", AddbetD1);
               }
             } else {
               setCountdownD1(downTime);
@@ -1008,7 +1010,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           data.stage < 10
         ) {
           setBeforegame2(false);
+          console.log("5:", AddbetD1);
           setAddbetD1(anteRef.current);
+          console.log("6:", AddbetD1);
           setBetsui(Number(data.bet));
           setBetsuiVol(Number(data.balance) / decimals);
           dealingCards();
@@ -1579,9 +1583,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             setBeforegame1(false);
             setBeforegame2(false);
             setRoomNum(num);
-            console.log("7:", AddbetP1);
             setAddbetP1(ante);
-            console.log("8:", ante);
             setAddbetD1(ante);
             setLookCard(false);
             setKeep(false);
@@ -3168,7 +3170,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   textAlign: "center", // 使文本居中
                 }}
               >
-                {AddbetP1 !== 0 ? AddbetP1 : null} {"asas"}
+                {AddbetP1 !== 0 ? AddbetP1 : null}
               </span>
             </div>
             <span
