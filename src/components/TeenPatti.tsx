@@ -3166,7 +3166,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   textAlign: "center", // 使文本居中
                 }}
               >
-                {AddbetP1 !== 0 ? AddbetP1 : null}
+                {AddbetP1 !== 0 ? AddbetP1 : null} {"asas"}
               </span>
             </div>
             <span
