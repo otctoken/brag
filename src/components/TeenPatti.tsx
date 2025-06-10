@@ -786,6 +786,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     anteRef.current = ante;
     betsuiRef.current = betsui;
     winAndBlindDRef.current = winAndBlindD;
+    console.log(CountdownD1);
+    console.log(CountdownP1);
     if (
       (winAndBlindD == "Blind" || winAndBlindD == "Seen") &&
       !beforegame1 &&
@@ -2684,8 +2686,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${item.hasMoved ? item.initialX : -1500
-                        }px, ${item.hasMoved ? item.initialY : 350}px)`,
+                      transform: `translate(${
+                        item.hasMoved ? item.initialX : -1500
+                      }px, ${item.hasMoved ? item.initialY : 350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
@@ -3044,7 +3047,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                           alignItems: "center", // 垂直居中对齐
                         }}
                       >
-                        Max single bet after seeing {maxbet * 2} {selected.toUpperCase()}
+                        Max single bet after seeing {maxbet * 2}{" "}
+                        {selected.toUpperCase()}
                       </span>
                     </div>
 
@@ -3103,8 +3107,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${item.hasMoved ? item.initialX : -1500
-                        }px, ${item.hasMoved ? item.initialY : -350}px)`,
+                      transform: `translate(${
+                        item.hasMoved ? item.initialX : -1500
+                      }px, ${item.hasMoved ? item.initialY : -350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
