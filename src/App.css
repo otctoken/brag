@@ -1,0 +1,788 @@
+/* Reset some basic styles */
+body,
+html,
+#root {
+  background-color: #191c1a;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+@font-face {
+  font-family: "Lcd";
+  src: url("./assets/Lcd.ttf") format("truetype");
+  /* 修改路径为实际的字体文件路径 */
+}
+
+/* Flexbox layout for app */
+.app {
+  display: flex;
+  width: 100%;
+}
+
+/* AppBar styles */
+.app-bar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #1a2520;
+  color: #1eb980;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  z-index: 1000;
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  color: rgb(10, 172, 83);
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.title {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.Gametitle {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgb(10, 172, 83);
+  font-size: 16px;
+  /* 设置字体大小为16像素rgb(10, 172, 83); */
+}
+
+.titleyue {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+  color: #a8a8a8;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.small-image {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.header-button {
+  background-color: #1eb980;
+  /* 默认背景颜色 */
+  border: none;
+  color: #333333;
+  width: 150px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-right: 200px;
+  font-size: 16px;
+  /* 设置字体大小 */
+  font-weight: bold;
+  /* 设置字体为粗体 */
+  transition: background-color 0.3s;
+  /* 添加背景颜色过渡效果 */
+  border-radius: 10px;
+}
+
+/* 鼠标悬停时 */
+.header-button:hover {
+  background-color: #149465;
+  /* 悬停时的背景颜色 */
+}
+
+/* 按钮被点击时 */
+.header-button:active {
+  background-color: #0f5e41;
+  /* 点击时的背景颜色 */
+}
+
+.paly-button {
+  background-color: #1eb980;
+  /* 默认背景颜色 */
+  border: none;
+  color: #333333;
+  width: 200px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 25px;
+  /* 设置字体大小 */
+  font-weight: bold;
+  /* 设置字体为粗体 */
+  transition: background-color 0.3s;
+  /* 添加背景颜色过渡效果 */
+  border-radius: 10px;
+}
+
+.paly-button.shift {
+  margin-left: 0;
+  margin-right: 0;
+  margin: 0 auto;
+  /* 方法1：水平居中 */
+  display: block;
+  /* 确保按钮是块级元素 */
+}
+
+/* 鼠标悬停时 */
+.paly-button:hover {
+  background-color: #149465;
+  /* 悬停时的背景颜色 */
+}
+
+/* 按钮被点击时 */
+.paly-button:active {
+  background-color: #0f5e41;
+  /* 点击时的背景颜色 */
+}
+
+.paly-button-red {
+  background-color: #e57373;
+  /* 默认背景颜色 */
+  border: none;
+  color: #333333;
+  width: 200px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 25px;
+  /* 设置字体大小 */
+  font-weight: bold;
+  /* 设置字体为粗体 */
+  transition: background-color 0.3s;
+  /* 添加背景颜色过渡效果 */
+  border-radius: 10px;
+}
+
+/* 鼠标悬停时 */
+.paly-button-red:hover {
+  background-color: #944848;
+  /* 悬停时的背景颜色 */
+}
+
+/* 按钮被点击时 */
+.paly-button-red:active {
+  background-color: #522929;
+  /* 点击时的背景颜色 */
+}
+
+.paly-button-ylw {
+  background-color: #b9af1f;
+  /* 默认背景颜色 */
+  border: none;
+  color: #333333;
+  width: 200px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 25px;
+  /* 设置字体大小 */
+  font-weight: bold;
+  /* 设置字体为粗体 */
+  transition: background-color 0.3s;
+  /* 添加背景颜色过渡效果 */
+  border-radius: 10px;
+}
+
+/* 鼠标悬停时 */
+.paly-button-ylw:hover {
+  background-color: #6e6813;
+  /* 悬停时的背景颜色 */
+}
+
+/* 按钮被点击时 */
+.paly-button-ylw:active {
+  background-color: #423f0b;
+  /* 点击时的背景颜色 */
+}
+
+.paly-button-gre {
+  background-color: #10d63b;
+  /* 默认背景颜色 */
+  border: none;
+  color: #333333;
+  width: 200px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 25px;
+  /* 设置字体大小 */
+  font-weight: bold;
+  /* 设置字体为粗体 */
+  transition: background-color 0.3s;
+  /* 添加背景颜色过渡效果 */
+  border-radius: 10px;
+}
+
+/* 鼠标悬停时 */
+.paly-button-gre:hover {
+  background-color: #0c8125;
+  /* 悬停时的背景颜色 */
+}
+
+/* 按钮被点击时 */
+.paly-button-gre:active {
+  background-color: #1c3d06;
+  /* 点击时的背景颜色 */
+}
+
+.paly-button-Blue {
+  background-color: #1e90ff;
+  /* 默认背景颜色 */
+  border: none;
+  color: #333333;
+  width: 200px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 25px;
+  /* 设置字体大小 */
+  font-weight: bold;
+  /* 设置字体为粗体 */
+  transition: background-color 0.3s;
+  /* 添加背景颜色过渡效果 */
+  border-radius: 10px;
+}
+
+/* 鼠标悬停时 */
+.paly-button-Blue:hover {
+  background-color: #125496;
+  /* 悬停时的背景颜色 */
+}
+
+/* 按钮被点击时 */
+.paly-button-Blue:active {
+  background-color: #072038;
+  /* 点击时的背景颜色 */
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: 180px;
+  background-color: #1a2520;
+  color: #1eb980;
+  padding-top: 60px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  overflow-y: auto;
+  transform: translateX(-240px);
+  transition: transform 0.3s ease-in-out;
+  z-index: 999;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar nav ul li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 3px solid #011a09;
+
+  font-size: 25px;
+  /* 设置字体大小 */
+  font-weight: bold;
+  /* 设置粗体 */
+  display: flex;
+  /* 使用 Flexbox 布局 */
+  justify-content: center;
+  /* 使文字水平居中 */
+  transition: background-color 0.3s;
+  /* 添加背景颜色过渡效果 */
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  padding: 0;
+  border-radius: 10px;
+  /* 设置圆角半径，可以根据需要调整 */
+
+  /* padding: 16px; */
+}
+
+.img {
+  padding: 0;
+  padding: 8px 8px;
+  /* padding: 16px; */
+}
+
+.tglogo {
+  width: 25%;
+  /* 适当调整宽度 */
+}
+
+.tglogo:hover {
+  cursor: pointer;
+  /* 鼠标悬停时显示小手光标 */
+}
+
+/* Main content styles */
+.content {
+  margin-top: 30px;
+  /* 你想要的距离值 */
+  flex-grow: 1;
+  padding: 50px 0px 0px;
+  margin-left: 380px;
+  margin-right: 200px;
+  transition: margin-left 0.3s ease-in-out;
+  color: rgb(200, 200, 200);
+}
+
+.content-data {
+  margin-top: 10px;
+  /* 你想要的距离值 */
+  flex-grow: 1;
+  padding: 50px 0px 0px;
+  margin-left: 0;
+  margin-right: 0;
+  transition: margin-left 0.3s ease-in-out;
+  color: rgb(200, 200, 200);
+}
+
+.content.shift {
+  margin-left: 0;
+}
+
+.grid-item-H {
+  background-color: #141414;
+  display: flex;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 60px;
+  border-radius: 16px;
+}
+
+.grid-item-avatar {
+  display: flex;
+  padding: 1px;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+  border-radius: 1px;
+}
+
+.grid-item {
+  background-color: #141414;
+  padding: 16px;
+  border-radius: 10px;
+  text-align: center;
+  /* 让内容水平居中 */
+  /* 将 .grid-item 设为 Flex 容器 */
+  gap: 16px;
+  /* justify-content: center; 水平居中 */
+  /* align-items: center; 垂直居中 */
+}
+
+/*这里与tsx有够级关系*/
+@media (max-width: 1400px) {
+  .sidebar {
+    transform: translateX(-240px);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .content {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .grid-item {
+    padding: 1px;
+
+    gap: 0px;
+    /* justify-content: center; 水平居中 */
+    /* align-items: center; 垂直居中 */
+  }
+
+  .grid-item-H {
+    gap: 0px;
+    padding: 0px;
+  }
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(600px, 100%), 1fr));
+  gap: 16px;
+}
+
+.grid-container-game {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(800px, 100%), 1fr));
+  gap: 16px;
+}
+
+.grid-container-game-fomo-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+  gap: 16px;
+}
+
+.grid-container-game-fomo-5 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(230px, 100%), 1fr));
+  gap: 16px;
+}
+
+.grid-container-game-21-5 {
+  display: flex;
+  flex-wrap: wrap;
+  /* 允许换行 */
+  gap: 12px;
+  /* 子元素之间的间距 */
+  justify-content: center;
+  /* 水平居中 */
+  align-items: center;
+  /* 垂直居中 */
+}
+
+.sub-grid-item {
+  background-color: #f0f0f0;
+  padding: 8px;
+  margin: 8px 0;
+  border-radius: 5px;
+  gap: 16px;
+}
+
+.page {
+  text-align: center;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  margin: 10px;
+  border-radius: 10px;
+}
+
+.footer {
+  color: #b8b5b5;
+  padding: 10px 0;
+}
+
+.shake {
+  animation: shake 0.08s ease-in-out infinite alternate;
+}
+
+@keyframes shake {
+  from {
+    transform: translateX(-5px);
+  }
+
+  to {
+    transform: translateX(5px);
+  }
+}
+
+.buttonimg {
+  width: 70px;
+  height: 70px;
+  background-size: cover;
+  background-position: center;
+  background-color: transparent;
+  border: none;
+  color: black;
+  font-size: 22px;
+  cursor: pointer;
+  transition: transform 0.1s, filter 0.1s;
+}
+
+.buttonimg:hover {
+  filter: brightness(1.2);
+}
+
+.buttonimg:active {
+  transform: scale(0.95);
+}
+
+/* animation: neon 3s infinite; */
+@keyframes neon {
+
+  0%,
+  100% {
+    border-color: rgba(255, 191, 0, 0.1);
+    /* Light Pink */
+    box-shadow: 0 0 5px rgba(255, 191, 0, 0.1), 0 0 20px rgba(255, 191, 0, 0.1),
+      0 0 40px rgba(255, 191, 0, 0.1), 0 0 80px rgba(255, 191, 0, 0.1);
+  }
+
+  20% {
+    border-color: rgba(135, 206, 250, 0.5);
+    /* Light Salmon */
+    box-shadow: 0 0 5px rgba(135, 206, 250, 0.5),
+      0 0 20px rgba(135, 206, 250, 0.5), 0 0 40px rgba(135, 206, 250, 0.5),
+      0 0 80px rgba(135, 206, 250, 0.5);
+  }
+
+  40% {
+    border-color: rgba(255, 182, 193, 0.5);
+    /* Light Blue */
+    box-shadow: 0 0 5px rgba(255, 182, 193, 0.5),
+      0 0 20px rgba(255, 182, 193, 0.5), 0 0 40px rgba(255, 182, 193, 0.5),
+      0 0 80px rgba(255, 182, 193, 0.5);
+  }
+
+  60% {
+    border-color: rgba(144, 238, 144, 0.5);
+    /* Light Green */
+    box-shadow: 0 0 5px rgba(144, 238, 144, 0.5),
+      0 0 20px rgba(144, 238, 144, 0.5), 0 0 40px rgba(144, 238, 144, 0.5),
+      0 0 80px rgba(144, 238, 144, 0.5);
+  }
+
+  80% {
+    border-color: rgba(221, 160, 221, 0.5);
+    /* Plum */
+    box-shadow: 0 0 5px rgba(221, 160, 221, 0.5),
+      0 0 20px rgba(221, 160, 221, 0.5), 0 0 40px rgba(221, 160, 221, 0.5),
+      0 0 80px rgba(221, 160, 221, 0.5);
+  }
+}
+
+@keyframes neon1 {
+
+  0%,
+  100% {
+    border-color: rgba(255, 182, 193, 0.1);
+    /* Light Pink */
+    box-shadow: 0 0 5px rgba(255, 182, 193, 0.1),
+      0 0 20px rgba(255, 182, 193, 0.1), 0 0 40px rgba(255, 182, 193, 0.1),
+      0 0 80px rgba(255, 182, 193, 0.1);
+  }
+
+  50% {
+    border-color: rgba(255, 182, 193, 0.3);
+    /* Light Green */
+    box-shadow: 0 0 5px rgba(255, 182, 193, 0.3),
+      0 0 20px rgba(255, 182, 193, 0.3), 0 0 40px rgba(255, 182, 193, 0.3),
+      0 0 80px rgba(255, 182, 193, 0.3);
+  }
+}
+
+@keyframes neon2 {
+
+  0%,
+  100% {
+    border-color: rgba(255, 191, 0, 0.1);
+    /* Light Pink */
+    box-shadow: 0 0 5px rgba(255, 191, 0, 0.1), 0 0 20px rgba(255, 191, 0, 0.1),
+      0 0 40px rgba(255, 191, 0, 0.1), 0 0 80px rgba(255, 191, 0, 0.1);
+  }
+
+  50% {
+    border-color: rgba(255, 191, 0, 0.3);
+    /* Light Green */
+    box-shadow: 0 0 5px rgba(255, 191, 0, 0.3), 0 0 20px rgba(255, 191, 0, 0.3),
+      0 0 40px rgba(255, 191, 0, 0.3), 0 0 80px rgba(255, 191, 0, 0.3);
+  }
+}
+
+@keyframes neon3 {
+
+  0%,
+  100% {
+    border-color: rgba(216, 191, 216, 0.1);
+    /* Light Pink */
+    box-shadow: 0 0 5px rgba(216, 191, 216, 0.1),
+      0 0 20px rgba(216, 191, 216, 0.1), 0 0 40px rgba(216, 191, 216, 0.1),
+      0 0 80px rgba(216, 191, 216, 0.1);
+  }
+
+  50% {
+    border-color: rgba(216, 191, 216, 0.3);
+    /* Light Green */
+    box-shadow: 0 0 5px rgba(216, 191, 216, 0.3),
+      0 0 20px rgba(216, 191, 216, 0.3), 0 0 40px rgba(216, 191, 216, 0.3),
+      0 0 80px rgba(216, 191, 216, 0.3);
+  }
+}
+
+@keyframes neon4 {
+
+  0%,
+  100% {
+    border-color: rgba(255, 200, 124, 0.1);
+    /* Light Pink */
+    box-shadow: 0 0 5px rgba(255, 200, 124, 0.1),
+      0 0 20px rgba(255, 200, 124, 0.1), 0 0 40px rgba(255, 200, 124, 0.1),
+      0 0 80px rgba(255, 200, 124, 0.1);
+  }
+
+  50% {
+    border-color: rgba(255, 200, 124, 0.3);
+    /* Light Green */
+    box-shadow: 0 0 5px rgba(255, 200, 124, 0.3),
+      0 0 20px rgba(255, 200, 124, 0.3), 0 0 40px rgba(255, 200, 124, 0.3),
+      0 0 80px rgba(255, 200, 124, 0.3);
+  }
+}
+
+@keyframes neon5 {
+
+  0%,
+  100% {
+    border-color: rgba(135, 206, 250, 0.1);
+    /* Light Pink */
+    box-shadow: 0 0 5px rgba(135, 206, 250, 0.1),
+      0 0 20px rgba(135, 206, 250, 0.1), 0 0 40px rgba(135, 206, 250, 0.1),
+      0 0 80px rgba(135, 206, 250, 0.1);
+  }
+
+  50% {
+    border-color: rgba(135, 206, 250, 0.3);
+    /* Light Green */
+    box-shadow: 0 0 5px rgba(135, 206, 250, 0.3),
+      0 0 20px rgba(135, 206, 250, 0.3), 0 0 40px rgba(135, 206, 250, 0.3),
+      0 0 80px rgba(135, 206, 250, 0.3);
+  }
+}
+
+@keyframes neon6 {
+
+  0%,
+  100% {
+    border-color: rgba(144, 238, 144, 0.1);
+    /* Light Pink */
+    box-shadow: 0 0 5px rgba(144, 238, 144, 0.1),
+      0 0 20px rgba(144, 238, 144, 0.1), 0 0 40px rgba(144, 238, 144, 0.1),
+      0 0 80px rgba(144, 238, 144, 0.1);
+  }
+
+  50% {
+    border-color: rgba(144, 238, 144, 0.3);
+    /* Light Green */
+    box-shadow: 0 0 5px rgba(144, 238, 144, 0.3),
+      0 0 20px rgba(144, 238, 144, 0.3), 0 0 40px rgba(144, 238, 144, 0.3),
+      0 0 80px rgba(144, 238, 144, 0.3);
+  }
+}
+
+@keyframes neon7 {
+
+  0%,
+  100% {
+    border-color: rgba(32, 178, 170, 0.1);
+    /* Light Pink */
+    box-shadow: 0 0 5px rgba(32, 178, 170, 0.1),
+      0 0 20px rgba(32, 178, 170, 0.1), 0 0 40px rgba(32, 178, 170, 0.1),
+      0 0 80px rgba(32, 178, 170, 0.1);
+  }
+
+  50% {
+    border-color: rgba(32, 178, 170, 0.3);
+    /* Light Green */
+    box-shadow: 0 0 5px rgba(32, 178, 170, 0.3),
+      0 0 20px rgba(32, 178, 170, 0.3), 0 0 40px rgba(32, 178, 170, 0.3),
+      0 0 80px rgba(32, 178, 170, 0.3);
+  }
+}
+
+@keyframes neon8 {
+
+  0%,
+  100% {
+    border-color: rgba(188, 143, 143, 0.1);
+    /* Light Pink */
+    box-shadow: 0 0 5px rgba(188, 143, 143, 0.1),
+      0 0 20px rgba(188, 143, 143, 0.1), 0 0 40px rgba(188, 143, 143, 0.1),
+      0 0 80px rgba(188, 143, 143, 0.1);
+  }
+
+  50% {
+    border-color: rgba(188, 143, 143, 0.3);
+    /* Light Green */
+    box-shadow: 0 0 5px rgba(188, 143, 143, 0.3),
+      0 0 20px rgba(188, 143, 143, 0.3), 0 0 40px rgba(188, 143, 143, 0.3),
+      0 0 80px rgba(188, 143, 143, 0.3);
+  }
+}
+
+@keyframes neon9 {
+
+  0%,
+  100% {
+    border-color: rgba(255, 218, 185, 0.1);
+    /* Light Pink */
+    box-shadow: 0 0 5px rgba(255, 218, 185, 0.1),
+      0 0 20px rgba(255, 218, 185, 0.1), 0 0 40px rgba(255, 218, 185, 0.1),
+      0 0 80px rgba(255, 218, 185, 0.1);
+  }
+
+  50% {
+    border-color: rgba(255, 218, 185, 0.3);
+    /* Light Green */
+    box-shadow: 0 0 5px rgba(255, 218, 185, 0.3),
+      0 0 20px rgba(255, 218, 185, 0.3), 0 0 40px rgba(255, 218, 185, 0.3),
+      0 0 80px rgba(255, 218, 185, 0.3);
+  }
+}
+
+.imagetransition {
+  width: 100px;
+  /* Set the width of the image */
+  height: 153px;
+  /* Set the height of the image */
+}
+
+.announcement-container {
+  position: fixed;
+  top: 50px;
+  /* 调整这个值来设置公告条距顶部的距离 */
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.5);
+  /* 设置背景为黑色，透明度50% */
+  z-index: 1000;
+  /* 确保公告条在所有其他内容之上 */
+  border: none;
+  /* 移除边框 */
+  display: flex;
+  /* 使用 Flexbox 布局 */
+  align-items: center;
+  /* 垂直居中 */
+  height: 30px;
+  /* 设置公告条的高度 */
+}
+
+.announcement-content {
+  white-space: nowrap;
+  animation: scroll-left 20s linear forwards;
+  color: #d9f84d;
+  /* 设置字体颜色为白色 */
+  display: flex;
+  /* 使用 Flexbox 布局 */
+  align-items: center;
+  /* 确保内容在垂直方向居中 */
+  padding-top: 7px;
+  /* height: 100%; 确保内容块占满容器高度 */
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100vw);
+    /* 从视口右侧外部开始 */
+  }
+
+  100% {
+    transform: translateX(-100%);
+    /* 移动到视口左侧外部 */
+  }
+}

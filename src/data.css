@@ -1,0 +1,80 @@
+.tabs {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.tabs button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #141414;
+  color: rgb(148, 146, 146);
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background-color: #292929;
+}
+
+.table-container {
+  max-height: 500px; /* 根据需要调整 */
+  overflow-y: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* 自动分配列宽 */
+}
+
+thead {
+  background-color: #141414;
+  color: rgb(148, 146, 146);
+}
+
+tbody tr {
+  border-bottom: 1px solid #494949; /* 添加隔断 */
+}
+
+tbody tr.empty-row {
+  height: 40px; /* 根据需要调整空行高度 */
+}
+
+tbody tr:nth-child(even) {
+  background-color: #202020;
+  color: rgb(148, 146, 146);
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #272727;
+  color: rgb(148, 146, 146);
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+  border-right: 1px solid #494949; /* 添加隔断 */
+}
+
+th:last-child,
+td:last-child {
+  border-right: none; /* 最后一列不需要右边框 */
+}
+
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-container th,
+.table-container td {
+  padding: 8px;
+  text-align: center; /* 居中显示文本 */
+  white-space: nowrap; /* 禁止文本换行 */
+  overflow: hidden; /* 隐藏超出容器的文本 */
+  text-overflow: ellipsis; /* 使用省略号表示超出的文本 */
+}
+
+.table-container tr.non-zero-profit {
+  color: green; /* 将文本颜色设置为绿色 */
+}
