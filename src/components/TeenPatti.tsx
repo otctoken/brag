@@ -867,6 +867,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   }
 
   function refreshData(data) {
+    console.log("stage", data.stage);
     if (data.time != GlbDatatime || data.stage != GlbStage) {
       GlbDatatime = data.time;
       GlbStage = data.stage;
