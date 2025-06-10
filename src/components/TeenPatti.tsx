@@ -875,7 +875,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             setBetsuiVol(ante);
             console.log("1:", AddbetP1);
             setAddbetP1(ante);
-            console.log("2:", AddbetP1);
+            console.log("2:", ante);
           }
         }
         const currentTimeInMilliseconds = Date.now();
@@ -956,7 +956,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               if (addBan > 0) {
                 console.log("3:", AddbetP1);
                 setAddbetP1((prevAnte) => prevAnte + addBan);
-                console.log("4:", AddbetP1);
+                console.log("4:", ante);
               }
             }
           } else if (data.player2 == account.address) {
@@ -992,7 +992,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               if (addBan > 0) {
                 console.log("5:", AddbetP1);
                 setAddbetP1((prevAnte) => prevAnte + addBan);
-                console.log("6:", AddbetP1);
+                console.log("6:", ante);
               }
             }
           }
@@ -1579,7 +1579,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             setRoomNum(num);
             console.log("7:", AddbetP1);
             setAddbetP1(ante);
-            console.log("8:", AddbetP1);
+            console.log("8:", ante);
             setAddbetD1(ante);
             setLookCard(false);
             setKeep(false);
