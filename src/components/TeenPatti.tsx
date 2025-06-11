@@ -24,7 +24,7 @@ const Package_TeenPatti =
 const Gamedata =
   "0xe697666e26768271c163e9616bb2e246f610ec009c3fa0f3ffe312070ce5ef16";
 const Gamedata_USDC =
-  "0xb2510a1fc43152481ee40998325cda452ca07e675b9b42cf403ee0d504b5c380";
+  "0x61fff7fd3fb6178385d88d4492b5e12657ea950045dbbe0d84b749ded61b4645";
 const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
   "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
