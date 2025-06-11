@@ -879,6 +879,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           if (data.stage == 10) {
             setBetsuiVol(ante);
             setAddbetP1(ante);
+            setAddbetD1(ante);
           }
         }
         const currentTimeInMilliseconds = Date.now();
