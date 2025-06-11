@@ -1038,7 +1038,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       if (roomNum > 0) {
         try {
           const suiAfter = await client.getDynamicFieldObject({
-            parentId: Gamedata_USDC,
+            parentId: Gamedata,
             name: {
               type: "u64",
               value: String(roomNum),
