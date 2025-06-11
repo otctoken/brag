@@ -1038,7 +1038,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       if (roomNum > 0) {
         try {
           const suiAfter = await client.getDynamicFieldObject({
-            parentId: Gamedata,
+            parentId: Gamedata_USDC,
             name: {
               type: "u64",
               value: String(roomNum),
@@ -2439,13 +2439,14 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
       try {
         const tx = new TransactionBlock();
-        const data = tx.object(Gamedata); //data
 
         let typeArgument = CoinSui;
+        let Gamedatas = Gamedata;
         if (selected == "usdc") {
           typeArgument = CoinUsdc;
+          Gamedatas = Gamedata_USDC;
         }
-
+        const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}leave_game`,
           typeArguments: [typeArgument],
