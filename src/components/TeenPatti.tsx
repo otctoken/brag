@@ -511,6 +511,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   const [maxbet, setMaxbet] = useState(10);
   const [decimals, setDecimals] = useState(1e9);
   const [selected, setSelected] = useState<"sui" | "usdc">("sui");
+  const [max_vol, setMaxvol] = useState(0);
   const [kiosk, setKiosk] = useState(
     "0x26566773fe7347af393bbf8fd6937d1169b04fd2f5789125685c0291cf422569"
   );
@@ -577,6 +578,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     setLookCard(false);
     setKeep(false);
     setBetsuiVol(1);
+    setMaxvol(0)
 
     setActionAndResultP("");
     setActionAndResultD("");
@@ -884,6 +886,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       GlbDatatime = data.time;
       GlbStage = data.stage;
 
+      let decimal = 1e9
+      if (selected == "usdc") {
+        decimal = 1e6
+      }
+      setMaxvol(data.max_bet / decimal)
+
       try {
         if (data.stage > 9) {
           setAddbetD1(0);
@@ -932,7 +940,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           !beforegame1Ref.current &&
           data.stage < 10
         ) {
-          const ban = Number(data.balance) / decimals;
+          let decimal = 1e9
+          if (selected == "usdc") {
+            decimal = 1e6
+          }
+          const ban = Number(data.balance) / decimal;
           const suibet = Number(data.bet);
           setBetsuiVol(ban);
           if (betsuiRef.current != suibet) {
@@ -1049,29 +1061,56 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     let errEoom = 0;
     const fetchData = async () => {
       if (roomNum > 0) {
-        try {
-          const suiAfter = await client.getDynamicFieldObject({
-            parentId: Gamedata,
-            name: {
-              type: "u64",
-              value: String(roomNum),
-            },
-          });
-          const data = JSON.parse(
-            // @ts-ignore
-            JSON.stringify(suiAfter["data"]["content"]["fields"])
-          );
-          // console.log(data);
-          // console.log(data.sigcards1[0]);
+        if (selected == "sui") {
+          try {
+            const suiAfter = await client.getDynamicFieldObject({
+              parentId: Gamedata,
+              name: {
+                type: "u64",
+                value: String(roomNum),
+              },
+            });
+            const data = JSON.parse(
+              // @ts-ignore
+              JSON.stringify(suiAfter["data"]["content"]["fields"])
+            );
+            // console.log(data);
+            // console.log(data.sigcards1[0]);
 
-          refreshData(data);
-        } catch (error) {
-          errEoom = errEoom + 1;
-          if (errEoom > 6) {
-            setRoomNum(0);
-            errEoom = 0;
+            refreshData(data);
+          } catch (error) {
+            errEoom = errEoom + 1;
+            if (errEoom > 6) {
+              setRoomNum(0);
+              errEoom = 0;
+            }
+            console.error("Error:", error);
           }
-          console.error("Error:", error);
+        } else {
+          try {
+            const suiAfter = await client.getDynamicFieldObject({
+              parentId: Gamedata_USDC,
+              name: {
+                type: "u64",
+                value: String(roomNum),
+              },
+            });
+            const data = JSON.parse(
+              // @ts-ignore
+              JSON.stringify(suiAfter["data"]["content"]["fields"])
+            );
+            // console.log(data);
+            // console.log(data.sigcards1[0]);
+
+            refreshData(data);
+          } catch (error) {
+            errEoom = errEoom + 1;
+            if (errEoom > 6) {
+              setRoomNum(0);
+              errEoom = 0;
+            }
+            console.error("Error:", error);
+          }
         }
       }
     };
@@ -1104,7 +1143,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       setBetShow((betsui * 2) / decimals);
       setBetRasie(betsui / decimals);
     } else {
-      const vol = parseFloat((betsui / 2e9).toFixed(2));
+      const vol = parseFloat((betsui / (2 * decimals)).toFixed(2));
       setBetCall(vol);
       setBetShow(vol * 2);
       setBetRasie(vol);
@@ -2815,6 +2854,13 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   {betsuiVol}
                 </h1>
               )}
+              {winAndBlindD !== "" && (
+                <img
+                  src={selected == "usdc" ? usdclogo : suilogo}
+                  alt="coin icon"
+                  style={{ width: "30px", height: "30px" }}
+                />
+              )}
               {
                 stage > 10 || keep || stage == -1 ? (
                   <button
@@ -3597,6 +3643,18 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           ) : null}
         </div>
       </div>
+      {max_vol > 0 && (
+        <span
+          style={{
+            fontSize: "12px",
+            color: "#FFD700",          // 金色
+            textAlign: "center",
+            display: "block",
+          }}
+        >
+          Max single blind bet {maxbet}{selected.toUpperCase()}---Max single bet after seeing {maxbet * 2}{selected.toUpperCase()}
+        </span>
+      )}
       <span
         style={{
           fontSize: "12px",
