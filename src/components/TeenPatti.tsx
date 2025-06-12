@@ -2513,7 +2513,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           <div
             className="grid-item"
             style={{
-              height: "600px",
+              height: "580px",
               backgroundImage: `url(${bjt})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
@@ -2761,9 +2761,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${
-                        item.hasMoved ? item.initialX : -1500
-                      }px, ${item.hasMoved ? item.initialY : 350}px)`,
+                      transform: `translate(${item.hasMoved ? item.initialX : -1500
+                        }px, ${item.hasMoved ? item.initialY : 350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
@@ -3182,9 +3181,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${
-                        item.hasMoved ? item.initialX : -1500
-                      }px, ${item.hasMoved ? item.initialY : -350}px)`,
+                      transform: `translate(${item.hasMoved ? item.initialX : -1500
+                        }px, ${item.hasMoved ? item.initialY : -350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
