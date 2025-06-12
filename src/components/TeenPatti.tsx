@@ -214,7 +214,7 @@ async function queryRoom(type) {
     });
 
     let list: RoomList[] = [];
-    console.log(res.data[0]["parsedJson"]["maxvol"]);
+
     for (var key in res.data) {
       let dict = {} as RoomList;
       dict.time = parseInt(res.data[key]["timestampMs"], 10);
@@ -225,7 +225,6 @@ async function queryRoom(type) {
       dict.cointype = type;
       list.push(dict);
     }
-    console.log("1", list);
 
     let res1: any = await client.queryEvents({
       query: {
@@ -248,7 +247,7 @@ async function queryRoom(type) {
 
     const list11 = [...list1, ...list];
     list11.sort((a, b) => b.time - a.time);
-    console.log("2", list11);
+
     const uniqueList1 = removeDuplicatesByKey(list11, "num");
 
     let res2: any = await client.queryEvents({
@@ -343,7 +342,6 @@ async function getCointype(addr, Cointype) {
       owner: addr,
       coinType: Cointype,
     });
-    console.log(coins.length);
     return coins;
   } catch (error) {
     console.error("Error callGetGamePlayerAndDiv:", error);
