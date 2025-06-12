@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./data.css"; // 假设你有一个 CSS 文件来进行样式处理
 
-
 import { getFullnodeUrl, SuiClient } from "@mysten/sui.js/client";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 
@@ -22,7 +21,7 @@ const gamelist = ["Coin Flip", "Blind Box", "Dice"];
 //   "0x866040bf37b4b3c5d9485b19ed6b05b96485a51474c2f244e1700517778a4fc1::suiwin::Outcome_Baccarat";
 
 const Package_TeenPatti =
-  "0x17a134b4fc5da33cea53cbb58e9a1c6ec6648f741a732c623fb09cc8d3ac419c::brag::Gvol";
+  "0x22d26daff6946e14998d47873885acde07db9c8de9fe073f314bd86a2b76668b::brag::Gvol";
 
 // const PackageFOMO =
 //   "0x7215f3f0d67be7611e0df20ddc8c10f5e67ff83d2964f29aa040a77bc2d2cdaa::suiwin::Outcome";
@@ -118,8 +117,6 @@ async function queryEvents_TeenPatti() {
   }
 }
 
-
-
 const MyTable: React.FC = () => {
   const account = useCurrentAccount();
   const [activeTab, setActiveTab] = useState("all");
@@ -135,29 +132,25 @@ const MyTable: React.FC = () => {
   useEffect(() => {
     // 定义要每隔5秒执行的函数
     const fetchData = async () => {
-
       let elementALLTeenPatti = await queryEvents_TeenPatti();
 
       if (elementALLTeenPatti.length == 0) {
         let list: Bet[] = [];
         let dict = {} as Bet; // 使用言
-        dict.time = 999
-        dict.profit = "--"
-        dict.player = "0x0"
+        dict.time = 999;
+        dict.profit = "--";
+        dict.player = "0x0";
         dict.game = "Brag";
-        dict.profit = "0"
+        dict.profit = "0";
         dict.wager = "--";
         dict.multiplier = "--";
         dict.link = "--";
         list.push(dict);
-        elementALLTeenPatti = list
-
+        elementALLTeenPatti = list;
       }
 
       let combinedList: Bet[] = [];
-      combinedList = [
-        ...elementALLTeenPatti,
-      ];
+      combinedList = [...elementALLTeenPatti];
       combinedList.sort((a, b) => b.time - a.time);
 
       if (dictlet.time != combinedList[0].time) {
@@ -187,17 +180,17 @@ const MyTable: React.FC = () => {
   const rowsToShow =
     filteredData.length < 0
       ? [
-        ...filteredData,
-        ...Array(15 - filteredData.length).fill({
-          time: "",
-          player: "",
-          game: "",
-          wager: "",
-          multiplier: "",
-          profit: "",
-          link: "",
-        }),
-      ]
+          ...filteredData,
+          ...Array(15 - filteredData.length).fill({
+            time: "",
+            player: "",
+            game: "",
+            wager: "",
+            multiplier: "",
+            profit: "",
+            link: "",
+          }),
+        ]
       : filteredData;
 
   return (
@@ -233,10 +226,11 @@ const MyTable: React.FC = () => {
             {rowsToShow.map((bet, index) => (
               <tr
                 key={index}
-                className={`${bet.link ? "" : "empty-row"} ${bet.profit !== "0.00" && bet.profit !== "--"
-                  ? "non-zero-profit"
-                  : ""
-                  }`}
+                className={`${bet.link ? "" : "empty-row"} ${
+                  bet.profit !== "0.00" && bet.profit !== "--"
+                    ? "non-zero-profit"
+                    : ""
+                }`}
               >
                 <td>{formatMilliseconds(bet.time)}</td>
                 <td>{bet.player}</td>

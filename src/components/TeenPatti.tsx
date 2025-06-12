@@ -18,13 +18,13 @@ const MINcoin = 10000;
 const MAXcoin = 1000000000000000;
 const neting = "mainnet";
 const Package_Te =
-  "0x17a134b4fc5da33cea53cbb58e9a1c6ec6648f741a732c623fb09cc8d3ac419c";
+  "0x22d26daff6946e14998d47873885acde07db9c8de9fe073f314bd86a2b76668b";
 const Package_TeenPatti =
-  "0x17a134b4fc5da33cea53cbb58e9a1c6ec6648f741a732c623fb09cc8d3ac419c::brag::";
+  "0x22d26daff6946e14998d47873885acde07db9c8de9fe073f314bd86a2b76668b::brag::";
 const Gamedata =
-  "0xe697666e26768271c163e9616bb2e246f610ec009c3fa0f3ffe312070ce5ef16";
+  "0xada78a58c3f902d1746caef12cbe9548a90517d4a2db798780c7535a2b7094f6";
 const Gamedata_USDC =
-  "0x61fff7fd3fb6178385d88d4492b5e12657ea950045dbbe0d84b749ded61b4645";
+  "0x0d0cf328df637a7039a55b3aba2720860732d259f251b450b95c859a68b85ec9";
 const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
   "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
