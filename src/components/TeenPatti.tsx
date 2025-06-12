@@ -1580,6 +1580,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           Gamedatas = Gamedata_USDC;
           if (account) {
             coins = await getCointype(account.address, CoinUsdc);
+          }else{
+            window.alert(`Link wallet to ${neting}!!`);
           }
           coinObjectId = coins[0].coinObjectId;
           if (coins.length > 1) {
