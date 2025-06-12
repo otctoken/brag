@@ -1507,7 +1507,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       }
     }
   };
-  const transferSui_join = async (bet, num, bo) => {
+  const transferSui_join = async (bet, num, bo, type) => {
     if (looksui) {
       setLooksui(false);
 
@@ -1533,13 +1533,14 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             "The bet amount does not meet the requirements,min:0.01SUI,MAX:--SUI"
           );
         }
-        setAnte(bet / decimals);
+
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
         let coinObjectId = tx.gas;
 
-        if (selected == "usdc") {
+        if (type?.toUpperCase().includes('USDC')) {
+
           let coins;
           typeArgument = CoinUsdc;
           Gamedatas = Gamedata_USDC;
@@ -1554,6 +1555,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               ]);
             }
           }
+          setAnte(bet / 1e6);
+        } else {
+          setAnte(bet / 1e9);
         }
 
         const [coin] = tx.splitCoins(coinObjectId, [bet]);
@@ -1589,6 +1593,14 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             setLooksui(looksui);
             window.alert("Transaction failed  OR  Insufficient balance");
           } else {
+            if (type?.toUpperCase().includes('USDC')) {
+              setSelected("usdc")
+            } else {
+              setSelected("sui")
+            }
+
+
+
             setLooksui(looksui);
             setBeforegame1(false);
             setBeforegame2(false);
@@ -2506,7 +2518,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           <div
             className="grid-item"
             style={{
-              height: "550px",
+              height: "750px",
               backgroundImage: `url(${bjt})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
@@ -2695,7 +2707,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                             <button
                               className="paly-button shift"
                               style={{ width: "90px", height: "40px", padding: "2px" }}
-                              onClick={() => transferSui_join(item.vol, item.num, item.bo)}
+                              onClick={() => transferSui_join(item.vol, item.num, item.bo, item.cointype)}
                             >
                               {looksui ? "Play" : "send.."}
                             </button>
