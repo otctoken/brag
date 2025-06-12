@@ -18,13 +18,13 @@ const MINcoin = 10000;
 const MAXcoin = 1000000000000000;
 const neting = "mainnet";
 const Package_Te =
-  "0x22d26daff6946e14998d47873885acde07db9c8de9fe073f314bd86a2b76668b";
+  "0x5379778ca89cb2c375718776cf152b9e407530fa3d7c58f0c83276bd8b076a32";
 const Package_TeenPatti =
-  "0x22d26daff6946e14998d47873885acde07db9c8de9fe073f314bd86a2b76668b::brag::";
+  "0x5379778ca89cb2c375718776cf152b9e407530fa3d7c58f0c83276bd8b076a32::brag::";
 const Gamedata =
-  "0xada78a58c3f902d1746caef12cbe9548a90517d4a2db798780c7535a2b7094f6";
+  "0xf6ea769b52a4935174ad3813b99ac583fefb823033b62b112c6e79134ea92e8c";
 const Gamedata_USDC =
-  "0x0d0cf328df637a7039a55b3aba2720860732d259f251b450b95c859a68b85ec9";
+  "0x68ea08020885dca9930e56fbcf33f7803886e6f5ffb11e9a17c47d5709b0804e";
 const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
   "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
@@ -199,31 +199,36 @@ interface RoomList {
   time: number;
   num: number;
   vol: number;
+  maxvol: number;
   bo: number;
+  cointype: string;
 }
 
-async function queryRoom() {
+async function queryRoom(type) {
   try {
     let res: any = await client.queryEvents({
       query: {
-        MoveEventType: `${Package_TeenPatti}GnumberOpen`,
+        MoveEventType: `${Package_TeenPatti}GnumberOpen<${type}>`,
       },
       limit: 120,
     });
 
     let list: RoomList[] = [];
+    console.log(res.data[0]["parsedJson"]["maxvol"])
     for (var key in res.data) {
       let dict = {} as RoomList;
       dict.time = parseInt(res.data[key]["timestampMs"], 10);
       dict.num = parseInt(res.data[key]["parsedJson"]["result"], 10);
       dict.vol = parseInt(res.data[key]["parsedJson"]["vol"], 10);
+      dict.maxvol = parseInt(res.data[key]["parsedJson"]["maxvol"], 10);
       dict.bo = 0; //0是新建房，1是继续游戏的房
+      dict.cointype = type
       list.push(dict);
     }
 
     let res1: any = await client.queryEvents({
       query: {
-        MoveEventType: `${Package_TeenPatti}GnumberCont`,
+        MoveEventType: `${Package_TeenPatti}GnumberCont<${type}>`,
       },
       limit: 120,
     });
@@ -234,8 +239,9 @@ async function queryRoom() {
       dict.time = parseInt(res1.data[key]["timestampMs"], 10);
       dict.num = parseInt(res1.data[key]["parsedJson"]["result"], 10);
       dict.vol = parseInt(res1.data[key]["parsedJson"]["vol"], 10);
-
+      dict.maxvol = 0;
       dict.bo = 1; //0是新建房，1是继续游戏的房
+      dict.cointype = type
       list1.push(dict);
     }
 
@@ -243,19 +249,23 @@ async function queryRoom() {
     list11.sort((a, b) => b.time - a.time);
 
     const uniqueList1 = removeDuplicatesByKey(list11, "num");
+
     let res2: any = await client.queryEvents({
       query: {
-        MoveEventType: `${Package_TeenPatti}GnumberClose`,
+        MoveEventType: `${Package_TeenPatti}GnumberClose<${type}>`,
       },
       limit: 120,
     });
     let list2: RoomList[] = [];
+
     for (var key in res2.data) {
       let dict2 = {} as RoomList;
       dict2.time = parseInt(res2.data[key]["timestampMs"], 10);
       dict2.num = parseInt(res2.data[key]["parsedJson"]["result"], 10);
       dict2.vol = 0;
+      dict2.maxvol = 0;
       dict2.bo = 0; //0是新建房，1是继续游戏的房
+      dict2.cointype = type
       list2.push(dict2);
     }
     // 找到 list_B 中最小的 num 值
@@ -263,10 +273,13 @@ async function queryRoom() {
     const uniqueList = uniqueList1.slice(0, 10);
 
     // 过滤 list_A，删除 num 小于 list_B 中最小 num 的元素
-    const filteredListA = uniqueList.filter((item) => item.num >= minNumB);
-    const list23 = removeMatchingRows(filteredListA, list2);
+    // const filteredListA = uniqueList.filter((item) => item.num >= minNumB);
+    // console.log("4", filteredListA)
+    const list23 = removeMatchingRows(uniqueList, list2);
 
     const list8 = list23.slice(0, 8);
+
+
 
     return list8;
   } catch (error) {
@@ -601,8 +614,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
   async function getRoomlist() {
     setItemsRoom([]);
-    const roomlist = await queryRoom();
-
+    const [roomlist_USDC, roomlist_Sui] = await Promise.all([
+      queryRoom(CoinUsdc),
+      queryRoom(CoinSui),
+    ]);
+    const roomlist = [...roomlist_Sui, ...roomlist_USDC];
     setItemsRoom(roomlist);
   }
 
@@ -2626,47 +2642,71 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                         padding: "2px",
                       }}
                     >
-                      {itemsRoom.map((item) => (
-                        <div
-                          key={item.num} // 添加一个唯一的 key.........................................................................
-                          className="grid-item"
-                          style={{
-                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            padding: "5px",
-                          }}
-                        >
-                          <span style={{ color: "rgb(144, 238, 144)" }}>
-                            ante
-                          </span>
-                          <p>
+                      {itemsRoom.map((item) => {
+                        const isUSDC = item.cointype === CoinUsdc;          // ✅ 是否 USDC
+                        const divisor = isUSDC ? 1e6 : 1e9;                 // ✅ 不同币种的精度
+                        const displayVol = parseFloat((item.vol / divisor).toFixed(2));
+                        const displaymaxVol = parseFloat((item.maxvol / divisor).toFixed(2));
+
+                        return (
+                          <div
+                            key={item.num}
+                            className="grid-item"
+                            style={{ backgroundColor: "rgba(0,0,0,0.5)", padding: "2px" }}
+                          >
+                            {/* ante 标签 */}
+                            <span style={{ color: "rgb(144,238,144)" }}>ante</span>
+
+                            {/* 数值行：行间距压缩到 1px */}
                             <span
                               style={{
-                                fontSize: "30px",
-                                color: "rgb(144, 238, 144)",
-                                padding: "2px",
+                                display: "block",
+                                margin: "1px 0",
+                                fontSize: "20px",
+                                color: "rgb(144,238,144)",
+                                padding: "1px",
                               }}
                             >
-                              {parseFloat((item.vol / decimals).toFixed(2))}
+                              {displayVol}
                             </span>
-                          </p>
-                          <button
-                            className="paly-button shift"
-                            style={{
-                              width: "90px",
-                              height: "40px",
-                              padding: "2px",
-                            }}
-                            onClick={() =>
-                              transferSui_join(item.vol, item.num, item.bo)
-                            }
-                          >
-                            {looksui ? "Play" : "send.."}
-                          </button>
-                          <span style={{ fontSize: "12px", color: "#999999" }}>
-                            Room No.{item.num % 1000}
-                          </span>
-                        </div>
-                      ))}
+                            <span
+                              style={{
+                                display: "block",
+                                margin: "1px 0",
+                                fontSize: "12px",
+                                color: "rgb(144,238,144)",
+                                padding: "5px",
+                              }}
+                            >
+                              Max Single Bet: {displaymaxVol}
+                            </span>
+
+                            {/* 币种标签（USDC=金色，其余=蓝色） */}
+                            <span
+                              style={{
+                                fontSize: "12px",
+                                color: isUSDC ? "#6495ED" : "#87CEFA",
+                              }}
+                            >
+                              {isUSDC ? "USDC" : "SUI"}
+                            </span>
+
+                            {/* Play / send.. 按钮 */}
+                            <button
+                              className="paly-button shift"
+                              style={{ width: "90px", height: "40px", padding: "2px" }}
+                              onClick={() => transferSui_join(item.vol, item.num, item.bo)}
+                            >
+                              {looksui ? "Play" : "send.."}
+                            </button>
+
+                            {/* 房间号 */}
+                            <span style={{ fontSize: "12px", color: "#999999" }}>
+                              Room&nbsp;No.{item.num % 1000}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
                   )
                 ) : beforegame2 ? (
@@ -2692,9 +2732,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${
-                        item.hasMoved ? item.initialX : -1500
-                      }px, ${item.hasMoved ? item.initialY : 350}px)`,
+                      transform: `translate(${item.hasMoved ? item.initialX : -1500
+                        }px, ${item.hasMoved ? item.initialY : 350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
@@ -3113,9 +3152,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${
-                        item.hasMoved ? item.initialX : -1500
-                      }px, ${item.hasMoved ? item.initialY : -350}px)`,
+                      transform: `translate(${item.hasMoved ? item.initialX : -1500
+                        }px, ${item.hasMoved ? item.initialY : -350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
