@@ -21,7 +21,7 @@ const gamelist = ["Coin Flip", "Blind Box", "Dice"];
 //   "0x866040bf37b4b3c5d9485b19ed6b05b96485a51474c2f244e1700517778a4fc1::suiwin::Outcome_Baccarat";
 
 const Package_TeenPatti =
-  "0x22d26daff6946e14998d47873885acde07db9c8de9fe073f314bd86a2b76668b::brag::Gvol";
+  "0x5379778ca89cb2c375718776cf152b9e407530fa3d7c58f0c83276bd8b076a32::brag::Gvol";
 
 // const PackageFOMO =
 //   "0x7215f3f0d67be7611e0df20ddc8c10f5e67ff83d2964f29aa040a77bc2d2cdaa::suiwin::Outcome";
@@ -180,17 +180,17 @@ const MyTable: React.FC = () => {
   const rowsToShow =
     filteredData.length < 0
       ? [
-          ...filteredData,
-          ...Array(15 - filteredData.length).fill({
-            time: "",
-            player: "",
-            game: "",
-            wager: "",
-            multiplier: "",
-            profit: "",
-            link: "",
-          }),
-        ]
+        ...filteredData,
+        ...Array(15 - filteredData.length).fill({
+          time: "",
+          player: "",
+          game: "",
+          wager: "",
+          multiplier: "",
+          profit: "",
+          link: "",
+        }),
+      ]
       : filteredData;
 
   return (
@@ -226,11 +226,10 @@ const MyTable: React.FC = () => {
             {rowsToShow.map((bet, index) => (
               <tr
                 key={index}
-                className={`${bet.link ? "" : "empty-row"} ${
-                  bet.profit !== "0.00" && bet.profit !== "--"
+                className={`${bet.link ? "" : "empty-row"} ${bet.profit !== "0.00" && bet.profit !== "--"
                     ? "non-zero-profit"
                     : ""
-                }`}
+                  }`}
               >
                 <td>{formatMilliseconds(bet.time)}</td>
                 <td>{bet.player}</td>
