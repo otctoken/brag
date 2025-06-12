@@ -3,7 +3,10 @@ import "./data.css"; // 假设你有一个 CSS 文件来进行样式处理
 
 import { getFullnodeUrl, SuiClient } from "@mysten/sui.js/client";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-
+// @ts-ignore
+import suilogo from "./assets/suilogo.svg";
+// @ts-ignore
+import usdclogo from "./assets/usdclogo.svg";
 //...................................................随机网络.................................
 //..随..........
 const urls = ["https://fullnode.testnet.sui.io:443"];
@@ -22,6 +25,9 @@ const gamelist = ["Coin Flip", "Blind Box", "Dice"];
 
 const Package_TeenPatti =
   "0x5379778ca89cb2c375718776cf152b9e407530fa3d7c58f0c83276bd8b076a32::brag::Gvol";
+const CoinSui = "0x2::sui::SUI";
+const CoinUsdc =
+  "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
 
 // const PackageFOMO =
 //   "0x7215f3f0d67be7611e0df20ddc8c10f5e67ff83d2964f29aa040a77bc2d2cdaa::suiwin::Outcome";
@@ -36,12 +42,12 @@ function formatNumber(value: number): string {
   // 保留两位小数并转换为字符串
   return value.toFixed(2);
 }
-function calculateAndFormatString(str1) {
+function calculateAndFormatString(str1,dism) {
   // 将字符串转换为浮点数
   const num1 = parseFloat(str1);
 
   // 进行一些运算，例如相加
-  const result = num1 / 1e9;
+  const result = num1 / dism;
   if (result > 0) {
     let truncatedResult = Math.floor(result * 100) / 100;
     return truncatedResult.toFixed(2);
@@ -73,6 +79,7 @@ interface Bet {
   multiplier: string;
   profit: string;
   link: string;
+  type: string;
 }
 
 let initialData: Bet[] = [];
@@ -82,7 +89,7 @@ async function queryEvents_TeenPatti() {
   try {
     let res: any = await client2.queryEvents({
       query: {
-        MoveEventType: Package_TeenPatti,
+        MoveEventType: `${Package_TeenPatti}<${CoinSui}>`,
       },
       limit: 120,
     });
@@ -94,17 +101,58 @@ async function queryEvents_TeenPatti() {
       dict.game = "Brag";
       if (res.data[key]["parsedJson"]["expendORincome"]) {
         dict.profit = calculateAndFormatString(
-          res.data[key]["parsedJson"]["vol"]
+          res.data[key]["parsedJson"]["vol"],1e9
         );
         dict.wager = "--";
       } else {
         dict.wager = calculateAndFormatString(
-          res.data[key]["parsedJson"]["vol"]
+          res.data[key]["parsedJson"]["vol"],1e9
         );
         dict.profit = "--";
       }
 
       dict.multiplier = "--";
+      dict.type = "sui"
+      dict.link = res.data[key]["id"]["txDigest"];
+      list.push(dict);
+    }
+    list = list.filter((bet) => bet.multiplier !== "");
+    return list;
+  } catch (error) {
+    console.error("Error querying events:", error);
+    let list: Bet[] = [];
+    return list;
+  }
+}
+
+async function queryEvents_TeenPatti_USDC() {
+  try {
+    let res: any = await client2.queryEvents({
+      query: {
+        MoveEventType: `${Package_TeenPatti}<${CoinUsdc}>`,
+      },
+      limit: 120,
+    });
+    let list: Bet[] = [];
+    for (var key in res.data) {
+      let dict = {} as Bet; // 使用言
+      dict.time = parseInt(res.data[key]["timestampMs"], 10);
+      dict.player = res.data[key]["parsedJson"]["player"];
+      dict.game = "Brag";
+      if (res.data[key]["parsedJson"]["expendORincome"]) {
+        dict.profit = calculateAndFormatString(
+          res.data[key]["parsedJson"]["vol"],1e6
+        );
+        dict.wager = "--";
+      } else {
+        dict.wager = calculateAndFormatString(
+          res.data[key]["parsedJson"]["vol"],1e6
+        );
+        dict.profit = "--";
+      }
+
+      dict.multiplier = "--";
+      dict.type = "usdc"
       dict.link = res.data[key]["id"]["txDigest"];
       list.push(dict);
     }
@@ -133,8 +181,9 @@ const MyTable: React.FC = () => {
     // 定义要每隔5秒执行的函数
     const fetchData = async () => {
       let elementALLTeenPatti = await queryEvents_TeenPatti();
+      let elementALLTeenPatti_usdc = await queryEvents_TeenPatti_USDC();
 
-      if (elementALLTeenPatti.length == 0) {
+      if (elementALLTeenPatti.length == 0 && elementALLTeenPatti_usdc.length==0) {
         let list: Bet[] = [];
         let dict = {} as Bet; // 使用言
         dict.time = 999;
@@ -150,7 +199,10 @@ const MyTable: React.FC = () => {
       }
 
       let combinedList: Bet[] = [];
-      combinedList = [...elementALLTeenPatti];
+            combinedList = [
+        ...elementALLTeenPatti_usdc,
+        ...elementALLTeenPatti,
+      ];
       combinedList.sort((a, b) => b.time - a.time);
 
       if (dictlet.time != combinedList[0].time) {
@@ -233,7 +285,19 @@ const MyTable: React.FC = () => {
               >
                 <td>{formatMilliseconds(bet.time)}</td>
                 <td>{bet.player}</td>
-                <td>{bet.game}</td>
+                <td>
+                  {bet.game}
+                  <img
+                    src={bet.type == "sui" ? suilogo : usdclogo}
+                    alt="logo"
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      marginLeft: "4px",
+                      verticalAlign: "middle"
+                    }}
+                  />
+                </td>
                 <td>{bet.wager}</td>
                 <td>{bet.multiplier}</td>
                 <td>{bet.profit}</td>
