@@ -214,7 +214,7 @@ async function queryRoom(type) {
     });
 
     let list: RoomList[] = [];
-    console.log(res.data[0]["parsedJson"]["maxvol"])
+    console.log(res.data[0]["parsedJson"]["maxvol"]);
     for (var key in res.data) {
       let dict = {} as RoomList;
       dict.time = parseInt(res.data[key]["timestampMs"], 10);
@@ -222,9 +222,10 @@ async function queryRoom(type) {
       dict.vol = parseInt(res.data[key]["parsedJson"]["vol"], 10);
       dict.maxvol = parseInt(res.data[key]["parsedJson"]["maxvol"], 10);
       dict.bo = 0; //0是新建房，1是继续游戏的房
-      dict.cointype = type
+      dict.cointype = type;
       list.push(dict);
     }
+    console.log("1", list);
 
     let res1: any = await client.queryEvents({
       query: {
@@ -241,13 +242,13 @@ async function queryRoom(type) {
       dict.vol = parseInt(res1.data[key]["parsedJson"]["vol"], 10);
       dict.maxvol = 0;
       dict.bo = 1; //0是新建房，1是继续游戏的房
-      dict.cointype = type
+      dict.cointype = type;
       list1.push(dict);
     }
 
     const list11 = [...list1, ...list];
     list11.sort((a, b) => b.time - a.time);
-
+    console.log("2", list11);
     const uniqueList1 = removeDuplicatesByKey(list11, "num");
 
     let res2: any = await client.queryEvents({
@@ -265,7 +266,7 @@ async function queryRoom(type) {
       dict2.vol = 0;
       dict2.maxvol = 0;
       dict2.bo = 0; //0是新建房，1是继续游戏的房
-      dict2.cointype = type
+      dict2.cointype = type;
       list2.push(dict2);
     }
     // 找到 list_B 中最小的 num 值
@@ -278,8 +279,6 @@ async function queryRoom(type) {
     const list23 = removeMatchingRows(uniqueList, list2);
 
     const list8 = list23.slice(0, 8);
-
-
 
     return list8;
   } catch (error) {
@@ -1534,13 +1533,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           );
         }
 
-
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
         let coinObjectId = tx.gas;
 
-        if (type?.toUpperCase().includes('USDC')) {
-
+        if (type?.toUpperCase().includes("USDC")) {
           let coins;
           typeArgument = CoinUsdc;
           Gamedatas = Gamedata_USDC;
@@ -1593,13 +1590,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             setLooksui(looksui);
             window.alert("Transaction failed  OR  Insufficient balance");
           } else {
-            if (type?.toUpperCase().includes('USDC')) {
-              setSelected("usdc")
+            if (type?.toUpperCase().includes("USDC")) {
+              setSelected("usdc");
             } else {
-              setSelected("sui")
+              setSelected("sui");
             }
-
-
 
             setLooksui(looksui);
             setBeforegame1(false);
@@ -2518,7 +2513,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           <div
             className="grid-item"
             style={{
-              height: "750px",
+              height: "600px",
               backgroundImage: `url(${bjt})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
@@ -2655,19 +2650,28 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       }}
                     >
                       {itemsRoom.map((item) => {
-                        const isUSDC = item.cointype === CoinUsdc;          // ✅ 是否 USDC
-                        const divisor = isUSDC ? 1e6 : 1e9;                 // ✅ 不同币种的精度
-                        const displayVol = parseFloat((item.vol / divisor).toFixed(2));
-                        const displaymaxVol = parseFloat((item.maxvol / divisor).toFixed(2));
+                        const isUSDC = item.cointype === CoinUsdc; // ✅ 是否 USDC
+                        const divisor = isUSDC ? 1e6 : 1e9; // ✅ 不同币种的精度
+                        const displayVol = parseFloat(
+                          (item.vol / divisor).toFixed(2)
+                        );
+                        const displaymaxVol = parseFloat(
+                          (item.maxvol / divisor).toFixed(2)
+                        );
 
                         return (
                           <div
                             key={item.num}
                             className="grid-item"
-                            style={{ backgroundColor: "rgba(0,0,0,0.5)", padding: "2px" }}
+                            style={{
+                              backgroundColor: "rgba(0,0,0,0.5)",
+                              padding: "2px",
+                            }}
                           >
                             {/* ante 标签 */}
-                            <span style={{ color: "rgb(144,238,144)" }}>ante</span>
+                            <span style={{ color: "rgb(144,238,144)" }}>
+                              ante
+                            </span>
 
                             {/* 数值行：行间距压缩到 1px */}
                             <span
@@ -2706,14 +2710,27 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                             {/* Play / send.. 按钮 */}
                             <button
                               className="paly-button shift"
-                              style={{ width: "90px", height: "40px", padding: "2px" }}
-                              onClick={() => transferSui_join(item.vol, item.num, item.bo, item.cointype)}
+                              style={{
+                                width: "90px",
+                                height: "40px",
+                                padding: "2px",
+                              }}
+                              onClick={() =>
+                                transferSui_join(
+                                  item.vol,
+                                  item.num,
+                                  item.bo,
+                                  item.cointype
+                                )
+                              }
                             >
                               {looksui ? "Play" : "send.."}
                             </button>
 
                             {/* 房间号 */}
-                            <span style={{ fontSize: "12px", color: "#999999" }}>
+                            <span
+                              style={{ fontSize: "12px", color: "#999999" }}
+                            >
                               Room&nbsp;No.{item.num % 1000}
                             </span>
                           </div>
@@ -2744,8 +2761,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${item.hasMoved ? item.initialX : -1500
-                        }px, ${item.hasMoved ? item.initialY : 350}px)`,
+                      transform: `translate(${
+                        item.hasMoved ? item.initialX : -1500
+                      }px, ${item.hasMoved ? item.initialY : 350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
@@ -3164,8 +3182,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${item.hasMoved ? item.initialX : -1500
-                        }px, ${item.hasMoved ? item.initialY : -350}px)`,
+                      transform: `translate(${
+                        item.hasMoved ? item.initialX : -1500
+                      }px, ${item.hasMoved ? item.initialY : -350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
