@@ -3360,15 +3360,21 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               </span>
             </div>
             <span
-              style={{ fontSize: "12px", color: "#899999", padding: "0px" }}
+              style={{
+                display: "inline-flex", // 关键：设为行内 flex
+                alignItems: "center", // 关键：垂直居中
+                fontSize: "12px",
+                color: "#899999",
+                padding: "0px",
+              }}
             >
               {nftvip && (
                 <img
                   src={viplogo}
                   alt="nft"
                   style={{
-                    width: "14px",
-                    height: "14px",
+                    width: "20px",
+                    height: "20px",
                   }}
                 />
               )}
