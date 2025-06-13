@@ -521,6 +521,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   const [nftid, setNftid] = useState(
     "0x1029dccf8c62758943619ae5f44976340319504de1330087f77e4b4b2bccc22e"
   );
+  const [nftvip, setNftvip] = useState(false);
   const [betsui, setBetsui] = useState(1);
   const [betsuiVol, setBetsuiVol] = useState(1);
 
@@ -665,11 +666,15 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     const kioskID_objectId = await getKioskNFT_(address);
     if (kioskID_objectId !== false) {
       const [kioskID, objectId] = kioskID_objectId;
-      console.log("找到 KioskID:", kioskID);
-      console.log("找到 ObjectID:", objectId);
+      console.log("KioskID:", kioskID);
+      console.log("ObjectID:", objectId);
+      setKiosk(kioskID);
+      setNftid(objectId);
+      setNftvip(true);
       // 这里可以继续对 kioskID 和 objectId 做你想要的操作
     } else {
-      console.log("没有找到符合条件的 NFT");
+      setNftvip(false);
+      console.log("not NFT");
     }
   }
 
@@ -3357,6 +3362,16 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             <span
               style={{ fontSize: "12px", color: "#899999", padding: "0px" }}
             >
+              {nftvip && (
+                <img
+                  src={viplogo}
+                  alt="nft"
+                  style={{
+                    width: "14px",
+                    height: "14px",
+                  }}
+                />
+              )}
               {addrP1}
             </span>
           </div>
