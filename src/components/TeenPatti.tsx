@@ -281,7 +281,7 @@ async function queryRoom(type) {
     const list23 = removeMatchingRows(uniqueList, list2);
 
     const list8 = list23.slice(0, 8);
-
+    console.log(list8);
     return list8;
   } catch (error) {
     console.error("Error querying events:", error);
