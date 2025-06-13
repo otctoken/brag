@@ -7,7 +7,7 @@ import suilogo from "../assets/suilogo8.svg";
 // @ts-ignore
 import usdclogo from "../assets/usdclogo.svg";
 // @ts-ignore
-import viplogo from "../assets/vip.gif";
+// import viplogo from "../assets/vip.gif";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import {
   getFullnodeUrl,
