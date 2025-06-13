@@ -645,11 +645,15 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         // @ts-ignore: 我知道这可能会出错，先跳过检查
         const kioskID = caps[i].data.content.fields.for; // i 是索引，caps[i] 是元素.fields?.for
         const suiAfter = await client.getDynamicFields({ parentId: kioskID });
-        if(suiAfter.data && suiAfter.data.length>0){
-          console.log(suiAfter.data.length)
-          console.log(suiAfter.data)
-        };
-
+        if (suiAfter.data && suiAfter.data.length > 0) {
+          console.log(suiAfter.data.length);
+          console.log(suiAfter.data);
+          for (let y = 0; y < caps.length; y++) {
+            if (suiAfter.data[y].objectType == NFTOB) {
+              console.log("VIP")
+            }
+          }
+        }
       }
     }
   }
