@@ -631,30 +631,30 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     }
   }
 
-  async function getKioskNFT(address: string) {
-    console.log("get kiosk err");
-    // ① 关键：这里用 owner 而不是 addr
-    const { data: caps } = await client.getOwnedObjects({
-      owner: address,
-      filter: {
-        StructType: "0x2::kiosk::KioskOwnerCap", // 只拉 KioskOwnerCap
-      },
-      options: { showContent: true }, // 要拿 fields
-    });
-    if (caps.length > 0) {
-      for (let i = 0; i < caps.length; i++) {
-        try {
-          // @ts-ignore: 我知道这可能会出错，先跳过检查
-          console.log(caps[i].data.content.fields.for); // i 是索引，caps[i] 是元素.fields?.
-          // console.log(kioskID)
-          // const suiAfter = await client.getDynamicFields({ parentId: kioskID });
-          // console.log(suiAfter)
-        } catch (e) {
-          console.log(e, "get kiosk err");
-        }
-      }
-    }
-  }
+  // async function getKioskNFT(address: string) {
+  //   console.log("get kiosk err");
+  //   // ① 关键：这里用 owner 而不是 addr
+  //   const { data: caps } = await client.getOwnedObjects({
+  //     owner: address,
+  //     filter: {
+  //       StructType: "0x2::kiosk::KioskOwnerCap", // 只拉 KioskOwnerCap
+  //     },
+  //     options: { showContent: true }, // 要拿 fields
+  //   });
+  //   if (caps.length > 0) {
+  //     for (let i = 0; i < caps.length; i++) {
+  //       try {
+  //         // @ts-ignore: 我知道这可能会出错，先跳过检查
+  //         console.log(caps[i].data.content.fields.for); // i 是索引，caps[i] 是元素.fields?.
+  //         // console.log(kioskID)
+  //         // const suiAfter = await client.getDynamicFields({ parentId: kioskID });
+  //         // console.log(suiAfter)
+  //       } catch (e) {
+  //         console.log(e, "get kiosk err");
+  //       }
+  //     }
+  //   }
+  // }
 
   function rasieADD() {
     let num = Math.floor(betRasie + 1);
@@ -1196,7 +1196,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     if (account) {
       setAvatarP1(getAvatarURL(account.address));
       setAddrP1(shortAddress(account.address));
-      getKioskNFT(account.address);
+      // getKioskNFT(account.address);
     }
   }, [account?.address]);
   useEffect(() => {
