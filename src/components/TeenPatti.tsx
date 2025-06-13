@@ -3361,11 +3361,14 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             </div>
             <span
               style={{
-                display: "inline-flex", // 关键：设为行内 flex
-                alignItems: "center", // 关键：垂直居中
+                display: "inline-flex",
+                alignItems: "center",
                 fontSize: "12px",
                 color: "#899999",
                 padding: "0px",
+                ...(nftvip
+                  ? { marginLeft: "-25px" } // 左移 25px
+                  : {}),
               }}
             >
               {nftvip && (
@@ -3373,8 +3376,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   src={viplogo}
                   alt="nft"
                   style={{
-                    width: "20px",
-                    height: "20px",
+                    width: "25px",
+                    height: "25px",
+                    marginRight: "4px",
                   }}
                 />
               )}
