@@ -3378,7 +3378,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   style={{
                     width: "25px",
                     height: "25px",
-                    marginRight: "4px",
                   }}
                 />
               )}
