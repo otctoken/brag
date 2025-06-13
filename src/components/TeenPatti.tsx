@@ -644,9 +644,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       for (let i = 0; i < caps.length; i++) {
         // @ts-ignore: 我知道这可能会出错，先跳过检查
         const kioskID = caps[i].data.content.fields.for; // i 是索引，caps[i] 是元素.fields?.for
-        console.log(kioskID);
         const suiAfter = await client.getDynamicFields({ parentId: kioskID });
-        console.log(suiAfter);
+        if(suiAfter.data && suiAfter.data.length>0){
+          console.log(suiAfter.data.length)
+          console.log(suiAfter.data)
+        };
+
       }
     }
   }
