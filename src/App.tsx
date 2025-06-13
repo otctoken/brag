@@ -318,7 +318,7 @@ const App: React.FC = () => {
         </a>
 
         <a
-          href="https://www.tradeport.xyz/sui/collection/0xc8544a17c09eb59aff99596bf3e1c9c766b0b13eb7e7c71b613cf0f77c090f6e?tab=mint&bottomTab=trades"
+          href="https://x.com/brag_game"
           target="_blank"
           rel="noopener noreferrer"
         >

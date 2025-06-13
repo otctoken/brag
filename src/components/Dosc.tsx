@@ -20,18 +20,18 @@ const Dosc = () => {
             </span>
           </h2>
           <p style={{ textAlign: "justify" }}>
-            Teen Patti is a two-player game where each player places an equal
-            bet to create the pot. Each player is then dealt three face-down
-            cards. Players can choose to call, raise, check, or fold. A blind
-            player's bet amount is half of what a player who has seen their
-            cards would bet. The player requesting a showdown must pay double
-            the chips, while the player being challenged does not need to pay
-            any chips. The maximum single bet for a blind player is 100, while
-            for a seen player, it is 200. The ranking of hands is as follows:
-            Three of a kind &gt;Straight flush &gt; Straight &gt; Flush &gt;
-            Pair &gt;High card, with AAA being the highest hand. If the hands of
-            the players are equal, the player who first requests the showdown
-            loses. Technical details: game that uses a draw-sign-encrypt-verify
+            Brag is a two-player game where each player places an equal bet to
+            create the pot. Each player is then dealt three face-down cards.
+            Players can choose to call, raise, check, or fold. A blind player's
+            bet amount is half of what a player who has seen their cards would
+            bet. The player requesting a showdown must pay double the chips,
+            while the player being challenged does not need to pay any chips.
+            The maximum single bet for a blind player is 100, while for a seen
+            player, it is 200. The ranking of hands is as follows: Three of a
+            kind &gt;Straight flush &gt; Straight &gt; Flush &gt; Pair &gt;High
+            card, with AAA being the highest hand. If the hands of the players
+            are equal, the player who first requests the showdown loses.
+            Technical details: game that uses a draw-sign-encrypt-verify
             mechanism to ensure honesty and fairness in the game. First, both
             players shuffle the deck randomly and then draw 3 random indices to
             form a 55-length array. This array is signed and recorded on-chain.
