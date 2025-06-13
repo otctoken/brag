@@ -1,5 +1,6 @@
 import React from "react";
-
+// @ts-ignore
+import viplogo from "../assets/vip.gif";
 const Dosc = () => {
   return (
     <div>
@@ -78,7 +79,19 @@ const Dosc = () => {
             <li>Do not leave the page during the game.</li>
           </ul>
           <p>(House fee: 0.5%)</p>
-          <p>(VIP House fee: 0.1%)</p>
+          <p>
+            (VIP House fee: 0.1%)
+            <img
+              src={viplogo}
+              alt="logo"
+              style={{
+                width: "20px",
+                height: "20px",
+                marginLeft: "4px",
+                verticalAlign: "middle",
+              }}
+            />
+          </p>
           <a
             target="_blank"
             style={{ color: "#2299ff" }}
