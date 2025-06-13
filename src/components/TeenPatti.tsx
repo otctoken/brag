@@ -30,7 +30,8 @@ const Gamedata_USDC =
 const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
   "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
-
+const NFTOB =
+  "0xf960a968fcbaf25d69cdaf53db17cab5fd1070a047468244311fe53abbf46194::my_hero::Hero";
 const clockob = "0x6";
 
 const client = new SuiClient({ url: "https://fullnode.testnet.sui.io:443" });
@@ -631,7 +632,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   }
 
   async function getKioskNFT(address: string) {
-    console.log("get kiosk err");
     // ① 关键：这里用 owner 而不是 addr
     const { data: caps } = await client.getOwnedObjects({
       owner: address,
