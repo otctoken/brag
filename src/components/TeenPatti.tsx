@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { bls12_381 } from "@noble/curves/bls12-381";
-// import { updatapoint } from "../pointfunction";
 // @ts-ignore
 import suilogo from "../assets/suilogo8.svg";
 // @ts-ignore
 import usdclogo from "../assets/usdclogo.svg";
+// @ts-ignore
+import viplogo from "../assets/vip.gif";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import {
   getFullnodeUrl,
@@ -28,7 +29,8 @@ const Gamedata_USDC =
 const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
   "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
-
+const NFT_vip =
+  "0xf960a968fcbaf25d69cdaf53db17cab5fd1070a047468244311fe53abbf46194::my_hero::Hero"
 const clockob = "0x6";
 
 const client = new SuiClient({ url: "https://fullnode.testnet.sui.io:443" });
@@ -143,6 +145,7 @@ import D13 from "../assets/pokerpng/13D.png";
 import H13 from "../assets/pokerpng/13H.png";
 // @ts-ignore
 import S13 from "../assets/pokerpng/13S.png";
+import { console } from "inspector";
 
 let GlbPcardsID = 0;
 let GlbDcardsID = 0;
@@ -624,6 +627,32 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     ) {
       setItemsRoom(roomlist);
     }
+  }
+
+  async function getKioskNFT(address: string) {
+    console.log("get kiosk err");
+    // ① 关键：这里用 owner 而不是 addr
+    const { data: caps } = await client.getOwnedObjects({
+      owner: address,
+      filter: {
+        StructType: '0x2::kiosk::KioskOwnerCap',   // 只拉 KioskOwnerCap
+      },
+      options: { showContent: true },              // 要拿 fields
+    });
+    if (caps.length > 0) {
+      for (let i = 0; i < caps.length; i++) {
+        try {
+          // @ts-ignore: 我知道这可能会出错，先跳过检查
+          console.log(caps[i].data.content.fields.for) // i 是索引，caps[i] 是元素.fields?.for 
+          // console.log(kioskID)
+          // const suiAfter = await client.getDynamicFields({ parentId: kioskID });
+          // console.log(suiAfter)
+        } catch (e) {
+          console.log(e, "get kiosk err");
+        }
+      }
+    }
+
   }
 
   function rasieADD() {
@@ -1166,6 +1195,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     if (account) {
       setAvatarP1(getAvatarURL(account.address));
       setAddrP1(shortAddress(account.address));
+      getKioskNFT(account.address)
     }
   }, [account?.address]);
   useEffect(() => {
@@ -1653,6 +1683,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             setBeforegame1(false);
             setBeforegame2(false);
             setRoomNum(num);
+            setAddbetD1(ante);
             setAddbetP1(ante);
             setLookCard(false);
             setKeep(false);
