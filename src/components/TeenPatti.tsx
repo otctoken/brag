@@ -647,7 +647,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const suiAfter = await client.getDynamicFields({ parentId: kioskID });
         if (suiAfter.data && suiAfter.data.length > 0) {
           for (let y = 0; y < suiAfter.data.length; y++) {
- 
             if (suiAfter.data[y].objectType == NFTOB) {
               return [kioskID, suiAfter.data[y].objectId];
             }
@@ -2775,6 +2774,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                             key={item.num}
                             className="grid-item"
                             style={{
+                              margin: "4px 0",
                               backgroundColor: "rgba(0,0,0,0.5)",
                               padding: "2px",
                             }}
