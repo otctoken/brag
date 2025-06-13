@@ -20,13 +20,13 @@ const MINcoin = 10000;
 const MAXcoin = 1000000000000000;
 const neting = "mainnet";
 const Package_Te =
-  "0x5379778ca89cb2c375718776cf152b9e407530fa3d7c58f0c83276bd8b076a32";
+  "0xe4985728dd9afeb55c3a7eb5067555b2ce56fca846647b4597819feb61844296";
 const Package_TeenPatti =
-  "0x5379778ca89cb2c375718776cf152b9e407530fa3d7c58f0c83276bd8b076a32::brag::";
+  "0xe4985728dd9afeb55c3a7eb5067555b2ce56fca846647b4597819feb61844296::brag::";
 const Gamedata =
-  "0xf6ea769b52a4935174ad3813b99ac583fefb823033b62b112c6e79134ea92e8c";
+  "0x919bcf88bd426bc3b40f722f59204dea2cbd942332c487e0a1b268916169147d";
 const Gamedata_USDC =
-  "0x68ea08020885dca9930e56fbcf33f7803886e6f5ffb11e9a17c47d5709b0804e";
+  "0x41f82e55f838213cae9f7de0b7ed9b9a3a15de691020f96d9293196167c12706";
 const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
   "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
@@ -224,7 +224,6 @@ async function queryRoom(type) {
       dict.num = parseInt(res.data[key]["parsedJson"]["result"], 10);
       dict.vol = parseInt(res.data[key]["parsedJson"]["vol"], 10);
       dict.maxvol = parseInt(res.data[key]["parsedJson"]["maxvol"], 10);
-      console.log(dict.maxvol);
       dict.bo = 0; //0是新建房，1是继续游戏的房
       dict.cointype = type;
       list.push(dict);
@@ -243,7 +242,7 @@ async function queryRoom(type) {
       dict.time = parseInt(res1.data[key]["timestampMs"], 10);
       dict.num = parseInt(res1.data[key]["parsedJson"]["result"], 10);
       dict.vol = parseInt(res1.data[key]["parsedJson"]["vol"], 10);
-      dict.maxvol = 0;
+      dict.maxvol = parseInt(res.data[key]["parsedJson"]["maxvol"], 10);
       dict.bo = 1; //0是新建房，1是继续游戏的房
       dict.cointype = type;
       list1.push(dict);
@@ -647,10 +646,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const kioskID = caps[i].data.content.fields.for; // i 是索引，caps[i] 是元素.fields?.for
         const suiAfter = await client.getDynamicFields({ parentId: kioskID });
         if (suiAfter.data && suiAfter.data.length > 0) {
-          console.log(suiAfter.data.length);
-          console.log(suiAfter.data);
           for (let y = 0; y < suiAfter.data.length; y++) {
-            console.log(suiAfter.data[y].objectType);
+ 
             if (suiAfter.data[y].objectType == NFTOB) {
               return [kioskID, suiAfter.data[y].objectId];
             }
@@ -666,8 +663,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     const kioskID_objectId = await getKioskNFT_(address);
     if (kioskID_objectId !== false) {
       const [kioskID, objectId] = kioskID_objectId;
-      console.log("KioskID:", kioskID);
-      console.log("ObjectID:", objectId);
       setKiosk(kioskID);
       setNftid(objectId);
       setNftvip(true);
