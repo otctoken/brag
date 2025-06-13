@@ -648,9 +648,10 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         if (suiAfter.data && suiAfter.data.length > 0) {
           console.log(suiAfter.data.length);
           console.log(suiAfter.data);
-          for (let y = 0; y < caps.length; y++) {
+          for (let y = 0; y < suiAfter.data.length; y++) {
+            console.log(suiAfter.data[y].objectType);
             if (suiAfter.data[y].objectType == NFTOB) {
-              console.log("VIP")
+              console.log("VIP");
             }
           }
         }
