@@ -631,7 +631,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     }
   }
 
-  async function getKioskNFT(address: string) {
+  async function getKioskNFT_(address: string) {
     // ① 关键：这里用 owner 而不是 addr
     const { data: caps } = await client.getOwnedObjects({
       owner: address,
@@ -651,11 +651,25 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           for (let y = 0; y < suiAfter.data.length; y++) {
             console.log(suiAfter.data[y].objectType);
             if (suiAfter.data[y].objectType == NFTOB) {
-              console.log("VIP");
+              return [kioskID, suiAfter.data[y].objectId];
             }
           }
         }
       }
+    }
+    return false;
+  }
+
+  async function getKioskNFT(address: string) {
+    // ① 关键：这里用 owner 而不是 addr
+    const kioskID_objectId = await getKioskNFT_(address);
+    if (kioskID_objectId !== false) {
+      const [kioskID, objectId] = kioskID_objectId;
+      console.log("找到 KioskID:", kioskID);
+      console.log("找到 ObjectID:", objectId);
+      // 这里可以继续对 kioskID 和 objectId 做你想要的操作
+    } else {
+      console.log("没有找到符合条件的 NFT");
     }
   }
 
