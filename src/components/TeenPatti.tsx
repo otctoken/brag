@@ -30,7 +30,7 @@ const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
   "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
 const NFT_vip =
-  "0xf960a968fcbaf25d69cdaf53db17cab5fd1070a047468244311fe53abbf46194::my_hero::Hero"
+  "0xf960a968fcbaf25d69cdaf53db17cab5fd1070a047468244311fe53abbf46194::my_hero::Hero";
 const clockob = "0x6";
 
 const client = new SuiClient({ url: "https://fullnode.testnet.sui.io:443" });
@@ -581,7 +581,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     setLookCard(false);
     setKeep(false);
     setBetsuiVol(1);
-    setMaxvol(0)
+    setMaxvol(0);
 
     setActionAndResultP("");
     setActionAndResultD("");
@@ -623,7 +623,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     const roomlist = [...roomlist_Sui, ...roomlist_USDC];
     if (
       roomlist.length !== itemsRoom.length ||
-      roomlist.some((item, idx) => JSON.stringify(item) !== JSON.stringify(itemsRoom[idx]))
+      roomlist.some(
+        (item, idx) => JSON.stringify(item) !== JSON.stringify(itemsRoom[idx])
+      )
     ) {
       setItemsRoom(roomlist);
     }
@@ -635,15 +637,15 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     const { data: caps } = await client.getOwnedObjects({
       owner: address,
       filter: {
-        StructType: '0x2::kiosk::KioskOwnerCap',   // 只拉 KioskOwnerCap
+        StructType: "0x2::kiosk::KioskOwnerCap", // 只拉 KioskOwnerCap
       },
-      options: { showContent: true },              // 要拿 fields
+      options: { showContent: true }, // 要拿 fields
     });
     if (caps.length > 0) {
       for (let i = 0; i < caps.length; i++) {
         try {
           // @ts-ignore: 我知道这可能会出错，先跳过检查
-          console.log(caps[i].data.content.fields.for) // i 是索引，caps[i] 是元素.fields?.for 
+          console.log(caps[i].data.content.fields.for); // i 是索引，caps[i] 是元素.fields?.
           // console.log(kioskID)
           // const suiAfter = await client.getDynamicFields({ parentId: kioskID });
           // console.log(suiAfter)
@@ -652,7 +654,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         }
       }
     }
-
   }
 
   function rasieADD() {
@@ -920,11 +921,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       GlbDatatime = data.time;
       GlbStage = data.stage;
 
-      let decimal = 1e9
+      let decimal = 1e9;
       if (selected == "usdc") {
-        decimal = 1e6
+        decimal = 1e6;
       }
-      setMaxvol(data.max_bet / decimal)
+      setMaxvol(data.max_bet / decimal);
 
       try {
         if (data.stage > 9) {
@@ -974,9 +975,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           !beforegame1Ref.current &&
           data.stage < 10
         ) {
-          let decimal = 1e9
+          let decimal = 1e9;
           if (selected == "usdc") {
-            decimal = 1e6
+            decimal = 1e6;
           }
           const ban = Number(data.balance) / decimal;
           const suibet = Number(data.bet);
@@ -1195,7 +1196,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     if (account) {
       setAvatarP1(getAvatarURL(account.address));
       setAddrP1(shortAddress(account.address));
-      getKioskNFT(account.address)
+      getKioskNFT(account.address);
     }
   }, [account?.address]);
   useEffect(() => {
@@ -2514,9 +2515,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     let data; // Declare data outside the try block
 
     try {
-      let gamedatas = Gamedata
+      let gamedatas = Gamedata;
       if (selected == "usdc") {
-        gamedatas = Gamedata_USDC
+        gamedatas = Gamedata_USDC;
       }
       const suiAfter = await client.getDynamicFieldObject({
         parentId: gamedatas,
@@ -2534,11 +2535,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     }
 
     if (data) {
-      console.log(data)
-      console.log(data.min_bet)
-      console.log(iputRoomNum)
-      console.log(0)
-      console.log(selected)
+      console.log(data);
+      console.log(data.min_bet);
+      console.log(iputRoomNum);
+      console.log(0);
+      console.log(selected);
 
       if (data.stage == 10) {
         transferSui_join(data.min_bet, iputRoomNum, 1, selected);
@@ -2602,8 +2603,14 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   //...........................................................................................................
   return (
     <div>
-      <div className="grid-container-game" style={{ marginBottom: 0, paddingBottom: 0 }}>
-        <div className="grid-item" style={{ marginBottom: 0, paddingBottom: 0 }}>
+      <div
+        className="grid-container-game"
+        style={{ marginBottom: 0, paddingBottom: 0 }}
+      >
+        <div
+          className="grid-item"
+          style={{ marginBottom: 0, paddingBottom: 0 }}
+        >
           <div
             className="grid-item"
             style={{
@@ -2855,8 +2862,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${item.hasMoved ? item.initialX : -1500
-                        }px, ${item.hasMoved ? item.initialY : 350}px)`,
+                      transform: `translate(${
+                        item.hasMoved ? item.initialX : -1500
+                      }px, ${item.hasMoved ? item.initialY : 350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
@@ -3282,8 +3290,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${item.hasMoved ? item.initialX : -1500
-                        }px, ${item.hasMoved ? item.initialY : -350}px)`,
+                      transform: `translate(${
+                        item.hasMoved ? item.initialX : -1500
+                      }px, ${item.hasMoved ? item.initialY : -350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
@@ -3700,22 +3709,22 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           ) : null}
         </div>
       </div>
-      {
-        max_vol > 0 && (
-          <span
-            style={{
-              fontSize: "12px",
-              color: "#FFD700",          // 金色
-              textAlign: "center",
-              display: "block",
-              marginBottom: 0,
-              paddingBottom: 0
-            }}
-          >
-            Max single blind bet {maxbet}{selected.toUpperCase()}---Max single bet after seeing {maxbet * 2}{selected.toUpperCase()}
-          </span>
-        )
-      }
+      {max_vol > 0 && (
+        <span
+          style={{
+            fontSize: "12px",
+            color: "#FFD700", // 金色
+            textAlign: "center",
+            display: "block",
+            marginBottom: 0,
+            paddingBottom: 0,
+          }}
+        >
+          Max single blind bet {maxbet}
+          {selected.toUpperCase()}---Max single bet after seeing {maxbet * 2}
+          {selected.toUpperCase()}
+        </span>
+      )}
       <span
         style={{
           fontSize: "12px",
@@ -3728,7 +3737,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         &gt; High card
       </span>
       {/* <button onClick={() => test()}>test</button> */}
-    </div >
+    </div>
   );
 };
 
