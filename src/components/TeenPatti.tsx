@@ -612,13 +612,18 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     useSignAndExecuteTransactionBlock();
 
   async function getRoomlist() {
-    setItemsRoom([]);
+    //setItemsRoom([]);
     const [roomlist_USDC, roomlist_Sui] = await Promise.all([
       queryRoom(CoinUsdc),
       queryRoom(CoinSui),
     ]);
     const roomlist = [...roomlist_Sui, ...roomlist_USDC];
-    setItemsRoom(roomlist);
+    if (
+      roomlist.length !== itemsRoom.length ||
+      roomlist.some((item, idx) => JSON.stringify(item) !== JSON.stringify(itemsRoom[idx]))
+    ) {
+      setItemsRoom(roomlist);
+    }
   }
 
   function rasieADD() {
@@ -1164,7 +1169,16 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     }
   }, [account?.address]);
   useEffect(() => {
-    getRoomlist(); // 在组件挂载时执行函数 aaa
+    // 组件挂载时先执行一次
+    getRoomlist();
+
+    // 每5秒执行一次
+    const intervalId = setInterval(() => {
+      getRoomlist();
+    }, 5000);
+
+    // 组件卸载时清除定时器
+    return () => clearInterval(intervalId);
   }, []); // 空依赖数组确保这个 effect 只在组件挂载时运行一次
 
   useEffect(() => {
@@ -1580,7 +1594,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           Gamedatas = Gamedata_USDC;
           if (account) {
             coins = await getCointype(account.address, CoinUsdc);
-          }else{
+          } else {
             window.alert(`Link wallet to ${neting}!!`);
           }
           coinObjectId = coins[0].coinObjectId;
@@ -2469,8 +2483,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     let data; // Declare data outside the try block
 
     try {
+      let gamedatas = Gamedata
+      if (selected == "usdc") {
+        gamedatas = Gamedata_USDC
+      }
       const suiAfter = await client.getDynamicFieldObject({
-        parentId: Gamedata,
+        parentId: gamedatas,
         name: {
           type: "u64",
           value: String(iputRoomNum),
@@ -2485,8 +2503,14 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     }
 
     if (data) {
+      console.log(data)
+      console.log(data.min_bet)
+      console.log(iputRoomNum)
+      console.log(0)
+      console.log(selected)
+
       if (data.stage == 10) {
-        transferSui_join_playing____();
+        transferSui_join(data.min_bet, iputRoomNum, 1, selected);
       } else if (data.stage > 10) {
         transferSui_go_on_playing____();
       }
@@ -2547,8 +2571,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   //...........................................................................................................
   return (
     <div>
-      <div className="grid-container-game">
-        <div className="grid-item">
+      <div className="grid-container-game" style={{ marginBottom: 0, paddingBottom: 0 }}>
+        <div className="grid-item" style={{ marginBottom: 0, paddingBottom: 0 }}>
           <div
             className="grid-item"
             style={{
@@ -3645,18 +3669,22 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           ) : null}
         </div>
       </div>
-      {max_vol > 0 && (
-        <span
-          style={{
-            fontSize: "12px",
-            color: "#FFD700",          // 金色
-            textAlign: "center",
-            display: "block",
-          }}
-        >
-          Max single blind bet {maxbet}{selected.toUpperCase()}---Max single bet after seeing {maxbet * 2}{selected.toUpperCase()}
-        </span>
-      )}
+      {
+        max_vol > 0 && (
+          <span
+            style={{
+              fontSize: "12px",
+              color: "#FFD700",          // 金色
+              textAlign: "center",
+              display: "block",
+              marginBottom: 0,
+              paddingBottom: 0
+            }}
+          >
+            Max single blind bet {maxbet}{selected.toUpperCase()}---Max single bet after seeing {maxbet * 2}{selected.toUpperCase()}
+          </span>
+        )
+      }
       <span
         style={{
           fontSize: "12px",
@@ -3669,7 +3697,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         &gt; High card
       </span>
       {/* <button onClick={() => test()}>test</button> */}
-    </div>
+    </div >
   );
 };
 
