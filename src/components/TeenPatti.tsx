@@ -643,10 +643,10 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     if (caps.length > 0) {
       for (let i = 0; i < caps.length; i++) {
         // @ts-ignore: 我知道这可能会出错，先跳过检查
-        console.log(caps[i].data.content.fields.for); // i 是索引，caps[i] 是元素.fields?.for
-        // console.log(kioskID)
-        // const suiAfter = await client.getDynamicFields({ parentId: kioskID });
-        // console.log(suiAfter)
+        const kioskID = caps[i].data.content.fields.for; // i 是索引，caps[i] 是元素.fields?.for
+        console.log(kioskID);
+        const suiAfter = await client.getDynamicFields({ parentId: kioskID });
+        console.log(suiAfter);
       }
     }
   }
