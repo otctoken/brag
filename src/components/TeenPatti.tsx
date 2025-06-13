@@ -224,6 +224,7 @@ async function queryRoom(type) {
       dict.num = parseInt(res.data[key]["parsedJson"]["result"], 10);
       dict.vol = parseInt(res.data[key]["parsedJson"]["vol"], 10);
       dict.maxvol = parseInt(res.data[key]["parsedJson"]["maxvol"], 10);
+      console.log(dict.maxvol);
       dict.bo = 0; //0是新建房，1是继续游戏的房
       dict.cointype = type;
       list.push(dict);
@@ -281,7 +282,6 @@ async function queryRoom(type) {
     const list23 = removeMatchingRows(uniqueList, list2);
 
     const list8 = list23.slice(0, 8);
-    console.log(list8);
     return list8;
   } catch (error) {
     console.error("Error querying events:", error);
@@ -2766,7 +2766,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       }}
                     >
                       {itemsRoom.map((item) => {
-                        const isUSDC = item.cointype === CoinUsdc; // ✅ 是否 USDC
+                        const isUSDC = item.cointype == CoinUsdc; // ✅ 是否 USDC
                         const divisor = isUSDC ? 1e6 : 1e9; // ✅ 不同币种的精度
                         const displayVol = parseFloat(
                           (item.vol / divisor).toFixed(2)
