@@ -2774,13 +2774,19 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                             key={item.num}
                             className="grid-item"
                             style={{
-                              margin: "4px 0",
                               backgroundColor: "rgba(0,0,0,0.5)",
                               padding: "2px",
                             }}
                           >
                             {/* ante 标签 */}
-                            <span style={{ color: "rgb(144,238,144)" }}>
+                            <span
+                              style={{
+                                display: "block",
+                                margin: "1px 0",
+                                padding: 0,
+                                color: "rgb(144,238,144)",
+                              }}
+                            >
                               ante
                             </span>
 
@@ -2789,9 +2795,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                               style={{
                                 display: "block",
                                 margin: "1px 0",
+                                padding: 0, // ← 去掉原来 1px 的 padding
                                 fontSize: "20px",
                                 color: "rgb(144,238,144)",
-                                padding: "1px",
                               }}
                             >
                               {displayVol}
@@ -2800,9 +2806,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                               style={{
                                 display: "block",
                                 margin: "1px 0",
+                                padding: "2px", // ← 原来是 5px，现在也收成 0
                                 fontSize: "12px",
                                 color: "rgb(144,238,144)",
-                                padding: "5px",
                               }}
                             >
                               Max Single Bet: {displaymaxVol}
