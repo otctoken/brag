@@ -24,7 +24,7 @@ const gamelist = ["Coin Flip", "Blind Box", "Dice"];
 //   "0x866040bf37b4b3c5d9485b19ed6b05b96485a51474c2f244e1700517778a4fc1::suiwin::Outcome_Baccarat";
 
 const Package_TeenPatti =
-  "0x5379778ca89cb2c375718776cf152b9e407530fa3d7c58f0c83276bd8b076a32::brag::Gvol";
+  "0xe4985728dd9afeb55c3a7eb5067555b2ce56fca846647b4597819feb61844296::brag::Gvol";
 const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
   "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
