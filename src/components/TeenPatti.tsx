@@ -3054,7 +3054,27 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                           alignItems: "center", // 垂直居中对齐
                         }}
                       >
-                        Ante {ante}
+                        Ante{" "}
+                        <input
+                          type="number"
+                          value={ante}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (/^\d*$/.test(val)) {
+                              setAnte(val === "" ? 0 : parseInt(val, 10)); // ✅ 转成 number 类型
+                            }
+                          }}
+                          style={{
+                            width: "70px",
+                            marginLeft: "6px",
+                            fontSize: "18px",
+                            padding: "2px",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            backgroundColor: "#222", // 可根据你的背景调整
+                            color: "#FFD700",
+                          }}
+                        />
                         <div
                           style={{
                             display: "flex",
