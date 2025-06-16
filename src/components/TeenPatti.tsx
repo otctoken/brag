@@ -674,15 +674,14 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
   function rasieADD() {
     let num = Math.floor(betRasie + 1);
-    const max = MAXcoin / decimals;
 
     if (lookCard) {
-      if (num > max * 2) {
-        num = max * 2;
+      if (num > maxbet * 2) {
+        num = maxbet * 2;
       }
     } else {
-      if (num > max) {
-        num = max;
+      if (num > maxbet) {
+        num = maxbet;
       }
     }
     setBetRasie(num);
@@ -690,23 +689,22 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
   function rasieDoule() {
     let num = Math.floor(betRasie * 2);
-    const max = MAXcoin / decimals;
 
     if (lookCard) {
-      if (num > max * 2) {
-        num = max * 2;
+      if (num > maxbet * 2) {
+        num = maxbet * 2;
       }
     } else {
-      if (num > max) {
-        num = max;
+      if (num > maxbet) {
+        num = maxbet;
       }
     }
-
     setBetRasie(num);
   }
+
   function rasieReduce() {
     const num = Math.floor(betRasie - 1);
-    if (num > betCall) {
+    if (num > betCall + 1) {
       setBetRasie(num);
     }
   }
@@ -3486,7 +3484,40 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                         alignItems: "center", // 垂直居中对齐
                       }}
                     >
-                      {betRasie}
+                      <input
+                        type="number"
+                        value={betRasie}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          let ip_val = parseInt(val, 10);
+                          if (lookCard) {
+                            if (ip_val > maxbet * 2) {
+                              ip_val = maxbet * 2;
+                            }
+                          } else {
+                            if (ip_val > maxbet) {
+                              ip_val = maxbet;
+                            }
+                          }
+                          if (ip_val < betCall + 1) {
+                            ip_val = betCall + 1;
+                          }
+
+                          if (/^\d*$/.test(val)) {
+                            setBetRasie(val === "" ? 0 : ip_val); // ✅ 转成 number 类型
+                          }
+                        }}
+                        style={{
+                          width: "80px",
+                          marginLeft: "6px",
+                          fontSize: "18px",
+                          padding: "2px",
+                          borderRadius: "4px",
+                          border: "1px solid #ccc",
+                          backgroundColor: "#222", // 可根据你的背景调整
+                          color: "#FFD700",
+                        }}
+                      />
                     </span>
                   </div>
                   <button
