@@ -67,7 +67,6 @@ const Dosc = () => {
               If you fold, wait for the opponent to verify, they may time out
               and the winner is you.
             </li>
-            <li>Single bet limit:Blind bet Max 100,seen bet Max 200.</li>
             <li>No limit on total bets.</li>
             <li>
               Players may not wager more than the Max Bet in a single betting
@@ -76,7 +75,6 @@ const Dosc = () => {
             <li>
               There is no limit on the bet amount when requesting a showdown.
             </li>
-            <li>Do not leave the page during the game.</li>
           </ul>
           <p>(House fee: 0.5%)</p>
           <p>
