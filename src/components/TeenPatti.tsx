@@ -3066,6 +3066,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                             border: "1px solid #ccc",
                             backgroundColor: "#222", // 可根据你的背景调整
                             color: "#FFD700",
+                            textAlign: "center",
                           }}
                         />
                         <div
@@ -3511,6 +3512,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                           border: "1px solid #ccc",
                           backgroundColor: "#222", // 可根据你的背景调整
                           color: "#FFD700",
+                          textAlign: "center",
                         }}
                       />
                     </span>
