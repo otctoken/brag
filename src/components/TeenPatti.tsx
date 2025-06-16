@@ -593,13 +593,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     setTypecards("");
   }
 
-  // function test() {
-  //   const crds = Uint8Array.from(randomPoker);
-  //   const pkey = bls12_381.getPublicKey(randomKey);
-  //   console.log(crds);
-  //   console.log(pkey);
-  // }
-
   function dealingCards() {
     setItemsp([]);
     setItemsd([]);
@@ -668,7 +661,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       // 这里可以继续对 kioskID 和 objectId 做你想要的操作
     } else {
       setNftvip(false);
-      console.log("not NFT");
     }
   }
 
@@ -994,14 +986,23 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             decimal = 1e6;
           }
           const ban = Number(data.balance) / decimal;
+
           const suibet = Number(data.bet);
+
           setBetsuiVol(ban);
           if (betsuiRef.current != suibet) {
             setBetsui(suibet);
           }
 
-          const addBan = ban - AddbetP1Ref.current - AddbetD1Ref.current;
-
+          let addBan = ban - AddbetP1Ref.current - AddbetD1Ref.current;
+          if (AddbetD1Ref.current == 0) {
+            setAddbetD1(addBan);
+            addBan = 0;
+          }
+          // console.log("addBan;", addBan);
+          // console.log("AddbetP1Ref.current;", AddbetP1Ref.current);
+          // console.log("AddbetD1Ref.current;", AddbetD1Ref.current);
+          // console.log("addBan;", addBan);
           if (data.player1 == account.address) {
             if (addrD1Ref.current == "0x0") {
               setAvatarD1(getAvatarURL(data.player2));
@@ -1096,8 +1097,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             setAddrD1(shortAddress(data.player1));
             setCountdownD1(downTime);
             setCountdownP1(0);
-
-            // console.log(99999999);
           }
         }
       } catch (error) {
@@ -1123,8 +1122,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               // @ts-ignore
               JSON.stringify(suiAfter["data"]["content"]["fields"])
             );
-            // console.log(data);
-            // console.log(data.sigcards1[0]);
 
             refreshData(data);
           } catch (error) {
@@ -1148,8 +1145,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               // @ts-ignore
               JSON.stringify(suiAfter["data"]["content"]["fields"])
             );
-            // console.log(data);
-            // console.log(data.sigcards1[0]);
 
             refreshData(data);
           } catch (error) {
