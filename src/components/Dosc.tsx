@@ -54,7 +54,7 @@ const Dosc = () => {
             <a
               target="_blank"
               style={{ color: "#2299ff" }}
-              href="https://medium.com/@suiwinGAME/suiwin-teen-patti-0950590ffb7a"
+              href="https://medium.com/@suiBrag/suiwin-teen-patti-0950590ffb7a"
             >
               More details
             </a>
