@@ -1109,7 +1109,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   useEffect(() => {
     let errEoom = 0;
     const fetchData = async () => {
-      if (roomNum > 0) {
+      if (roomNum > 0 && !keep) {
         if (selected == "sui") {
           try {
             const suiAfter = await client.getDynamicFieldObject({
