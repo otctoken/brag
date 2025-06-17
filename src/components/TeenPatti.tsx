@@ -932,6 +932,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         decimal = 1e6;
       }
       setMaxvol(data.max_bet / decimal);
+      setMaxbet(data.max_bet / decimal);
 
       try {
         if (data.stage > 9) {
