@@ -107,6 +107,16 @@ const Dosc = () => {
               View Details
             </a>
           </p>
+          <p>
+            <strong>Github: </strong>
+            <a
+              target="_blank"
+              style={{ color: "#2299ff" }}
+              href="https://github.com/otctoken/brag/"
+            >
+              View Details
+            </a>
+          </p>
         </section>
       </div>
     </div>
