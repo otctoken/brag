@@ -20,13 +20,13 @@ const MINcoin = 10000;
 const MAXcoin = 1000000000000000;
 const neting = "mainnet";
 const Package_Te =
-  "0xe4985728dd9afeb55c3a7eb5067555b2ce56fca846647b4597819feb61844296";
+  "0xfda4e2a81a22af6533fd7e8e3e85dd6116548831ffef32d7a1a303daac8b65e7";
 const Package_TeenPatti =
-  "0xe4985728dd9afeb55c3a7eb5067555b2ce56fca846647b4597819feb61844296::brag::";
+  "0xfda4e2a81a22af6533fd7e8e3e85dd6116548831ffef32d7a1a303daac8b65e7::brag::";
 const Gamedata =
-  "0x919bcf88bd426bc3b40f722f59204dea2cbd942332c487e0a1b268916169147d";
+  "0x4064b6a00bb83b29eba226f269783528cb0502068ace78ca6e9a1f23ba66f601";
 const Gamedata_USDC =
-  "0x41f82e55f838213cae9f7de0b7ed9b9a3a15de691020f96d9293196167c12706";
+  "0x943b26f4287ede077a2d030444cc626394980cd840422e166c5d176d9ea1948f";
 const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
   "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
@@ -1548,7 +1548,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         tx.moveCall({
           target: `${Package_TeenPatti}create_game`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [
             tx.pure(Array.from(signedPokerHash)),
             tx.pure(maxbetcoin),
@@ -1657,7 +1657,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         tx.moveCall({
           target: `${Package_TeenPatti}${join}`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [
             tx.pure(num),
             tx.pure(Array.from(signedPokerHash)),
@@ -1734,7 +1734,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}apply_look_cards`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [tx.pure(roomNum), clock, data],
         });
 
@@ -1787,7 +1787,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}reveal_look_cards`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [
             tx.pure(roomNum),
             tx.pure(Array.from(cardThree)),
@@ -1867,7 +1867,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}call`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [tx.pure(roomNum), coin, clock, data],
         });
 
@@ -1936,7 +1936,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}rasie`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [tx.pure(roomNum), coin, clock, data],
         });
 
@@ -2012,7 +2012,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}applyOpenCards`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [
             tx.pure(roomNum),
             tx.pure(Array.from(crds)),
@@ -2084,7 +2084,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}OpenCards`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [
             tx.pure(roomNum),
             tx.pure(Array.from(crds)),
@@ -2147,7 +2147,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}fold`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [tx.pure(roomNum), clock, data],
         });
 
@@ -2210,7 +2210,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}get_fold_bets`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [
             tx.pure(roomNum),
             tx.pure(Array.from(crds)),
@@ -2274,7 +2274,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}get_timeout_bets`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [tx.pure(roomNum), clock, data],
         });
 
@@ -2357,7 +2357,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         tx.moveCall({
           target: `${Package_TeenPatti}go_on_playing`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [
             tx.pure(iputRoomNum),
             tx.pure(Array.from(signedPokerHash)),
@@ -2449,7 +2449,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}join_playing`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [
             tx.pure(iputRoomNum),
             tx.pure(Array.from(signedPokerHash)),
@@ -2570,7 +2570,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}leave_game`,
-          typeArguments: [typeArgument],
+          typeArguments: [typeArgument, NFTOB],
           arguments: [tx.pure(roomNum), data],
         });
 
