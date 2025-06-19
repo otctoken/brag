@@ -7,8 +7,6 @@ module brag::brag {
     use sui::dynamic_object_field as dof;
     use sui::kiosk::{Self, Kiosk};
     
-    use nft::my_hero::Hero;  // NFT
-    
     const EChangek: u64 = 0;
     const EChangekVol:u64 = 1;
     const EBetVol: u64 = 2;
@@ -28,16 +26,16 @@ module brag::brag {
 
     const Adminadd: address = @0x82242fabebc3e6e331c3d5c6de3d34ff965671b75154ec1cb9e00aa437bbfa44;
 
-    public struct GameData<phantom T> has key {
+    public struct GameData<phantom T,phantom G> has key {
         id: UID,
         balance: Balance<T>,
         fee:u8,
         vip_fee:u8,
-        countdown:u64,//10
+        countdown:u64,//11
         // min:u64,
         // max:u64,
-        gamenumber:u64,//+1
-        //ingame:bool,//A
+        gamenumber:u64,//11
+        //ingame:bool,//11
     }
 
     
@@ -99,7 +97,7 @@ module brag::brag {
 
     }
 
-    public entry fun change_data_fee<T>(_: &AdminCap,fee:u8,gamedata:&mut GameData<T>,wl:&mut WLock,ctx:&mut TxContext){
+    public entry fun change_data_fee<T,G>(_: &AdminCap,fee:u8,gamedata:&mut GameData<T,G>,wl:&mut WLock,ctx:&mut TxContext){
         assert!(tx_context::epoch(ctx)>wl.data,EChangek);
         assert!(fee < 51,EChangekVol);
         gamedata.fee=fee;
@@ -112,13 +110,13 @@ module brag::brag {
         };
         wl.data = 9999999;
     }
-    public entry fun change_data_countdown_down<T>(_: &AdminCap,gamedata:&mut GameData<T>,wl:&mut WLock,ctx:&mut TxContext){
+    public entry fun change_data_countdown_down<T,G>(_: &AdminCap,gamedata:&mut GameData<T,G>,wl:&mut WLock,ctx:&mut TxContext){
         assert!(tx_context::epoch(ctx)>wl.data,EChangek);
         gamedata.countdown = gamedata.countdown - 10000;
         assert!(gamedata.countdown > 20_000,EChangekVol);
         wl.data = 9999999;
     }
-    public entry fun change_data_countdown_up<T>(_: &AdminCap,gamedata:&mut GameData<T>,wl:&mut WLock,ctx:&mut TxContext){
+    public entry fun change_data_countdown_up<T,G>(_: &AdminCap,gamedata:&mut GameData<T,G>,wl:&mut WLock,ctx:&mut TxContext){
         assert!(tx_context::epoch(ctx)>wl.data,EChangek);
         gamedata.countdown = gamedata.countdown + 10000;
         assert!(gamedata.countdown < 120_000,EChangekVol);
@@ -127,7 +125,7 @@ module brag::brag {
 
 
 
-    public entry fun get_fee<T>(_: &AdminCap,adder:address, vol:u64,gamedata:&mut GameData<T>,ctx:&mut TxContext){
+    public entry fun get_fee<T,G>(_: &AdminCap,adder:address, vol:u64,gamedata:&mut GameData<T,G>,ctx:&mut TxContext){
         let coina = coin::take(&mut gamedata.balance,vol,ctx);
         transfer::public_transfer(coina,adder);
     }
@@ -143,8 +141,8 @@ module brag::brag {
         });
     }
 
-    public entry fun initgamedata<T>(_: &AdminCap,ctx:&mut TxContext){
-        transfer::share_object(GameData<T> {
+    public entry fun initgamedata<T,G>(_: &AdminCap,ctx:&mut TxContext){
+        transfer::share_object(GameData<T,G> {
         id: object::new(ctx),
         balance:balance::zero<T>(),
         countdown:60_000,
@@ -199,23 +197,23 @@ module brag::brag {
         let value2 = get_values(hand2);
         let mut values1 = handle_special_case(value1);
         let mut values2 = handle_special_case(value2);
-        // 111
+        // 11
         sort3(&mut values1);
         sort3(&mut values2);
         // 11
         let mut i = 2;
         while (i >= 0) {
             if (values1[i] > values2[i]) {
-                return 1 // hand1 1
+                return 1 // hand1 11
             } else if (values1[i] < values2[i]) {
-                return 2 // hand2 1
+                return 2 // hand2 11
             };
             if (i == 0) {
                 break
             };
             i = i - 1;
         };
-        // 1
+        // 11
         return 0
     }
 
@@ -318,17 +316,17 @@ module brag::brag {
         let type1 = get_cards_type(hand1);
         let type2 = get_cards_type(hand2);
         if (type1 > type2) {
-            1 // hand1 1
+            1 // hand1 11
         } else if (type1 < type2) {
-            2 // hand2 1
+            2 // hand2 11
         }else{
             if(type1 == 2){
                 let pair1 =  get_pair_value(hand1);
                 let pair2 =  get_pair_value(hand2);
                 if (pair1 > pair2) {
-                    1 // hand1 1
+                    1 // hand1 11
                 } else if (pair1 < pair2) {
-                    2 // hand2 1
+                    2 // hand2 11
                 }else{
                     get_high_cards(hand1,hand2)
                 }
@@ -339,7 +337,7 @@ module brag::brag {
 
      }
 
-             /// 11
+             //111
     fun sub_vector(a: &vector<u8>, start: u64, length: u64): vector<u8> {
         let mut result = vector::empty<u8>();
         let mut i = start;
@@ -371,15 +369,15 @@ module brag::brag {
         cards
     }
    
-    //11
-    public entry fun create_game<T>(sigcards:vector<u8>,max_bet:u64,coin_v: Coin<T>,game_data: &mut GameData<T>,kiosk:&Kiosk,nft_id:ID,ctx: &mut TxContext) {//1
+    //11..................................................................................................................................
+    public entry fun create_game<T,G:store + key>(sigcards:vector<u8>,max_bet:u64,coin_v: Coin<T>,game_data: &mut GameData<T,G>,kiosk:&Kiosk,nft_id:ID,ctx: &mut TxContext) {//开房.......................
         let coin_value = coin::value(&coin_v);
         assert!(coin_value <= max_bet, EBetVol);
         game_data.gamenumber = game_data.gamenumber+1;
         // assert!(revealcard.length==2,ERev);
 
         let mut vip = false;
-        if(kiosk::has_item_with_type<Hero>(kiosk, nft_id) && kiosk::owner(kiosk) == ctx.sender()){
+        if(kiosk::has_item_with_type<G>(kiosk, nft_id) && kiosk::owner(kiosk) == ctx.sender()){
             vip = true;
         };
         let pokerdata = PokerData {
@@ -391,7 +389,7 @@ module brag::brag {
             sigcards2: vector::empty<u8>(),
             revealcards1:vector::empty<u8>(),
             revealcards2:vector::empty<u8>(),
-            stage:10,               //0 11
+            stage:10,               //0 1
             bet:coin_value,
             min_bet:coin_value,
             max_bet:max_bet,
@@ -408,8 +406,8 @@ module brag::brag {
         });
     }
 
-    //加入房间
-    public entry fun join_game<T>(gamenumber: u64,sigcards:vector<u8>,coin_v: Coin<T>,clock: &Clock,game_data: &mut GameData<T>,kiosk:&Kiosk,   nft_id:ID,ctx: &TxContext) {
+    //111
+    public entry fun join_game<T,G:store + key>(gamenumber: u64,sigcards:vector<u8>,coin_v: Coin<T>,clock: &Clock,game_data: &mut GameData<T,G>,kiosk:&Kiosk,   nft_id:ID,ctx: &TxContext) {
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         let coin_value = coin::value(&coin_v);
         assert!(coin_value == pk_data.bet, EBetVol);
@@ -417,9 +415,9 @@ module brag::brag {
         // assert!(revealcard.length==2,ERev);
         pk_data.player2 = ctx.sender();
         pk_data.sigcards2 = sigcards;
-        pk_data.stage=0;               //0 都没看牌 1  1看牌  2 2 看牌 3  都看牌  5有弃牌，4比牌   11，12已发放奖励    10游戏准备阶段
+        pk_data.stage=0;               //0 1
         pk_data.time = clock.timestamp_ms();
-        if(kiosk::has_item_with_type<Hero>(kiosk, nft_id) && kiosk::owner(kiosk) == ctx.sender()){
+        if(kiosk::has_item_with_type<G>(kiosk, nft_id) && kiosk::owner(kiosk) == ctx.sender()){
             pk_data.vip_p2 = true;
         };
         coin::put(&mut pk_data.balance, coin_v);
@@ -427,7 +425,7 @@ module brag::brag {
             result:gamenumber,
         });
     }
-    //申请看牌
+    //11
     fun apply_look_cards_(b:bool,revealcards:vector<u8>,clock:u64,stage:&mut u8,time:&mut u64,action:&mut bool){
         assert!(action != b, EAction);
         assert!(vector::length(&revealcards) < 1, ERevealcards);
@@ -436,7 +434,7 @@ module brag::brag {
         *action = b;
     }
 
-    public entry fun apply_look_cards<T>(gamenumber: u64,clock: &Clock,game_data: &mut GameData<T>,ctx: &TxContext) {
+    public entry fun apply_look_cards<T,G>(gamenumber: u64,clock: &Clock,game_data: &mut GameData<T,G>,ctx: &TxContext) {
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         assert!(pk_data.stage < 4, EStage);
         if(ctx.sender() == pk_data.player1){
@@ -445,7 +443,7 @@ module brag::brag {
             apply_look_cards_(false,pk_data.revealcards1,clock.timestamp_ms(),&mut pk_data.stage,&mut pk_data.time,&mut pk_data.action);
         };
     }
-    //揭示牌
+    //11
     fun reveal_look_cards_(b:bool,revealcards:vector<u8>,clock:u64,revealcards_:&mut vector<u8>,stage:&mut u8,time:&mut u64,action:&mut bool){
         assert!(action != b, EAction);
         assert!(stage == 6, EStage);
@@ -459,7 +457,7 @@ module brag::brag {
     }
 
 
-    public entry fun reveal_look_cards<T>(gamenumber:u64,revealcards:vector<u8>,clock: &Clock,game_data: &mut GameData<T>,ctx: &TxContext) {
+    public entry fun reveal_look_cards<T,G>(gamenumber:u64,revealcards:vector<u8>,clock: &Clock,game_data: &mut GameData<T,G>,ctx: &TxContext) {
         assert!(vector::length(&revealcards)==3 ,ERevealcards);
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         if(ctx.sender() == pk_data.player1){
@@ -469,7 +467,7 @@ module brag::brag {
         };
         
     }
-    //跟注
+    //11
     fun call_(b:bool,revealcards:vector<u8>,coinv:u64,bet:u64,clock:u64,time:&mut u64,action:&mut bool){
         assert!(action != b, EAction);
         if(vector::length(&revealcards) < 1){
@@ -481,7 +479,7 @@ module brag::brag {
         *action = b;
     }
 
-    public entry fun call<T>(gamenumber:u64,coin_v: Coin<T>,clock: &Clock,game_data: &mut GameData<T>,ctx: &TxContext) {
+    public entry fun call<T,G>(gamenumber:u64,coin_v: Coin<T>,clock: &Clock,game_data: &mut GameData<T,G>,ctx: &TxContext) {
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         assert!(ctx.sender() == pk_data.player1 || ctx.sender() == pk_data.player2, ENotP);
         assert!(pk_data.stage < 4, EStage);
@@ -500,7 +498,7 @@ module brag::brag {
     }
 
 
-    //加注
+    //11
     fun rasie_(b:bool,revealcards:vector<u8>,coinv:u64,max:u64,clock:u64,bet:&mut u64,time:&mut u64,action:&mut bool){
         assert!(action != b, EAction);
         if(vector::length(&revealcards) < 1){
@@ -516,7 +514,7 @@ module brag::brag {
         *action = b;
     }
 
-    public entry fun rasie<T>(gamenumber:u64,coin_v: Coin<T>,clock: &Clock,game_data: &mut GameData<T>,ctx: &TxContext) {
+    public entry fun rasie<T,G>(gamenumber:u64,coin_v: Coin<T>,clock: &Clock,game_data: &mut GameData<T,G>,ctx: &TxContext) {
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         assert!(ctx.sender() == pk_data.player1 || ctx.sender() == pk_data.player2, ENotP);
         assert!(pk_data.stage < 4, EStage);
@@ -535,7 +533,7 @@ module brag::brag {
     }
 
 
-    //申请比牌  applyOpenCards
+    //11 applyOpenCards
 
     fun applyOpenCards_(b:bool,revealcards:vector<u8>,sigcards:vector<u8>,public_key:vector<u8>,
         opencards:vector<u8>,coinv:u64,clock: u64,bet:u64,revealcards_:&mut vector<u8>,stage:&mut u8,time:&mut u64,action:&mut bool){
@@ -564,7 +562,7 @@ module brag::brag {
         *action = b;
         *stage = 4;
     }
-    public entry fun applyOpenCards<T>(gamenumber: u64,opencards:vector<u8>,public_key:vector<u8>,coin_v: Coin<T>,clock: &Clock,game_data: &mut GameData<T>,ctx: &TxContext) {//领取弃牌奖励方必须验证否则失败
+    public entry fun applyOpenCards<T,G>(gamenumber: u64,opencards:vector<u8>,public_key:vector<u8>,coin_v: Coin<T>,clock: &Clock,game_data: &mut GameData<T,G>,ctx: &TxContext) {//领取弃牌奖励方必须验证否则失败
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         assert!(pk_data.stage < 4, EStage);
         let coin_value = coin::value(&coin_v);
@@ -585,7 +583,7 @@ module brag::brag {
             expendORincome:false,
         });
     }
-    //被比牌
+    //11
 
     fun OpenCards_<T>(
         num: u8,
@@ -637,7 +635,7 @@ module brag::brag {
             let coin_p = coin::split(&mut coinp, coin_vp, ctx);
             transfer::public_transfer(coin_p,shend);
             if(num==1){
-                *stage = 11; //这里控制继续游戏 11 玩家1胜利  12玩家2胜利
+                *stage = 11; //11
                 *time = 0;
             }else{
                 *stage = 12;
@@ -659,7 +657,7 @@ module brag::brag {
             let coin_p = coin::split(&mut coinp, coin_vp, ctx);
             transfer::public_transfer(coin_p,adder);
             if(num==1){
-                *stage = 12; //这里控制继续游戏
+                *stage = 12; //1
                 *time = 0;
             }else{
                 *stage = 11;
@@ -673,10 +671,10 @@ module brag::brag {
         };
         let value = coin::value(&coinp);
         let left_fee = coin::split(&mut coinp, value, ctx);
-        coin::destroy_zero(coinp); // 必须销毁 0 coin
+        coin::destroy_zero(coinp); // 1 0 coin
         left_fee
     }
-    public entry fun OpenCards<T>(gamenumber: u64,opencards:vector<u8>,public_key:vector<u8>,game_data: &mut GameData<T>,ctx: &mut TxContext) {//领取弃牌奖励方必须验证否则失败
+    public entry fun OpenCards<T,G>(gamenumber: u64,opencards:vector<u8>,public_key:vector<u8>,game_data: &mut GameData<T,G>,ctx: &mut TxContext) {//领取弃牌奖励方必须验证否则失败
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         assert!(pk_data.stage == 4, EStage);
         assert!(ctx.sender() == pk_data.player1 || ctx.sender() == pk_data.player2, ENotP);
@@ -700,7 +698,7 @@ module brag::brag {
     
 
 
-        //弃牌
+        //1
     fun fold_(b:bool,clock: u64,stage:&mut u8,time:&mut u64,action:&mut bool){
         assert!(action != b, EAction);
         *time = clock;
@@ -708,7 +706,7 @@ module brag::brag {
         *stage = 5;
     }
 
-    public entry fun fold<T>(gamenumber: u64,clock: &Clock,game_data: &mut GameData<T>,ctx: &TxContext) {//领取弃牌奖励方必须验证否则失败
+    public entry fun fold<T,G>(gamenumber: u64,clock: &Clock,game_data: &mut GameData<T,G>,ctx: &TxContext) {//领取弃牌奖励方必须验证否则失败
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         assert!(pk_data.stage < 5, EStage);
         if(ctx.sender() == pk_data.player1){
@@ -720,7 +718,7 @@ module brag::brag {
 
 
 
-    //获取放弃筹码
+    //1
     fun get_fold_bets_<T>(b:bool,action:bool,sigcards:vector<u8>,public_key:vector<u8>,
         opencards:vector<u8>,coinp:Coin<T>,revealcards_:vector<u8>,cvaluep:u64,
         stage:&mut u8,time:&mut u64,sand:address){
@@ -751,7 +749,7 @@ module brag::brag {
         });
         
     }
-    public entry fun get_fold_bets<T>(gamenumber: u64,opencards:vector<u8>,public_key:vector<u8>,game_data: &mut GameData<T>,ctx: &mut TxContext){
+    public entry fun get_fold_bets<T,G>(gamenumber: u64,opencards:vector<u8>,public_key:vector<u8>,game_data: &mut GameData<T,G>,ctx: &mut TxContext){
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         assert!(ctx.sender() == pk_data.player1 || ctx.sender() == pk_data.player2, ENotP);
         assert!(pk_data.stage == 5, EStage);
@@ -783,8 +781,8 @@ module brag::brag {
             coinp,pk_data.revealcards2,cvaluep,&mut pk_data.stage,&mut pk_data.time,ctx.sender());
         }
     }
-    //...................................这里开始可以领取弃牌超时奖励了，任何一种都必须保持诚实...............
-    public entry fun get_timeout_bets<T>(gamenumber: u64,clock: &Clock,game_data: &mut GameData<T>,ctx: &mut TxContext){
+    //................................................
+    public entry fun get_timeout_bets<T,G>(gamenumber: u64,clock: &Clock,game_data: &mut GameData<T,G>,ctx: &mut TxContext){
         let PokerData<T>{
             id,
             mut balance,
@@ -847,8 +845,8 @@ module brag::brag {
         });
     }
 
-    //继续游戏...................................
-    public entry fun go_on_playing<T>(gamenumber: u64,sigcards:vector<u8>,coin_v: Coin<T>,game_data: &mut GameData<T>,ctx: &TxContext) {//继续.......................
+    //...............................
+    public entry fun go_on_playing<T,G>(gamenumber: u64,sigcards:vector<u8>,coin_v: Coin<T>,game_data: &mut GameData<T,G>,ctx: &TxContext) {//....................
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         assert!(ctx.sender() == pk_data.player1 || ctx.sender() == pk_data.player2, EPlayer);
         assert!(pk_data.stage == 11 || pk_data.stage == 12, EStage);
@@ -895,15 +893,15 @@ module brag::brag {
             maxvol:pk_data.max_bet,
         });
     }
-    //加入继续游戏..............................
-    public entry fun join_playing<T>(gamenumber: u64,sigcards:vector<u8>,coin_v: Coin<T>,clock: &Clock,game_data: &mut GameData<T>,kiosk:&Kiosk,nft_id:ID,ctx: &TxContext) {
+    //.........................
+    public entry fun join_playing<T,G:store + key>(gamenumber: u64,sigcards:vector<u8>,coin_v: Coin<T>,clock: &Clock,game_data: &mut GameData<T,G>,kiosk:&Kiosk,nft_id:ID,ctx: &TxContext) {
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         let coin_value = coin::value(&coin_v);
         assert!(coin_value == pk_data.bet, EBetVol);
         assert!(pk_data.player2 == @0x0 || pk_data.player1 == @0x0, EIngame);
         // assert!(revealcard.length==2,ERev);
         let mut vip = false;
-        if(kiosk::has_item_with_type<Hero>(kiosk, nft_id) && kiosk::owner(kiosk) == ctx.sender()){
+        if(kiosk::has_item_with_type<G>(kiosk, nft_id) && kiosk::owner(kiosk) == ctx.sender()){
             vip = true;
         };
         if(pk_data.player2 == @0x0 ){
@@ -920,15 +918,15 @@ module brag::brag {
                 pk_data.vip_p1 = vip;
             };
         };
-        pk_data.stage=0;               //0 都没看牌 1  1看牌  2 2 看牌 3  都看牌  5有弃牌，4比牌   11，12已发放奖励    10游戏准备阶段
+        pk_data.stage=0;               //0 10
         pk_data.time = clock.timestamp_ms();
         coin::put(&mut pk_data.balance, coin_v);
         emit(GnumberClose<T>{
             result:gamenumber,
         });
     }
-    //销毁.....离开房间........................通用..........
-    public entry fun leave_game<T>(gamenumber: u64,game_data: &mut GameData<T>,ctx: &mut TxContext){
+    //.........
+    public entry fun leave_game<T,G>(gamenumber: u64,game_data: &mut GameData<T,G>,ctx: &mut TxContext){
         let PokerData<T>{
             id,
             mut balance,

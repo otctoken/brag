@@ -37,7 +37,7 @@ const usdcTYPE =
   "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
 function getAvatarURL(address: string) {
   const sum = address.substring(2, 10);
-  const numericStr = sum.replace(/\D/g, ""); // 移除所有非数字字符
+  const numericStr = sum.replace(/\D/g, ""); // 1
   const num = Number(numericStr);
   let num1 = num % 10000;
   if (num1 < 1) {
@@ -119,8 +119,8 @@ const App: React.FC = () => {
       }),
     ]);
 
-    const sui = (parseFloat(suiBal.totalBalance) / 1e9).toFixed(2); // SUI 精度9位
-    const usdc = (parseFloat(usdcBal.totalBalance) / 1e6).toFixed(2); // USDC 精度6位
+    const sui = (parseFloat(suiBal.totalBalance) / 1e9).toFixed(2); // SUI 1
+    const usdc = (parseFloat(usdcBal.totalBalance) / 1e6).toFixed(2); // USDC 1
     return { sui, usdc };
   };
 
@@ -137,8 +137,8 @@ const App: React.FC = () => {
           }),
         ]);
 
-        const sui = (parseFloat(suiBal.totalBalance) / 1e9).toFixed(2); // SUI 精度9位
-        const usdc = (parseFloat(usdcBal.totalBalance) / 1e6).toFixed(2); // USDC 精度6位
+        const sui = (parseFloat(suiBal.totalBalance) / 1e9).toFixed(2); // SUI 1
+        const usdc = (parseFloat(usdcBal.totalBalance) / 1e6).toFixed(2); // USDC 1
         setBalance(sui);
         setBalanceusdc(usdc);
       } catch (error) {
@@ -198,7 +198,7 @@ const App: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              width: "100%", // 父容器宽度自适应
+              width: "100%", // 1
             }}
           >
             <div
@@ -216,7 +216,7 @@ const App: React.FC = () => {
                 alt="Small"
                 className="small-image"
                 style={{
-                  width: "1.2em", // 跟随字体
+                  width: "1.2em", // 1
                   height: "1.2em",
                   objectFit: "contain",
                 }}
@@ -234,7 +234,7 @@ const App: React.FC = () => {
                 gap: "1px",
                 width: "100%",
                 justifyContent: "center",
-                marginTop: "1px", // 两组之间的间距
+                marginTop: "1px", //1
               }}
             >
               <img
@@ -270,8 +270,6 @@ const App: React.FC = () => {
               { name: "Brag", path: "/brag" },
 
               { name: "Dosc", path: "/Dosc" },
-              // { name: "Fomo SWG", path: "/Fomo3DSWG" },
-              // { name: "Fomo(soon)", path: "/Fomo" },
             ].map((item, index) => (
               <NavLink
                 key={index}
@@ -353,7 +351,7 @@ const App: React.FC = () => {
             path="/WeeklyRace"
             element={<WeeklyRace onGetbalan={getbalangolbal} />}
           />
-          {/* 处理所有未匹配的路径，默认返回 Home */}
+          {/* Home */}
           <Route path="*" element={<Home />} />
         </Routes>
         <div className="content-data">
