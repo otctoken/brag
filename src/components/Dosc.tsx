@@ -102,7 +102,7 @@ const Dosc = () => {
             <a
               target="_blank"
               style={{ color: "#2299ff" }}
-              href="https://suiscan.xyz/mainnet/object/0x7dd2554ce9cfdc933e070ae78c7774fd6e3f5b2b0468df642c804111fb3cf1c1/contracts"
+              href="https://suiscan.xyz/mainnet/object/0x93a36744eff6ee002ef32948866098eae032f277e7e702133dd35dc7cbfe1681/contracts"
             >
               View Details
             </a>
