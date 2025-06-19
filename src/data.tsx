@@ -9,7 +9,7 @@ import suilogo from "./assets/suilogo.svg";
 import usdclogo from "./assets/usdclogo.svg";
 //.........................................................................
 //..........
-const urls = ["https://fullnode.testnet.sui.io:443"];
+const urls = ["https://fullnode.mainnet.sui.io:443"];
 const randomUrl = urls[Math.floor(Math.random() * urls.length)];
 
 const client2 = new SuiClient({ url: randomUrl });
@@ -18,10 +18,10 @@ const client2 = new SuiClient({ url: randomUrl });
 const gamelist = ["Coin Flip", "Blind Box", "Dice"];
 
 const Package_TeenPatti =
-  "0xfda4e2a81a22af6533fd7e8e3e85dd6116548831ffef32d7a1a303daac8b65e7::brag::Gvol";
+  "0x93a36744eff6ee002ef32948866098eae032f277e7e702133dd35dc7cbfe1681::brag::Gvol";
 const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
-  "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
+  "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC";
 
 function formatNumber(value: number): string {
   // 11
