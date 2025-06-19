@@ -489,10 +489,10 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   const [selected, setSelected] = useState<"sui" | "usdc">("sui");
   const [max_vol, setMaxvol] = useState(0);
   const [kiosk, setKiosk] = useState(
-    "0x26566773fe7347af393bbf8fd6937d1169b04fd2f5789125685c0291cf422569"
+    "0x637ca98303882f75fea8136a75e8a53a666c1c18a88e0b15a4fbda0d6e9e784f"
   );
   const [nftid, setNftid] = useState(
-    "0x1029dccf8c62758943619ae5f44976340319504de1330087f77e4b4b2bccc22e"
+    "0x5da7936cf1ec55beecb3102b27ce0842920bddf97742ad0423313cbc50613a3b"
   );
   const [nftvip, setNftvip] = useState(false);
   const [betsui, setBetsui] = useState(1);
