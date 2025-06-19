@@ -32,9 +32,9 @@ import suiwinmeme from "./assets/suiwinmeme.png";
 // @ts-ignore
 import Xpng from "./assets/x.png";
 
-const neting = "test";
+const neting = "main";
 const usdcTYPE =
-  "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
+  "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC";
 function getAvatarURL(address: string) {
   const sum = address.substring(2, 10);
   const numericStr = sum.replace(/\D/g, ""); // 1
@@ -51,7 +51,7 @@ function getAvatarURL(address: string) {
 
 const App: React.FC = () => {
   const client = new SuiClient({
-    url: "https://rpc-testnet.suiscan.xyz:443",
+    url: "https://rpc-mainnet.suiscan.xyz:443",
   });
 
   const [avatar, setAvatar] = useState("https://i.imgur.com/q2BJwpV.png");

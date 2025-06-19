@@ -20,21 +20,21 @@ const MINcoin = 10000;
 const MAXcoin = 1000000000000000;
 const neting = "mainnet";
 const Package_Te =
-  "0xfda4e2a81a22af6533fd7e8e3e85dd6116548831ffef32d7a1a303daac8b65e7";
+  "0x93a36744eff6ee002ef32948866098eae032f277e7e702133dd35dc7cbfe1681";
 const Package_TeenPatti =
-  "0xfda4e2a81a22af6533fd7e8e3e85dd6116548831ffef32d7a1a303daac8b65e7::brag::";
+  "0x93a36744eff6ee002ef32948866098eae032f277e7e702133dd35dc7cbfe1681::brag::";
 const Gamedata =
-  "0x4064b6a00bb83b29eba226f269783528cb0502068ace78ca6e9a1f23ba66f601";
+  "0xe526821cc9f7d744d5dc4702a0a6c5e47cf1bc88dfa91e156ed1e76fa5f4b587";
 const Gamedata_USDC =
-  "0x943b26f4287ede077a2d030444cc626394980cd840422e166c5d176d9ea1948f";
+  "0xc0aa5056c6765f2e473a512ff0283bbc102486c7da4c8597c9ce9d43aebf0e62";
 const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
-  "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
+  "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC";
 const NFTOB =
-  "0xf960a968fcbaf25d69cdaf53db17cab5fd1070a047468244311fe53abbf46194::my_hero::Hero";
+  "0xc8544a17c09eb59aff99596bf3e1c9c766b0b13eb7e7c71b613cf0f77c090f6e::cyber___city_citizen::Nft";
 const clockob = "0x6";
 
-const client = new SuiClient({ url: "https://fullnode.testnet.sui.io:443" });
+const client = new SuiClient({ url: "https://fullnode.mainnet.sui.io:443" });
 
 // @ts-ignore
 import bjt from "../assets/TeenPattibj.jpg"; // Import your background image
