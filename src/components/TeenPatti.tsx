@@ -153,9 +153,8 @@ let GlbDatatime = null;
 let GlbStage = null;
 
 function getAvatarURL(address) {
-  // 先将地址字符串转换为整数
   const sum = address.substring(2, 10);
-  const numericStr = sum.replace(/\D/g, ""); // 移除所有非数字字符
+  const numericStr = sum.replace(/\D/g, "");
   const num = Number(numericStr);
   let num1 = num % 10000;
   if (num1 < 1) {
@@ -164,15 +163,14 @@ function getAvatarURL(address) {
 
   const num2 = num1.toString().padStart(4, "0");
 
-  // 将两个数相加并对10000取模
   return `https://cryptopunks.app/public/images/cryptopunks/punk${num2}.png`;
 }
 function shortAddress(str) {
   if (str.length <= 16) {
-    return str; // 如果字符串长度小于或等于16，直接返回原字符串
+    return str;
   }
-  let start = str.slice(0, 8); // 取前8位
-  let end = str.slice(-8); // 取后8位
+  let start = str.slice(0, 8);
+  let end = str.slice(-8);
   return `${start}....${end}`;
 }
 
@@ -186,9 +184,7 @@ function removeDuplicatesByKey(array, key) {
 }
 
 function removeMatchingRows(table1, table2) {
-  // 遍历表二的每一行
   table2.forEach((table2Row) => {
-    // 在表一中查找是否存在与表二相同的a，并且time较小的行
     table1 = table1.filter((table1Row) => {
       return !(
         table1Row.num === table2Row.num && table1Row.time < table2Row.time
@@ -224,7 +220,7 @@ async function queryRoom(type) {
       dict.num = parseInt(res.data[key]["parsedJson"]["result"], 10);
       dict.vol = parseInt(res.data[key]["parsedJson"]["vol"], 10);
       dict.maxvol = parseInt(res.data[key]["parsedJson"]["maxvol"], 10);
-      dict.bo = 0; //0是新建房，1是继续游戏的房
+      dict.bo = 0;
       dict.cointype = type;
       list.push(dict);
     }
@@ -243,7 +239,7 @@ async function queryRoom(type) {
       dict.num = parseInt(res1.data[key]["parsedJson"]["result"], 10);
       dict.vol = parseInt(res1.data[key]["parsedJson"]["vol"], 10);
       dict.maxvol = parseInt(res.data[key]["parsedJson"]["maxvol"], 10);
-      dict.bo = 1; //0是新建房，1是继续游戏的房
+      dict.bo = 1;
       dict.cointype = type;
       list1.push(dict);
     }
@@ -267,20 +263,18 @@ async function queryRoom(type) {
       dict2.num = parseInt(res2.data[key]["parsedJson"]["result"], 10);
       dict2.vol = 0;
       dict2.maxvol = 0;
-      dict2.bo = 0; //0是新建房，1是继续游戏的房
+      dict2.bo = 0;
       dict2.cointype = type;
       list2.push(dict2);
     }
-    // 找到 list_B 中最小的 num 值
+
     const minNumB = Math.min(...list2.map((item) => item.num));
     const uniqueList = uniqueList1.slice(0, 10);
 
-    // 过滤 list_A，删除 num 小于 list_B 中最小 num 的元素
-    // const filteredListA = uniqueList.filter((item) => item.num >= minNumB);
-    // console.log("4", filteredListA)
     const list23 = removeMatchingRows(uniqueList, list2);
 
     const list8 = list23.slice(0, 8);
+    // console.log(list8);
     return list8;
   } catch (error) {
     console.error("Error querying events:", error);
@@ -293,7 +287,6 @@ function getRandomKey() {
   let privateKey = "";
 
   for (let i = 0; i < 64; i++) {
-    // 每次随机选择一个十六进制字符并添加到私钥字符串中
     privateKey += hexChars[Math.floor(Math.random() * 16)];
   }
 
@@ -301,11 +294,9 @@ function getRandomKey() {
 }
 
 function getRandomPoker() {
-  // 创建 1 到 52 的数组
   let firstPart = Array.from({ length: 52 }, (_, i) => i + 1);
   let secondPart = Array.from({ length: 52 }, (_, i) => i);
 
-  // 打乱数组的顺序（Fisher-Yates Shuffle 算法）
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -313,29 +304,26 @@ function getRandomPoker() {
     }
     return array;
   }
-  // 打乱前 52 个数字
+
   firstPart = shuffle(firstPart);
 
-  // 打乱 0 到 51 的数组，并截取前 3 个元素，然后排序
   secondPart = shuffle(secondPart)
     .slice(0, 3)
     .sort((a, b) => a - b);
 
-  // 将前 52 个数字和后 3 个数字合并
   const fullList = [...firstPart, ...secondPart];
 
   return fullList;
 }
 
-//...................................删除21点的.......................................
+//................................................................
 
-// 定义牌字典的类型
 interface StringMap {
   [key: string]: string;
 }
 
 interface AProps {
-  onGetbalan: () => void; // 定义 props 类型
+  onGetbalan: () => void;
 }
 
 async function getCointype(addr, Cointype) {
@@ -350,7 +338,6 @@ async function getCointype(addr, Cointype) {
   }
 }
 
-// 定义牌字典
 const cardDictionary: StringMap = {
   "0": a0,
   "1C": C1,
@@ -422,43 +409,34 @@ function getCardsType(cards) {
     console.log("Exactly three cards must be provided.");
   }
 
-  // 提取花色和点数
   const suits = cards.map((card) => (card - 1) % 4);
   const suit = suits.map((card) => sui[card]);
   const values = cards.map((card) => Math.floor((card - 1) / 4) + 1);
 
-  // 检查是否是豹子 (三张相同的牌)
   if (values[0] === values[1] && values[1] === values[2]) {
     return [values, suit, 5];
   }
 
-  // 对点数进行排序
   values.sort((a, b) => a - b);
 
-  // 检查是否是同花 (三张牌的花色相同)
   const isFlush = suits[0] === suits[1] && suits[1] === suits[2];
 
-  // 检查是否是顺子 (点数连续)
   const isStraight =
     (values[2] - values[0] === 2 && values[2] - values[1] === 1) ||
     (values[0] === 1 && values[1] === 12 && values[2] === 13); // A, Q, K
 
-  // 检查是否是同花顺 (同花且顺子)
   if (isFlush && isStraight) {
     return [values, suit, 4];
   }
 
-  // 检查是否是顺子 (顺子)
   if (isStraight) {
     return [values, suit, 3];
   }
 
-  // 检查是否是清一色 (同花)
   if (isFlush) {
     return [values, suit, 2];
   }
 
-  // 检查是否是对子 (两张相同的牌)
   if (
     values[0] === values[1] ||
     values[1] === values[2] ||
@@ -467,10 +445,9 @@ function getCardsType(cards) {
     return [values, suit, 1];
   }
 
-  // 高牌 (其他情况)
   return [values, suit, 0];
 }
-// 定义列表项类型
+
 interface ListItem {
   id: number;
   text: string;
@@ -478,13 +455,10 @@ interface ListItem {
   y: number;
   initialX: number;
   initialY: number;
-  hasMoved: boolean; // 用于跟踪元素是否已移动
+  hasMoved: boolean;
 }
 
 const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
-  // 游戏结束必须初始化的：.... ......
-
-  // 前面的是21点的不用的删除：.... .......................................................
   const [looksui, setLooksui] = useState(true);
   const [actionAndResultP, setActionAndResultP] = useState("");
   const [actionAndResultD, setActionAndResultD] = useState("");
@@ -533,7 +507,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   const [stage, setStage] = useState(0);
   const [keep, setKeep] = useState(false);
 
-  //按钮类.........lookcard..........time.......stage..................................................................
+  //......lookcard..........time.......stage..................................................................
 
   const [apply_look_cards, setApply_look_cards] = useState(true);
   const [reveal_look_cards, setReveal_look_cards] = useState(false);
@@ -545,18 +519,18 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   const [get_fold_bets, setGet_fold_bets] = useState(false);
   const [get_timeout_bets, setGet_timeout_bets] = useState(false);
 
-  //按钮类.................................................................^^^^^^...........................
+  //..............................................................^^^^^^...........................
   const [iputRoomNum, setIputRoomNum] = useState(0);
   const [roomNum, setRoomNum] = useState(0);
 
   const [randomKey, setRandomKey] = useState(() => {
     const saved = localStorage.getItem("randomKey");
-    return saved !== null ? JSON.parse(saved) : ""; // 默认值为 true
+    return saved !== null ? JSON.parse(saved) : "";
   });
 
   const [randomPoker, setRandomPoker] = useState(() => {
     const saved = localStorage.getItem("randomPoker");
-    return saved !== null ? JSON.parse(saved) : []; // 默认值为 true
+    return saved !== null ? JSON.parse(saved) : [];
   });
 
   const [itemsRoom, setItemsRoom] = useState<RoomList[]>([]);
@@ -600,7 +574,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       setTimeout(() => {
         handleClickP(0, i, "H");
         handleClickD(0, i, "H");
-      }, 500 * i); // i * 500 毫秒的延迟
+      }, 500 * i);
     }
   }
 
@@ -625,18 +599,18 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   }
 
   async function getKioskNFT_(address: string) {
-    // ① 关键：这里用 owner 而不是 addr
+    // ①
     const { data: caps } = await client.getOwnedObjects({
       owner: address,
       filter: {
-        StructType: "0x2::kiosk::KioskOwnerCap", // 只拉 KioskOwnerCap
+        StructType: "0x2::kiosk::KioskOwnerCap", // KioskOwnerCap
       },
-      options: { showContent: true }, // 要拿 fields
+      options: { showContent: true }, // fields
     });
     if (caps.length > 0) {
       for (let i = 0; i < caps.length; i++) {
-        // @ts-ignore: 我知道这可能会出错，先跳过检查
-        const kioskID = caps[i].data.content.fields.for; // i 是索引，caps[i] 是元素.fields?.for
+        // @ts-ignore:
+        const kioskID = caps[i].data.content.fields.for;
         const suiAfter = await client.getDynamicFields({ parentId: kioskID });
         if (suiAfter.data && suiAfter.data.length > 0) {
           for (let y = 0; y < suiAfter.data.length; y++) {
@@ -651,14 +625,14 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   }
 
   async function getKioskNFT(address: string) {
-    // ① 关键：这里用 owner 而不是 addr
+    // ①
     const kioskID_objectId = await getKioskNFT_(address);
     if (kioskID_objectId !== false) {
       const [kioskID, objectId] = kioskID_objectId;
       setKiosk(kioskID);
       setNftid(objectId);
       setNftvip(true);
-      // 这里可以继续对 kioskID 和 objectId 做你想要的操作
+      // kioskID
     } else {
       setNftvip(false);
     }
@@ -819,8 +793,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   function lookSeeCrads(listC, pokers) {
     let listB: number[] = [];
     for (let i = 0; i < 3; i++) {
-      const number1 = pokers[listC[i]]; // 将字符转换为数字
-      listB.push(number1); // 将数字加入数组
+      const number1 = pokers[listC[i]];
+      listB.push(number1);
     }
     const [values, suit, type] = getCardsType(listB);
 
@@ -856,7 +830,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     ) {
       setGet_timeout_bets(true);
     } else {
-      setGet_timeout_bets(false); //试试
+      setGet_timeout_bets(false);
     }
     if (ante > maxbet) {
       setMaxbet(ante);
@@ -1160,11 +1134,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       }
     };
 
-    fetchData(); // 初始调用
+    fetchData();
 
     const intervalId = setInterval(fetchData, 2000);
 
-    return () => clearInterval(intervalId); // 清理定时器
+    return () => clearInterval(intervalId);
   }, [roomNum, account?.address, lookCard]);
 
   useEffect(() => {
@@ -1210,17 +1184,14 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     }
   }, [account?.address]);
   useEffect(() => {
-    // 组件挂载时先执行一次
     getRoomlist();
 
-    // 每5秒执行一次
     const intervalId = setInterval(() => {
       getRoomlist();
     }, 5000);
 
-    // 组件卸载时清除定时器
     return () => clearInterval(intervalId);
-  }, []); // 空依赖数组确保这个 effect 只在组件挂载时运行一次
+  }, []);
 
   useEffect(() => {
     if (selected == "usdc") {
@@ -1228,14 +1199,13 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     } else {
       setDecimals(1e9);
     }
-  }, [selected]); // 空依赖数组确保这个 effect 只在组件挂载时运行一次
+  }, [selected]);
 
   useEffect(() => {
-    // 在 useEffect 内部定义一个异步函数
     const fetchData = async () => {
       try {
         if (stage != 10 && stage != 4) {
-          const result = await chaxunjieguo(); // 调用异步函数并等待结果
+          const result = await chaxunjieguo();
           if (result && account) {
             const [jieguo, addr] = result;
 
@@ -1248,15 +1218,15 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               let lisApp: number[] = [];
               for (let i = 0; i < 3; i++) {
                 if (addr != account.address) {
-                  const number1 = jieguo[randomPoker[i + 52]]; // 将字符转换为数字
-                  listOpen.push(Number(number1)); // 将数字加入数组
-                  const number2 = randomPoker[jieguo[i + 52]]; // 将字符转换为数字
-                  lisApp.push(number2); // 将数字加入数组}
+                  const number1 = jieguo[randomPoker[i + 52]];
+                  listOpen.push(Number(number1));
+                  const number2 = randomPoker[jieguo[i + 52]];
+                  lisApp.push(number2);
                 } else {
-                  const number1 = randomPoker[lookCarditemsp[i + 52]]; // 将字符转换为数字
-                  listOpen.push(Number(number1)); // 将数字加入数组
-                  const number2 = lookCarditemsp[randomPoker[i + 52]]; // 将字符转换为数字
-                  lisApp.push(number2); // 将数字加入数组}
+                  const number1 = randomPoker[lookCarditemsp[i + 52]];
+                  listOpen.push(Number(number1));
+                  const number2 = lookCarditemsp[randomPoker[i + 52]];
+                  lisApp.push(number2);
                 }
               }
               const [valuesO, suitO, typeO] = getCardsType(listOpen);
@@ -1355,7 +1325,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   function stringToUint8Array(input) {
     const byteArray: number[] = [];
     for (let i = 0; i < input.length; i++) {
-      byteArray[i] = input.charCodeAt(i); // 将每个字符转换为相应的字节值
+      byteArray[i] = input.charCodeAt(i);
     }
     return byteArray;
   }
@@ -1384,7 +1354,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           },
         });
         if (suiAfter2.transaction) {
-          // 使用 as any 忽略类型检查
           const transactionData = suiAfter2.transaction.data.transaction as any;
           if (Number(transactionData.inputs[1].value) == roomNum) {
             const byteArray = stringToUint8Array(
@@ -1414,11 +1383,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     const newItem = {
       id: GlbPcardsID,
       text: textB,
-      x: newCount * 35 - 72, // 生成随机X坐标
-      y: 25, // 初始Y坐标
-      initialX: 0, // 目标X坐标
-      initialY: 0, // 目标Y坐标
-      hasMoved: false, // 初始状态为未移动
+      x: newCount * 35 - 72,
+      y: 25,
+      initialX: 0,
+      initialY: 0,
+      hasMoved: false,
     };
 
     setItemsp((prevItems) => [...prevItems, newItem]);
@@ -1429,7 +1398,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           item.id === newItem.id ? { ...item, hasMoved: true } : item
         )
       );
-    }, 50); // 延迟50ms触发移动
+    }, 50);
   };
 
   const handleClickD = (cak, newCount, pkColor) => {
@@ -1442,11 +1411,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     const newItem = {
       id: GlbDcardsID,
       text: textB,
-      x: newCount * 35 - 72, // 生成随机X坐标
-      y: 5, // 初始Y坐标
-      initialX: 0, // 目标X坐标
-      initialY: 0, // 目标Y坐标
-      hasMoved: false, // 初始状态为未移动
+      x: newCount * 35 - 72,
+      y: 5,
+      initialX: 0,
+      initialY: 0,
+      hasMoved: false,
     };
 
     setItemsd((prevItems) => [...prevItems, newItem]);
@@ -1457,7 +1426,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           item.id === newItem.id ? { ...item, hasMoved: true } : item
         )
       );
-    }, 50); // 延迟50ms触发移动
+    }, 50);
     if (newCount == 2) {
       setWinAndBlindD("Blind");
     }
@@ -1470,8 +1439,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     setItemsp((prevItems) =>
       prevItems.map((item) => ({
         ...item,
-        initialX: 1500, // 目标X位置
-        initialY: -350, // 目标Y位置
+        initialX: 1500,
+        initialY: -350,
         hasMoved: true,
       }))
     );
@@ -1479,13 +1448,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     setItemsd((prevItems) =>
       prevItems.map((item) => ({
         ...item,
-        initialX: 1500, // 目标X位置
-        initialY: 350, // 目标Y位置
+        initialX: 1500,
+        initialY: 350,
         hasMoved: true,
       }))
     );
 
-    // 设置延迟来清空项的状态
     // setTimeout(() => {
     //   setItemsp((prevItems) =>
     //     prevItems.filter((item) => !keysToRemoveP.includes(item.id))
@@ -1493,10 +1461,10 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     //   setItemsd((prevItems) =>
     //     prevItems.filter((item) => !keysToRemove.includes(item.id))
     //   );
-    // }, 500); // 等待动画完成后清空项
+    // }, 500);
   };
 
-  //交易类...................................................................................
+  //.......................................................................
   const transferSui_create_game = async () => {
     if (looksui) {
       setLooksui(false);
@@ -1700,8 +1668,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             initbutton();
             setCountdownD1(59);
 
-            //玩家扑克..............................
-            //对手扑克............................
             dealingCards();
           }
         }
@@ -2389,8 +2355,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             setLookCard(false);
             setKeep(false);
             initbutton();
-
-            //对手扑克............................
           }
         }
       } catch (error) {
@@ -2482,8 +2446,6 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
             initbutton();
 
-            //玩家扑克..............................
-            //对手扑克............................
             // dealingCards();
           }
         }
@@ -2624,10 +2586,10 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               backgroundRepeat: "no-repeat",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "flex-start", // 改为 flex-start 或 center
+              justifyContent: "flex-start",
               alignItems: "center",
               overflow: "hidden",
-              gap: "0px", // 确保子元素之间的间距为零
+              gap: "0px",
               padding: "2px",
             }}
           >
@@ -2641,7 +2603,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               style={{
                 height: "40px",
                 width: "220px",
-                // ............头像.....................................................................
+                // ....................................................................
                 position: "relative",
                 padding: "1px",
               }}
@@ -2651,8 +2613,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   color: "#199999",
 
                   width: "90px",
-                  fontSize: "25px", // 动态调整字体大小
-                  textAlign: "center", // 使文本居中
+                  fontSize: "25px",
+                  textAlign: "center",
                 }}
               >
                 {AddbetD1 !== 0 ? AddbetD1 : null}
@@ -2671,7 +2633,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   color: "rgb(255, 191, 0)",
                   fontFamily: "Lcd, sans-serif",
 
-                  textAlign: "center", // 使文本居中
+                  textAlign: "center",
                 }}
               >
                 {CountdownD1 !== 0 ? CountdownD1 : null}
@@ -2687,11 +2649,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             >
               <div
                 style={{
-                  position: "absolute", // 使用 absolute 定位在容器
-                  top: "33%", // 固定在容器的顶部
-                  left: "50%", // 水平居中
-                  transform: "translateX(-50%)", // 使元素在容器中水平居中
-                  zIndex: 1, // 确保在容器内所有元素之上
+                  position: "absolute",
+                  top: "33%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  zIndex: 1,
                   backgroundColor:
                     winAndBlindD === ""
                       ? "rgba(0, 0, 0, 0)"
@@ -2704,30 +2666,30 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   fontSize: "30px",
                   borderRadius: "5px",
                   textAlign: "center",
-                  display: "inline-block", // 设置为 inline-block，使宽度根据文本内容自动调整
-                  whiteSpace: "nowrap", // 防止文本换行（可选，如果需要强制单行）
+                  display: "inline-block",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {winAndBlindD}
               </div>
               <div
                 style={{
-                  position: "absolute", // 绝对定位
-                  top: "60%", // 距离容器顶部的距离
-                  left: "50%", // 水平居中
-                  transform: "translateX(-50%)", // 水平居中对齐
-                  zIndex: 1, // 确保在容器内所有元素之上
+                  position: "absolute",
+                  top: "60%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  zIndex: 1,
                   backgroundColor:
                     actionAndResultD === ""
                       ? "rgba(0, 0, 0, 0)"
-                      : "rgba(0, 0, 0, 0.5)", // 根据 valueP 动态设置背景色
-                  color: "#e7e7e7", // 文本颜色
+                      : "rgba(0, 0, 0, 0.5)",
+                  color: "#e7e7e7",
                   padding: "2px 2px",
                   fontSize: "20px",
                   borderRadius: "5px",
                   textAlign: "center",
-                  display: "inline-block", // 设置为 inline-block，使宽度根据文本内容自动调整
-                  whiteSpace: "nowrap", // 防止文本换行（可选，如果需要强制单行）
+                  display: "inline-block",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {actionAndResultD}
@@ -2740,7 +2702,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                         textAlign: "center",
                         fontSize: "20px",
                         color: "#fff",
-                        paddingTop: "70px", // 增加顶部填充距离
+                        paddingTop: "70px",
                       }}
                     >
                       There is currently no game room, please click below to
@@ -2754,8 +2716,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       }}
                     >
                       {itemsRoom.map((item) => {
-                        const isUSDC = item.cointype == CoinUsdc; // ✅ 是否 USDC
-                        const divisor = isUSDC ? 1e6 : 1e9; // ✅ 不同币种的精度
+                        const isUSDC = item.cointype == CoinUsdc;
+                        const divisor = isUSDC ? 1e6 : 1e9;
                         const displayVol = parseFloat(
                           (item.vol / divisor).toFixed(2)
                         );
@@ -2772,7 +2734,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                               padding: "2px",
                             }}
                           >
-                            {/* ante 标签 */}
+                            {/* ante  */}
                             <span
                               style={{
                                 display: "block",
@@ -2784,12 +2746,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                               ante
                             </span>
 
-                            {/* 数值行：行间距压缩到 1px */}
+                            {/* 1px */}
                             <span
                               style={{
                                 display: "block",
                                 margin: "1px 0",
-                                padding: 0, // ← 去掉原来 1px 的 padding
+                                padding: 0, // ←  padding
                                 fontSize: "20px",
                                 color: "rgb(144,238,144)",
                               }}
@@ -2800,7 +2762,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                               style={{
                                 display: "block",
                                 margin: "1px 0",
-                                padding: "2px", // ← 原来是 5px，现在也收成 0
+                                padding: "2px", // ←  0
                                 fontSize: "12px",
                                 color: "rgb(144,238,144)",
                               }}
@@ -2808,7 +2770,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                               Max Single Bet: {displaymaxVol}
                             </span>
 
-                            {/* 币种标签（USDC=金色，其余=蓝色） */}
+                            {/* ） */}
                             <span
                               style={{
                                 fontSize: "12px",
@@ -2818,7 +2780,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                               {isUSDC ? "USDC" : "SUI"}
                             </span>
 
-                            {/* Play / send.. 按钮 */}
+                            {/* Play  */}
                             <button
                               className="paly-button shift"
                               style={{
@@ -2838,7 +2800,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                               {looksui ? "Play" : "send.."}
                             </button>
 
-                            {/* 房间号 */}
+                            {/* 1 */}
                             <span
                               style={{ fontSize: "12px", color: "#999999" }}
                             >
@@ -2892,22 +2854,20 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                 padding: "2px",
               }}
             >
-              {
-                stage > 10 || keep ? (
-                  <button
-                    style={{
-                      marginTop: "1px",
-                      width: "120px",
-                    }}
-                    className="paly-button shift"
-                    onClick={() => {
-                      Keep_playing();
-                    }}
-                  >
-                    Keep playing
-                  </button> // 如果 A > 10，渲染该值
-                ) : null // 否则，渲染 null（什么也不渲染）
-              }
+              {stage > 10 || keep ? (
+                <button
+                  style={{
+                    marginTop: "1px",
+                    width: "120px",
+                  }}
+                  className="paly-button shift"
+                  onClick={() => {
+                    Keep_playing();
+                  }}
+                >
+                  Keep playing
+                </button>
+              ) : null}
 
               {winAndBlindD !== "" && (
                 <img
@@ -2936,23 +2896,21 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   style={{ width: "30px", height: "30px" }}
                 />
               )}
-              {
-                stage > 10 || keep || stage == -1 ? (
-                  <button
-                    style={{
-                      marginTop: "1px",
-                      width: "120px",
-                    }}
-                    className="paly-button-red"
-                    onClick={() => {
-                      InitAll();
-                      getRoomlist();
-                    }}
-                  >
-                    Exit room
-                  </button>
-                ) : null // 否则，渲染 null（什么也不渲染）
-              }
+              {stage > 10 || keep || stage == -1 ? (
+                <button
+                  style={{
+                    marginTop: "1px",
+                    width: "120px",
+                  }}
+                  className="paly-button-red"
+                  onClick={() => {
+                    InitAll();
+                    getRoomlist();
+                  }}
+                >
+                  Exit room
+                </button>
+              ) : null}
             </div>
             <div
               className="grid-item"
@@ -2964,31 +2922,31 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
             >
               <div
                 style={{
-                  position: "absolute", // 使用 absolute 定位在容器
-                  top: "25%", // 固定在容器的顶部
-                  left: "50%", // 水平居中
-                  transform: "translateX(-50%)", // 使元素在容器中水平居中
-                  zIndex: 1, // 确保在容器内所有元素之上
+                  position: "absolute",
+                  top: "25%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  zIndex: 1,
                   backgroundColor:
                     typecards === ""
                       ? "rgba(0, 0, 0, 0)"
                       : "rgba(0, 0, 0, 0.8)",
-                  color: "rgb(10, 172, 83)", // 文字颜色
-                  padding: "2px 4px", // 内边距调整为左右对称
-                  fontSize: "20px", // 字体大小
-                  whiteSpace: "nowrap", // 防止文本换行
-                  borderRadius: "4px", // 可选：为背景添加圆角
+                  color: "rgb(10, 172, 83)",
+                  padding: "2px 4px",
+                  fontSize: "20px",
+                  whiteSpace: "nowrap",
+                  borderRadius: "4px",
                 }}
               >
                 {typecards}
               </div>
               <div
                 style={{
-                  position: "absolute", // 使用 absolute 定位在容器
-                  top: "43%", // 固定在容器的顶部
-                  left: "50%", // 水平居中
-                  transform: "translateX(-50%)", // 使元素在容器中水平居中
-                  zIndex: 1, // 确保在容器内所有元素之上
+                  position: "absolute",
+                  top: "43%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  zIndex: 1,
                   backgroundColor:
                     winAndBlindP === ""
                       ? "rgba(0, 0, 0, 0)"
@@ -3001,30 +2959,30 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   fontSize: "30px",
                   borderRadius: "5px",
                   textAlign: "center",
-                  display: "inline-block", // 设置为 inline-block，使宽度根据文本内容自动调整
-                  whiteSpace: "nowrap", // 防止文本换行（可选，如果需要强制单行）
+                  display: "inline-block",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {winAndBlindP}
               </div>
               <div
                 style={{
-                  position: "absolute", // 绝对定位
-                  top: "70%", // 距离容器顶部的距离
-                  left: "50%", // 水平居中
-                  transform: "translateX(-50%)", // 水平居中对齐
-                  zIndex: 1, // 确保在容器内所有元素之上
+                  position: "absolute",
+                  top: "70%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  zIndex: 1,
                   backgroundColor:
                     actionAndResultP === ""
                       ? "rgba(0, 0, 0, 0)"
-                      : "rgba(0, 0, 0, 0.5)", // 根据 valueP 动态设置背景色
-                  color: "#e7e7e7", // 文本颜色
+                      : "rgba(0, 0, 0, 0.5)",
+                  color: "#e7e7e7",
                   padding: "2px 2px",
                   fontSize: "20px",
                   borderRadius: "5px",
                   textAlign: "center",
-                  display: "inline-block", // 设置为 inline-block，使宽度根据文本内容自动调整
-                  whiteSpace: "nowrap", // 防止文本换行（可选，如果需要强制单行）
+                  display: "inline-block",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {actionAndResultP}
@@ -3035,8 +2993,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                     className="grid-item"
                     style={{
                       backgroundColor: "rgba(0, 0,0, 0.5)",
-                      padding: "5px", // 这里设置 align-items 为 flex-start
-                      height: "auto", // 使父元素高度自适应
+                      padding: "5px", // flex-start
+                      height: "auto",
                     }}
                   >
                     <div>
@@ -3044,8 +3002,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                         style={{
                           fontSize: "20px",
                           color: "#FFD700",
-                          display: "inline-flex", // 使用 inline-flex
-                          alignItems: "center", // 垂直居中对齐
+                          display: "inline-flex", // inline-flex
+                          alignItems: "center",
                         }}
                       >
                         Ante{" "}
@@ -3055,7 +3013,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                           onChange={(e) => {
                             const val = e.target.value;
                             if (/^\d*$/.test(val)) {
-                              setAnte(val === "" ? 0 : parseInt(val, 10)); // ✅ 转成 number 类型
+                              setAnte(val === "" ? 0 : parseInt(val, 10)); // umber
                             }
                           }}
                           style={{
@@ -3065,7 +3023,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                             padding: "2px",
                             borderRadius: "4px",
                             border: "1px solid #ccc",
-                            backgroundColor: "#222", // 可根据你的背景调整
+                            backgroundColor: "#222",
                             color: "#FFD700",
                             textAlign: "center",
                           }}
@@ -3135,8 +3093,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                         textAlign: "center" as const, // 'as const' to narrow the type
                         marginTop: "1px",
                         cursor: "pointer",
-                        padding: "1px", // 这里设置 align-items 为 flex-start
-                        fontWeight: "bold", // 设置文本为粗体
+                        padding: "1px",
+                        fontWeight: "bold",
                       }}
                     >
                       —
@@ -3152,8 +3110,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                         textAlign: "center" as const, // 'as const' to narrow the type
                         marginTop: "1px",
                         cursor: "pointer",
-                        padding: "1px", // 这里设置 align-items 为 flex-start
-                        fontWeight: "bold", // 设置文本为粗体
+                        padding: "1px",
+                        fontWeight: "bold",
                       }}
                     >
                       X2
@@ -3169,7 +3127,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                         textAlign: "center" as const, // 'as const' to narrow the type
                         marginTop: "1px",
                         cursor: "pointer",
-                        fontWeight: "bold", // 设置文本为粗体
+                        fontWeight: "bold",
                       }}
                     >
                       <span
@@ -3187,8 +3145,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                           style={{
                             fontSize: "12px",
                             color: "#FFD700",
-                            display: "inline-flex", // 使用 inline-flex
-                            alignItems: "center", // 垂直居中对齐
+                            display: "inline-flex",
+                            alignItems: "center",
                           }}
                         >
                           Max single blind bet {maxbet} {selected.toUpperCase()}
@@ -3205,8 +3163,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                           textAlign: "center" as const, // 'as const' to narrow the type
                           marginTop: "1px",
                           cursor: "pointer",
-                          padding: "1px", // 这里设置 align-items 为 flex-start
-                          fontWeight: "bold", // 设置文本为粗体
+                          padding: "1px",
+                          fontWeight: "bold",
                         }}
                       >
                         —
@@ -3222,8 +3180,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                           textAlign: "center" as const, // 'as const' to narrow the type
                           marginTop: "1px",
                           cursor: "pointer",
-                          padding: "1px", // 这里设置 align-items 为 flex-start
-                          fontWeight: "bold", // 设置文本为粗体
+                          padding: "1px",
+                          fontWeight: "bold",
                         }}
                       >
                         X2
@@ -3239,7 +3197,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                           textAlign: "center" as const, // 'as const' to narrow the type
                           marginTop: "1px",
                           cursor: "pointer",
-                          fontWeight: "bold", // 设置文本为粗体
+                          fontWeight: "bold",
                         }}
                       >
                         <span
@@ -3257,8 +3215,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                         style={{
                           fontSize: "12px",
                           color: "#FFD700",
-                          display: "inline-flex", // 使用 inline-flex
-                          alignItems: "center", // 垂直居中对齐
+                          display: "inline-flex",
+                          alignItems: "center",
                         }}
                       >
                         Max single bet after seeing {maxbet * 2}{" "}
@@ -3338,7 +3296,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               style={{
                 height: "40px",
                 width: "220px",
-                // ............头像.....................................................................................................................
+                // .............................................................................................................
                 position: "relative",
                 padding: "1px",
               }}
@@ -3351,7 +3309,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   color: "rgb(255, 191, 0)",
                   fontFamily: "Lcd, sans-serif",
 
-                  textAlign: "center", // 使文本居中
+                  textAlign: "center",
                 }}
               >
                 {CountdownP1 !== 0 ? CountdownP1 : null}
@@ -3368,8 +3326,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   color: "#199999",
 
                   width: "90px",
-                  fontSize: "25px", // 动态调整字体大小
-                  textAlign: "center", // 使文本居中
+                  fontSize: "25px",
+                  textAlign: "center",
                 }}
               >
                 {AddbetP1 !== 0 ? AddbetP1 : null}
@@ -3383,7 +3341,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                 color: "#899999",
                 padding: "0px",
                 ...(nftvip
-                  ? { marginLeft: "-25px" } // 左移 25px
+                  ? { marginLeft: "-25px" } //  25px
                   : {}),
               }}
             >
@@ -3400,22 +3358,22 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
               {addrP1}
             </span>
           </div>
-          {!beforegame1 && !beforegame2 ? ( //这里需要修改............................................................................................................
+          {!beforegame1 && !beforegame2 ? ( //.........................................................................................................
             <div>
               <div
                 className="grid-container-game-21-5"
                 style={{
                   backgroundColor: "rgba(0, 0, 0, 0)",
                   padding: "2px",
-                  alignItems: "flex-end", // 子元素底部对齐
+                  alignItems: "flex-end",
                 }}
               >
                 <div
                   className="grid-item"
                   style={{
                     // backgroundColor: "rgba(30, 30, 94, 1)",
-                    padding: "1px", // 这里设置 align-items 为 flex-start
-                    height: "auto", // 使父元素高度自适应
+                    padding: "1px", // align-items  flex-start
+                    height: "auto", // 1
                   }}
                 >
                   <button
@@ -3435,8 +3393,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                 <div
                   className="grid-item"
                   style={{
-                    padding: "1px", // 这里设置 align-items 为 flex-start
-                    height: "auto", // 使父元素高度自适应
+                    padding: "1px", //flex-start
+                    height: "auto", // 2
                   }}
                 >
                   <div>
@@ -3444,8 +3402,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       style={{
                         fontSize: "20px",
                         color: "#FFD700",
-                        display: "inline-flex", // 使用 inline-flex
-                        alignItems: "center", // 垂直居中对齐
+                        display: "inline-flex", // inline-flex
+                        alignItems: "center", // 4
                       }}
                     >
                       {betShow}
@@ -3468,8 +3426,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                 <div
                   className="grid-item"
                   style={{
-                    padding: "1px", // 这里设置 align-items 为 flex-start
-                    height: "auto", // 使父元素高度自适应
+                    padding: "1px", //  flex-start
+                    height: "auto", // 1
                   }}
                 >
                   <div>
@@ -3477,8 +3435,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       style={{
                         fontSize: "20px",
                         color: "#FFD700",
-                        display: "inline-flex", // 使用 inline-flex
-                        alignItems: "center", // 垂直居中对齐
+                        display: "inline-flex", //  inline-flex
+                        alignItems: "center",
                       }}
                     >
                       <input
@@ -3501,7 +3459,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                           }
 
                           if (/^\d*$/.test(val)) {
-                            setBetRasie(val === "" ? 0 : ip_val); // ✅ 转成 number 类型
+                            setBetRasie(val === "" ? 0 : ip_val); //2
                           }
                         }}
                         style={{
@@ -3511,7 +3469,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                           padding: "2px",
                           borderRadius: "4px",
                           border: "1px solid #ccc",
-                          backgroundColor: "#222", // 可根据你的背景调整
+                          backgroundColor: "#222", // 1
                           color: "#FFD700",
                           textAlign: "center",
                         }}
@@ -3529,8 +3487,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       textAlign: "center" as const, // 'as const' to narrow the type
                       marginTop: "1px",
                       cursor: "pointer",
-                      padding: "1px", // 这里设置 align-items 为 flex-start
-                      fontWeight: "bold", // 设置文本为粗体
+                      padding: "1px",
+                      fontWeight: "bold",
                     }}
                   >
                     —
@@ -3546,8 +3504,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       textAlign: "center" as const, // 'as const' to narrow the type
                       marginTop: "1px",
                       cursor: "pointer",
-                      padding: "1px", // 这里设置 align-items 为 flex-start
-                      fontWeight: "bold", // 设置文本为粗体
+                      padding: "1px",
+                      fontWeight: "bold",
                     }}
                   >
                     X2
@@ -3563,7 +3521,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       textAlign: "center" as const, // 'as const' to narrow the type
                       marginTop: "1px",
                       cursor: "pointer",
-                      fontWeight: "bold", // 设置文本为粗体
+                      fontWeight: "bold",
                     }}
                   >
                     <span
@@ -3592,8 +3550,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                 <div
                   className="grid-item"
                   style={{
-                    padding: "1px", // 这里设置 align-items 为 flex-start
-                    height: "auto", // 使父元素高度自适应
+                    padding: "1px",
+                    height: "auto",
                   }}
                 >
                   <div>
@@ -3601,8 +3559,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       style={{
                         fontSize: "20px",
                         color: "#FFD700",
-                        display: "inline-flex", // 使用 inline-flex
-                        alignItems: "center", // 垂直居中对齐
+                        display: "inline-flex",
+                        alignItems: "center",
                       }}
                     >
                       {betCall}
@@ -3625,8 +3583,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                 <div
                   className="grid-item"
                   style={{
-                    padding: "1px", // 这里设置 align-items 为 flex-start
-                    height: "auto", // 使父元素高度自适应
+                    padding: "1px", // flex-start
+                    height: "auto", // 1
                   }}
                 >
                   <button
@@ -3649,15 +3607,15 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                 style={{
                   backgroundColor: "rgba(0, 0, 0, 0)",
                   padding: "2px",
-                  alignItems: "flex-end", // 子元素底部对齐
+                  alignItems: "flex-end", // 1
                 }}
               >
                 <div
                   className="grid-item"
                   style={{
                     backgroundColor: "rgba(0, 0, 0, 0)",
-                    padding: "1px", // 这里设置 align-items 为 flex-start
-                    height: "auto", // 使父元素高度自适应
+                    padding: "1px", //  flex-start
+                    height: "auto", // 1
                   }}
                 >
                   <div>
@@ -3665,8 +3623,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       style={{
                         fontSize: "12px",
                         color: "#999999",
-                        display: "inline-flex", // 使用 inline-flex
-                        alignItems: "center", // 垂直居中对齐
+                        display: "inline-flex", // line-flex
+                        alignItems: "center", // 1
                       }}
                     >
                       Opponent Folded, Click to Win
@@ -3690,8 +3648,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   className="grid-item"
                   style={{
                     backgroundColor: "rgba(0, 0, 0, 0)",
-                    padding: "1px", // 这里设置 align-items 为 flex-start
-                    height: "auto", // 使父元素高度自适应
+                    padding: "1px", // flex-start
+                    height: "auto", // 1
                   }}
                 >
                   <div>
@@ -3699,8 +3657,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       style={{
                         fontSize: "12px",
                         color: "#999999",
-                        display: "inline-flex", // 使用 inline-flex
-                        alignItems: "center", // 垂直居中对齐
+                        display: "inline-flex", //nline-flex
+                        alignItems: "center", // 2
                       }}
                     >
                       Accept Showdown Request
@@ -3724,8 +3682,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   className="grid-item"
                   style={{
                     backgroundColor: "rgba(0, 0, 0, 0)",
-                    padding: "1px", // 这里设置 align-items 为 flex-start
-                    height: "auto", // 使父元素高度自适应
+                    padding: "1px",
+                    height: "auto",
                   }}
                 >
                   <div>
@@ -3733,8 +3691,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       style={{
                         fontSize: "12px",
                         color: "#999999",
-                        display: "inline-flex", // 使用 inline-flex
-                        alignItems: "center", // 垂直居中对齐
+                        display: "inline-flex",
+                        alignItems: "center",
                       }}
                     >
                       Win if the opponent times out!
@@ -3758,8 +3716,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                   className="grid-item"
                   style={{
                     backgroundColor: "rgba(0, 0, 0, 0)",
-                    padding: "1px", // 这里设置 align-items 为 flex-start
-                    height: "auto", // 使父元素高度自适应
+                    padding: "1px",
+                    height: "auto",
                   }}
                 >
                   <div>
@@ -3767,8 +3725,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       style={{
                         fontSize: "12px",
                         color: "#999999",
-                        display: "inline-flex", // 使用 inline-flex
-                        alignItems: "center", //
+                        display: "inline-flex",
+                        alignItems: "center",
                       }}
                     >
                       Reveal draw sequence to opponent!
@@ -3797,7 +3755,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         <span
           style={{
             fontSize: "12px",
-            color: "#FFD700", // 金色
+            color: "#FFD700",
             textAlign: "center",
             display: "block",
             marginBottom: 0,

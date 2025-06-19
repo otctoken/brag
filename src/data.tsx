@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./data.css"; // 假设你有一个 CSS 文件来进行样式处理
+import "./data.css"; //  CSS
 
 import { getFullnodeUrl, SuiClient } from "@mysten/sui.js/client";
 import { useCurrentAccount } from "@mysten/dapp-kit";
@@ -7,8 +7,8 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import suilogo from "./assets/suilogo.svg";
 // @ts-ignore
 import usdclogo from "./assets/usdclogo.svg";
-//...................................................随机网络.................................
-//..随..........
+//.........................................................................
+//..........
 const urls = ["https://fullnode.testnet.sui.io:443"];
 const randomUrl = urls[Math.floor(Math.random() * urls.length)];
 
@@ -16,12 +16,6 @@ const client2 = new SuiClient({ url: randomUrl });
 
 // ......................................................................
 const gamelist = ["Coin Flip", "Blind Box", "Dice"];
-// const PackageA =
-//   "0x866040bf37b4b3c5d9485b19ed6b05b96485a51474c2f244e1700517778a4fc1::suiwin::Outcome";
-// const PackageA_21 =
-//   "0x866040bf37b4b3c5d9485b19ed6b05b96485a51474c2f244e1700517778a4fc1::suiwin::Outcome21";
-// const PackageA_Baccarat =
-//   "0x866040bf37b4b3c5d9485b19ed6b05b96485a51474c2f244e1700517778a4fc1::suiwin::Outcome_Baccarat";
 
 const Package_TeenPatti =
   "0xfda4e2a81a22af6533fd7e8e3e85dd6116548831ffef32d7a1a303daac8b65e7::brag::Gvol";
@@ -29,24 +23,19 @@ const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
   "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
 
-// const PackageFOMO =
-//   "0x7215f3f0d67be7611e0df20ddc8c10f5e67ff83d2964f29aa040a77bc2d2cdaa::suiwin::Outcome";
-// const PackageFOMOPrize =
-//   "0x7215f3f0d67be7611e0df20ddc8c10f5e67ff83d2964f29aa040a77bc2d2cdaa::suiwin::OutcomePrize";
-
 function formatNumber(value: number): string {
-  // 检查是否为整数
+  // 11
   if (Number.isInteger(value)) {
     return value.toString();
   }
-  // 保留两位小数并转换为字符串
+  // 11
   return value.toFixed(2);
 }
 function calculateAndFormatString(str1, dism) {
-  // 将字符串转换为浮点数
+  // 11
   const num1 = parseFloat(str1);
 
-  // 进行一些运算，例如相加
+  // 11
   const result = num1 / dism;
   if (result > 0) {
     let truncatedResult = Math.floor(result * 100) / 100;
@@ -54,13 +43,13 @@ function calculateAndFormatString(str1, dism) {
   } else {
     return result.toFixed(2);
   }
-  // 将结果格式化为保留两位小数的字符串
+  // 11
 }
 function formatMilliseconds(ms: number): string {
   if (ms != 0) {
     const date = new Date(ms);
 
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // 月份从0开始，需要加1
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // 11
     const day = String(date.getDate()).padStart(2, "0");
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
@@ -182,7 +171,7 @@ const MyTable: React.FC = () => {
   }
 
   useEffect(() => {
-    // 定义要每隔5秒执行的函数
+    // 11
     const fetchData = async () => {
       let elementALLTeenPatti = await queryEvents_TeenPatti();
       let elementALLTeenPatti_usdc = await queryEvents_TeenPatti_USDC();
@@ -192,7 +181,7 @@ const MyTable: React.FC = () => {
         elementALLTeenPatti_usdc.length == 0
       ) {
         let list: Bet[] = [];
-        let dict = {} as Bet; // 使用言
+        let dict = {} as Bet; // 111
         dict.time = 999;
         dict.profit = "--";
         dict.player = "0x0";
@@ -219,7 +208,7 @@ const MyTable: React.FC = () => {
 
     const intervalId = setInterval(fetchData, Fedatatime);
 
-    // 清理定时器以避免内存泄漏
+    // 11
     // @ts-ignore
 
     return () => clearInterval(intervalId);
@@ -312,7 +301,7 @@ const MyTable: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
-                      color: "rgb(148, 146, 146)", // 设置点击前后的颜色
+                      color: "rgb(148, 146, 146)", // 11
                     }}
                   >
                     {bet.link}
