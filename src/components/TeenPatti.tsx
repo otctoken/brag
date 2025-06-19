@@ -270,9 +270,10 @@ async function queryRoom(type) {
 
     const minNumB = Math.min(...list2.map((item) => item.num));
     const uniqueList = uniqueList1.slice(0, 10);
-
+    // console.log(uniqueList);
+    // console.log(list2);
     const list23 = removeMatchingRows(uniqueList, list2);
-
+    // console.log(list23);
     const list8 = list23.slice(0, 8);
     // console.log(list8);
     return list8;
@@ -588,11 +589,13 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       queryRoom(CoinSui),
     ]);
     const roomlist = [...roomlist_Sui, ...roomlist_USDC];
+    // console.log(roomlist.length, itemsRoom.length);
     if (
       roomlist.length !== itemsRoom.length ||
       roomlist.some(
         (item, idx) => JSON.stringify(item) !== JSON.stringify(itemsRoom[idx])
-      )
+      ) ||
+      roomlist.length == 0
     ) {
       setItemsRoom(roomlist);
     }
