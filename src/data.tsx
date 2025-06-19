@@ -24,7 +24,7 @@ const gamelist = ["Coin Flip", "Blind Box", "Dice"];
 //   "0x866040bf37b4b3c5d9485b19ed6b05b96485a51474c2f244e1700517778a4fc1::suiwin::Outcome_Baccarat";
 
 const Package_TeenPatti =
-  "0xe4985728dd9afeb55c3a7eb5067555b2ce56fca846647b4597819feb61844296::brag::Gvol";
+  "0xfda4e2a81a22af6533fd7e8e3e85dd6116548831ffef32d7a1a303daac8b65e7::brag::Gvol";
 const CoinSui = "0x2::sui::SUI";
 const CoinUsdc =
   "0xdacf78cf79c12c8fd19f45d4ee37634523836995c63b67e2b9d79ee188012aab::usdc::USDC";
@@ -42,7 +42,7 @@ function formatNumber(value: number): string {
   // 保留两位小数并转换为字符串
   return value.toFixed(2);
 }
-function calculateAndFormatString(str1,dism) {
+function calculateAndFormatString(str1, dism) {
   // 将字符串转换为浮点数
   const num1 = parseFloat(str1);
 
@@ -101,18 +101,20 @@ async function queryEvents_TeenPatti() {
       dict.game = "Brag";
       if (res.data[key]["parsedJson"]["expendORincome"]) {
         dict.profit = calculateAndFormatString(
-          res.data[key]["parsedJson"]["vol"],1e9
+          res.data[key]["parsedJson"]["vol"],
+          1e9
         );
         dict.wager = "--";
       } else {
         dict.wager = calculateAndFormatString(
-          res.data[key]["parsedJson"]["vol"],1e9
+          res.data[key]["parsedJson"]["vol"],
+          1e9
         );
         dict.profit = "--";
       }
 
       dict.multiplier = "--";
-      dict.type = "sui"
+      dict.type = "sui";
       dict.link = res.data[key]["id"]["txDigest"];
       list.push(dict);
     }
@@ -141,18 +143,20 @@ async function queryEvents_TeenPatti_USDC() {
       dict.game = "Brag";
       if (res.data[key]["parsedJson"]["expendORincome"]) {
         dict.profit = calculateAndFormatString(
-          res.data[key]["parsedJson"]["vol"],1e6
+          res.data[key]["parsedJson"]["vol"],
+          1e6
         );
         dict.wager = "--";
       } else {
         dict.wager = calculateAndFormatString(
-          res.data[key]["parsedJson"]["vol"],1e6
+          res.data[key]["parsedJson"]["vol"],
+          1e6
         );
         dict.profit = "--";
       }
 
       dict.multiplier = "--";
-      dict.type = "usdc"
+      dict.type = "usdc";
       dict.link = res.data[key]["id"]["txDigest"];
       list.push(dict);
     }
@@ -183,7 +187,10 @@ const MyTable: React.FC = () => {
       let elementALLTeenPatti = await queryEvents_TeenPatti();
       let elementALLTeenPatti_usdc = await queryEvents_TeenPatti_USDC();
 
-      if (elementALLTeenPatti.length == 0 && elementALLTeenPatti_usdc.length==0) {
+      if (
+        elementALLTeenPatti.length == 0 &&
+        elementALLTeenPatti_usdc.length == 0
+      ) {
         let list: Bet[] = [];
         let dict = {} as Bet; // 使用言
         dict.time = 999;
@@ -199,10 +206,7 @@ const MyTable: React.FC = () => {
       }
 
       let combinedList: Bet[] = [];
-            combinedList = [
-        ...elementALLTeenPatti_usdc,
-        ...elementALLTeenPatti,
-      ];
+      combinedList = [...elementALLTeenPatti_usdc, ...elementALLTeenPatti];
       combinedList.sort((a, b) => b.time - a.time);
 
       if (dictlet.time != combinedList[0].time) {
@@ -232,17 +236,17 @@ const MyTable: React.FC = () => {
   const rowsToShow =
     filteredData.length < 0
       ? [
-        ...filteredData,
-        ...Array(15 - filteredData.length).fill({
-          time: "",
-          player: "",
-          game: "",
-          wager: "",
-          multiplier: "",
-          profit: "",
-          link: "",
-        }),
-      ]
+          ...filteredData,
+          ...Array(15 - filteredData.length).fill({
+            time: "",
+            player: "",
+            game: "",
+            wager: "",
+            multiplier: "",
+            profit: "",
+            link: "",
+          }),
+        ]
       : filteredData;
 
   return (
@@ -278,10 +282,11 @@ const MyTable: React.FC = () => {
             {rowsToShow.map((bet, index) => (
               <tr
                 key={index}
-                className={`${bet.link ? "" : "empty-row"} ${bet.profit !== "0.00" && bet.profit !== "--"
+                className={`${bet.link ? "" : "empty-row"} ${
+                  bet.profit !== "0.00" && bet.profit !== "--"
                     ? "non-zero-profit"
                     : ""
-                  }`}
+                }`}
               >
                 <td>{formatMilliseconds(bet.time)}</td>
                 <td>{bet.player}</td>
@@ -294,7 +299,7 @@ const MyTable: React.FC = () => {
                       width: "20px",
                       height: "20px",
                       marginLeft: "4px",
-                      verticalAlign: "middle"
+                      verticalAlign: "middle",
                     }}
                   />
                 </td>
