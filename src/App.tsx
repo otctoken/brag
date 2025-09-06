@@ -46,7 +46,7 @@ function getAvatarURL(address: string) {
 
   const num2 = num1.toString().padStart(4, "0");
 
-  return `https://cryptopunks.app/public/images/cryptopunks/punk${num2}.png`;
+  return `https://www.cryptopunks.app/images/cryptopunks/punk${num2}.png`;
 }
 
 const App: React.FC = () => {
@@ -370,3 +370,4 @@ const AppWrapper: React.FC = () => (
 );
 
 export default AppWrapper;
+
