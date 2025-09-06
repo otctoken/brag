@@ -163,7 +163,7 @@ function getAvatarURL(address) {
 
   const num2 = num1.toString().padStart(4, "0");
 
-  return `https://cryptopunks.app/public/images/cryptopunks/punk${num2}.png`;
+  return `https://www.cryptopunks.app/images/cryptopunks/punk${num2}.png`;
 }
 function shortAddress(str) {
   if (str.length <= 16) {
