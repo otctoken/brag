@@ -9,9 +9,11 @@ import suilogo from "./assets/suilogo.svg";
 import usdclogo from "./assets/usdclogo.svg";
 //.........................................................................
 //..........
-const urls = ["https://fullnode.mainnet.sui.io:443"];
+const urls = [
+  "https://sui-mainnet.nodeinfra.com",
+  "https://sui-mainnet.public.blastapi.io",
+];
 const randomUrl = urls[Math.floor(Math.random() * urls.length)];
-
 const client2 = new SuiClient({ url: randomUrl });
 
 // ......................................................................

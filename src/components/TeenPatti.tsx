@@ -34,7 +34,12 @@ const NFTOB =
   "0xc8544a17c09eb59aff99596bf3e1c9c766b0b13eb7e7c71b613cf0f77c090f6e::cyber___city_citizen::Nft";
 const clockob = "0x6";
 
-const client = new SuiClient({ url: "https://fullnode.mainnet.sui.io:443" });
+const urls = [
+  "https://sui-mainnet.nodeinfra.com",
+  "https://sui-mainnet.public.blastapi.io",
+];
+const randomUrl = urls[Math.floor(Math.random() * urls.length)];
+const client = new SuiClient({ url: randomUrl });
 
 // @ts-ignore
 import bjt from "../assets/TeenPattibj.jpg"; // Import your background image
