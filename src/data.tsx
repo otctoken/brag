@@ -10,8 +10,8 @@ import usdclogo from "./assets/usdclogo.svg";
 //.........................................................................
 //..........
 const urls = [
-  "https://sui-mainnet.nodeinfra.com",
-  "https://sui-mainnet.public.blastapi.io",
+  "https://sui.blockpi.network/v1/rpc/public",
+  "https://sui-rpc.publicnode.com",
 ];
 const randomUrl = urls[Math.floor(Math.random() * urls.length)];
 const client2 = new SuiClient({ url: randomUrl });
@@ -319,3 +319,4 @@ const MyTable: React.FC = () => {
 };
 
 export default MyTable;
+
