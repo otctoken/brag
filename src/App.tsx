@@ -357,7 +357,7 @@ const App: React.FC = () => {
         <div className="content-data">
           <MyTable />
         </div>
-        <div className="footer"> ©2025 All rights reserved</div>
+        <div className="footer"> ©2026 All rights reserved</div>
       </div>
     </div>
   );
@@ -370,4 +370,5 @@ const AppWrapper: React.FC = () => (
 );
 
 export default AppWrapper;
+
 
