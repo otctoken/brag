@@ -11,7 +11,7 @@ import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
 import { getmyAll } from "./pointfunction";
 import { SuiClient } from "@mysten/sui.js/client";
 import Home from "./components/Home";
-import Dosc from "./components/Dosc";
+import Docs from "./components/Docs";
 import MyTable from "./data";
 import "./App.css";
 
@@ -338,7 +338,7 @@ const App: React.FC = () => {
       <div className={`content ${mobileOpen ? "shift" : ""}`}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/Dosc" element={<Dosc />} />
+          <Route path="/Docs" element={<Docs />} />
           <Route
             path="/brag"
             element={<TeenPatti onGetbalan={getbalangolbal} />}
