@@ -269,7 +269,7 @@ const App: React.FC = () => {
               { name: "Home", path: "/" },
               { name: "Brag", path: "/brag" },
 
-              { name: "Dosc", path: "/Dosc" },
+              { name: "Docs", path: "/Docs" },
             ].map((item, index) => (
               <NavLink
                 key={index}

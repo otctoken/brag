@@ -4,7 +4,7 @@ import viplogo from "../assets/vip.gif";
 const Dosc = () => {
   return (
     <div>
-      <h1 className="titleyue">Dosc</h1>
+      <h1 className="titleyue">Docs</h1>
 
       <div
         className="grid-container-game"
