@@ -243,7 +243,7 @@ async function queryRoom(type) {
       dict.time = parseInt(res1.data[key]["timestampMs"], 10);
       dict.num = parseInt(res1.data[key]["parsedJson"]["result"], 10);
       dict.vol = parseInt(res1.data[key]["parsedJson"]["vol"], 10);
-      dict.maxvol = parseInt(res.data[key]["parsedJson"]["maxvol"], 10);
+      dict.maxvol = parseInt(res1.data[key]["parsedJson"]["maxvol"], 10);
       dict.bo = 1;
       dict.cointype = type;
       list1.push(dict);
@@ -2842,9 +2842,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${
-                        item.hasMoved ? item.initialX : -1500
-                      }px, ${item.hasMoved ? item.initialY : 350}px)`,
+                      transform: `translate(${item.hasMoved ? item.initialX : -1500
+                        }px, ${item.hasMoved ? item.initialY : 350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
@@ -3287,9 +3286,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
                       position: "absolute",
                       top: item.y,
                       left: item.x,
-                      transform: `translate(${
-                        item.hasMoved ? item.initialX : -1500
-                      }px, ${item.hasMoved ? item.initialY : -350}px)`,
+                      transform: `translate(${item.hasMoved ? item.initialX : -1500
+                        }px, ${item.hasMoved ? item.initialY : -350}px)`,
                       transition:
                         "transform 0.8s ease, left 0.8s ease, top 0.8s ease",
                       width: "auto",
