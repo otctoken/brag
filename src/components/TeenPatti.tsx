@@ -11,9 +11,7 @@ import usdclogo from "../assets/usdclogo.svg";
 import viplogo from "../assets/vip.gif";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import {
-  getFullnodeUrl,
   SuiClient,
-  SuiHTTPTransport,
 } from "@mysten/sui.js/client";
 
 const MINcoin = 10000;
@@ -1144,7 +1142,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
     fetchData();
 
-    const intervalId = setInterval(fetchData, 2000);
+    const intervalId = setInterval(fetchData, 6000);
 
     return () => clearInterval(intervalId);
   }, [roomNum, account?.address, lookCard]);
@@ -1196,7 +1194,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
     const intervalId = setInterval(() => {
       getRoomlist();
-    }, 5000);
+    }, 7000);
 
     return () => clearInterval(intervalId);
   }, []);
