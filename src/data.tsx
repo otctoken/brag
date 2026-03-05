@@ -200,10 +200,10 @@ const MyTable: React.FC = () => {
       combinedList = [...elementALLTeenPatti_usdc, ...elementALLTeenPatti];
       combinedList.sort((a, b) => b.time - a.time);
 
-      if (dictlet.time != combinedList[0].time) {
-        setData(combinedList);
-        dictlet = combinedList[0];
-      }
+
+      setData(combinedList);
+      dictlet = combinedList[0];
+
     };
 
     let Fedatatime = 5000;
@@ -225,19 +225,19 @@ const MyTable: React.FC = () => {
       ? sampleData
       : sampleData.filter((bet) => bet.player === Betplayer()); //Betplayer()
   const rowsToShow =
-    filteredData.length < 0
+    filteredData.length <= 0
       ? [
-          ...filteredData,
-          ...Array(15 - filteredData.length).fill({
-            time: "",
-            player: "",
-            game: "",
-            wager: "",
-            multiplier: "",
-            profit: "",
-            link: "",
-          }),
-        ]
+        ...filteredData,
+        ...Array(15 - filteredData.length).fill({
+          time: "",
+          player: "",
+          game: "",
+          wager: "",
+          multiplier: "",
+          profit: "",
+          link: "",
+        }),
+      ]
       : filteredData;
 
   return (
@@ -273,11 +273,10 @@ const MyTable: React.FC = () => {
             {rowsToShow.map((bet, index) => (
               <tr
                 key={index}
-                className={`${bet.link ? "" : "empty-row"} ${
-                  bet.profit !== "0.00" && bet.profit !== "--"
-                    ? "non-zero-profit"
-                    : ""
-                }`}
+                className={`${bet.link ? "" : "empty-row"} ${bet.profit !== "0.00" && bet.profit !== "--"
+                  ? "non-zero-profit"
+                  : ""
+                  }`}
               >
                 <td>{formatMilliseconds(bet.time)}</td>
                 <td>{bet.player}</td>
