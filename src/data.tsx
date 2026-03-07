@@ -201,7 +201,19 @@ const MyTable: React.FC = () => {
       combinedList.sort((a, b) => b.time - a.time);
 
 
-      setData(combinedList);
+      setData((prev) => {
+        const map = new Map();
+
+        [...combinedList, ...prev].forEach((item) => {
+          map.set(item.link, item); // 用 txDigest 去重
+        });
+
+        const merged = Array.from(map.values());
+
+        merged.sort((a, b) => b.time - a.time);
+
+        return merged.slice(0, 120); // 最多保留120条
+      });
       dictlet = combinedList[0];
 
     };
