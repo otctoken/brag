@@ -187,15 +187,9 @@ function removeDuplicatesByKey(array, key) {
 }
 
 function removeMatchingRows(table1, table2) {
-  table2.forEach((table2Row) => {
-    table1 = table1.filter((table1Row) => {
-      return !(
-        table1Row.num === table2Row.num && table1Row.time < table2Row.time
-      );
-    });
-  });
+  const closedNums = new Set(table2.map((row) => row.num));
 
-  return table1;
+  return table1.filter((row) => !closedNums.has(row.num));
 }
 interface RoomList {
   time: number;
