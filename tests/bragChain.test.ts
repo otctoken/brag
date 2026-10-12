@@ -4,7 +4,8 @@ import { bcs } from '@mysten/sui/bcs';
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeSuiAddress } from '@mysten/sui/utils';
 import { client } from '../src/suiClient';
-import { decodeBragEvent, findKioskNFT, getCoins, getRoom, queryBragEvents, readOpenCards, requireSuccess } from '../src/bragChain';
+import { historyClient } from '../src/historyClient';
+import { decodeBragEvent, findKioskNFT, getCoins, getRoom, queryBragEvents, readOpenCards, requireSuccess, findOpenCards } from '../src/bragChain';
 
 afterEach(() => mock.restoreAll());
 
@@ -22,26 +23,71 @@ test('decodes Move events without JSON and preserves u64 precision', () => {
   assert.deepEqual(decodeBragEvent(event), { result: '9007199254740993', vol: '10', maxvol: '100' });
 });
 
-test('event pagination continues through empty scan-limited pages and resolves real timestamps', async () => {
+const historyNode = (digest: string, sequenceNumber = 0) => ({
+  sequenceNumber, timestamp: '2026-03-07T04:00:00.000Z', transaction: { digest },
+  contents: { type: { repr: eventType }, bcs: Buffer.from(eventBytes).toString('base64') },
+});
+
+test('history uses the GraphQL indexer, reverses pages and follows backward cursors', async () => {
   const requests: any[] = [];
-  mock.method(client, 'listEvents', async (options: any) => {
+  mock.method(client, 'listEvents', () => { throw new Error('Must not query fullnode history'); });
+  mock.method(client, 'getTransaction', () => { throw new Error('Timestamps must arrive in the event query'); });
+  mock.method(historyClient, 'query', async (options: any) => {
     requests.push(options);
-    return requests.length === 1
-      ? { events: [], hasNextPage: true, endCursor: 'scan-cursor' }
-      : { events: [event], hasNextPage: false, endCursor: 'end' };
+    return { data: { events: requests.length === 1
+      ? { nodes: [historyNode('second'), historyNode('newest')], pageInfo: { hasPreviousPage: true, startCursor: 'older' } }
+      : { nodes: [historyNode('oldest')], pageInfo: { hasPreviousPage: false, startCursor: 'end' } },
+    } };
   });
-  mock.method(client, 'getTransaction', async () => ({ $kind: 'Transaction', Transaction: { timestampMs: 1234 } }));
   const result = await queryBragEvents(eventType);
-  assert.equal(requests[0].order, 'descending');
-  assert.equal(requests[0].limit, 50);
-  assert.equal(requests[1].before, 'scan-cursor');
-  assert.equal(result.data[0].timestampMs, '1234');
-  assert.equal(result.data[0].id.txDigest, 'test-digest');
+  assert.equal(requests[0].variables.last, 50);
+  assert.equal(requests[1].variables.before, 'older');
+  assert.equal(result.data[0].timestampMs, String(Date.parse('2026-03-07T04:00:00.000Z')));
+  assert.deepEqual(result.data.map(event => event.id.txDigest), ['newest', 'second', 'oldest']);
 });
 
 test('stops a broken pagination cursor instead of looping forever', async () => {
-  mock.method(client, 'listEvents', async () => ({ events: [], hasNextPage: true, endCursor: 'same' }));
+  mock.method(historyClient, 'query', async () => ({ data: { events: {
+    nodes: [], pageInfo: { hasPreviousPage: true, startCursor: 'same' },
+  } } }));
   await assert.rejects(queryBragEvents(eventType), /cursor did not advance/);
+});
+
+test('GraphQL errors and incomplete records are not misreported as empty history', async () => {
+  mock.method(historyClient, 'query', async () => ({ errors: [{ message: 'Indexer unavailable' }] }));
+  await assert.rejects(queryBragEvents(eventType), /Indexer unavailable/);
+  mock.restoreAll();
+  mock.method(historyClient, 'query', async () => ({ data: { events: {
+    nodes: [{ ...historyNode('digest'), timestamp: null }], pageInfo: { hasPreviousPage: false },
+  } } }));
+  await assert.rejects(queryBragEvents(eventType), /missing its digest, timestamp or contents/);
+});
+
+test('history honors the requested limit across multiple GraphQL pages', async () => {
+  const sizes: number[] = [];
+  mock.method(historyClient, 'query', async ({ variables }: any) => {
+    sizes.push(variables.last);
+    return { data: { events: {
+      nodes: Array.from({ length: variables.last }, (_, i) => historyNode(`page-${sizes.length}-${i}`)),
+      pageInfo: { hasPreviousPage: true, startCursor: `page-${sizes.length}` },
+    } } };
+  });
+  assert.equal((await queryBragEvents(eventType)).data.length, 120);
+  assert.deepEqual(sizes, [50, 50, 20]);
+});
+
+test('an empty successful indexer response yields no fabricated records', async () => {
+  mock.method(historyClient, 'query', async () => ({ data: { events: {
+    nodes: [], pageInfo: { hasPreviousPage: false, startCursor: null },
+  } } }));
+  assert.deepEqual(await queryBragEvents(eventType), { data: [] });
+});
+
+test('OpenCards history also uses the indexer', async () => {
+  mock.method(client, 'listTransactions', () => { throw new Error('Must not query fullnode history'); });
+  const query = mock.method(historyClient, 'listTransactions', async () => ({ transactions: [], hasNextPage: false }));
+  assert.equal(await findOpenCards(packageId, 42), undefined);
+  assert.equal(query.mock.callCount(), 1);
 });
 
 test('collects all coin pages and reports no spendable coins', async () => {

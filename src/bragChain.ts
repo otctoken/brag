@@ -1,7 +1,9 @@
 import { bcs } from '@mysten/sui/bcs';
 import type { SuiClientTypes } from '@mysten/sui/client';
 import { fromBase64, normalizeStructTag } from '@mysten/sui/utils';
+import { graphql } from '@mysten/sui/graphql/schema';
 import { client } from './suiClient';
+import { historyClient } from './historyClient';
 
 // Layouts follow contract/brag.move. BCS avoids transport-specific JSON shapes.
 export const PokerData = bcs.struct('PokerData', {
@@ -32,7 +34,7 @@ const VolumeEvent = bcs.struct('VolumeEvent', {
 });
 const KioskOwnerCap = bcs.struct('KioskOwnerCap', { id: bcs.Address, for: bcs.Address });
 
-export function decodeBragEvent(event: SuiClientTypes.Event): Record<string, unknown> {
+export function decodeBragEvent(event: Pick<SuiClientTypes.Event, 'eventType' | 'bcs' | 'json'>): Record<string, unknown> {
   const name = event.eventType.split('::')[2]?.split('<')[0];
   switch (name) {
     case 'GnumberOpen':
@@ -52,41 +54,56 @@ export function requireSuccess<I extends SuiClientTypes.TransactionInclude>(
   return result.Transaction;
 }
 
-const timestamps = new Map<string, number>();
-async function eventTimestamp(digest: string) {
-  const cached = timestamps.get(digest);
-  if (cached !== undefined) return cached;
-  const result = await client.getTransaction({ digest });
-  const tx = result.Transaction ?? result.FailedTransaction;
-  const timestamp = tx.timestampMs;
-  if (timestamp === null) throw new Error(`Transaction ${digest} has no checkpoint timestamp yet`);
-  if (timestamps.size >= 1000) timestamps.delete(timestamps.keys().next().value!);
-  timestamps.set(digest, timestamp);
-  return timestamp;
+const historyEventsQuery = graphql(`
+  query BragHistoryEvents($type: String!, $last: Int!, $before: String) {
+    events(filter: { type: $type }, last: $last, before: $before) {
+      pageInfo { hasPreviousPage startCursor }
+      nodes {
+        sequenceNumber
+        timestamp
+        transaction { digest }
+        contents { type { repr } bcs }
+      }
+    }
+  }
+`);
+
+export interface BragHistoryEvent {
+  timestampMs: string;
+  parsedJson: Record<string, unknown>;
+  id: { txDigest: string; eventSeq: string };
 }
 
-export async function queryBragEvents(eventType: string, limit = 120) {
-  const events: SuiClientTypes.EventEntry[] = [];
+export async function queryBragEvents(eventType: string, limit = 120, signal?: AbortSignal) {
+  const data: BragHistoryEvent[] = [];
   let before: string | null = null;
-  do {
-    const page = await client.listEvents({
-      filter: { eventType }, order: 'descending', before,
-      limit: Math.min(50, limit - events.length),
+  while (data.length < limit) {
+    // Fetch timestamps together with events instead of issuing one extra RPC per row.
+    const result = await historyClient.query({
+      query: historyEventsQuery,
+      variables: { type: normalizeStructTag(eventType), last: Math.min(50, limit - data.length), before },
+      signal,
     });
-    events.push(...page.events);
-    if (!page.hasNextPage) break;
-    if (!page.endCursor || page.endCursor === before) throw new Error('Event cursor did not advance');
-    before = page.endCursor;
-  } while (events.length < limit);
-
-  // Resolve timestamps with bounded concurrency; gRPC events only carry a checkpoint/digest.
-  const data: { timestampMs: string; parsedJson: Record<string, unknown>; id: { txDigest: string; eventSeq: string } }[] = [];
-  for (let i = 0; i < events.length; i += 6) {
-    data.push(...await Promise.all(events.slice(i, i + 6).map(async (event) => ({
-      timestampMs: String(await eventTimestamp(event.transactionDigest)),
-      parsedJson: decodeBragEvent(event),
-      id: { txDigest: event.transactionDigest, eventSeq: String(event.eventIndex) },
-    }))));
+    if (result.errors?.length) throw new Error(result.errors.map(error => error.message).join('; '));
+    const page = result.data?.events;
+    if (!page) throw new Error('History response is missing events');
+    // GraphQL last/before pages arrive oldest-first; reverse each page for newest-first history.
+    for (const event of [...page.nodes].reverse()) {
+      const digest = event.transaction?.digest;
+      const timestamp = event.timestamp ? Date.parse(event.timestamp) : NaN;
+      const contents = event.contents;
+      if (!digest || !Number.isFinite(timestamp) || !contents?.bcs || !contents.type?.repr) {
+        throw new Error('History event is missing its digest, timestamp or contents');
+      }
+      data.push({
+        timestampMs: String(timestamp),
+        parsedJson: decodeBragEvent({ eventType: contents.type.repr, bcs: fromBase64(contents.bcs), json: null }),
+        id: { txDigest: digest, eventSeq: String(event.sequenceNumber) },
+      });
+    }
+    if (!page.pageInfo.hasPreviousPage) break;
+    if (!page.pageInfo.startCursor || page.pageInfo.startCursor === before) throw new Error('Event cursor did not advance');
+    before = page.pageInfo.startCursor;
   }
   return { data };
 }
@@ -161,7 +178,7 @@ export async function findOpenCards(packageId: string, room: number) {
   let before: string | null = null;
   let checked = 0;
   do {
-    const page = await client.listTransactions({
+    const page = await historyClient.listTransactions({
       filter: { function: `${packageId}::brag::OpenCards` },
       order: 'descending', before, limit: 12 - checked, include: { transaction: true },
     });
