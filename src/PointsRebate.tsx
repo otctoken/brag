@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import {
   getmyAll,
   getTop10,

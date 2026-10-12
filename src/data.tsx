@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./data.css"; //  CSS
 
-import { getFullnodeUrl, SuiClient } from "@mysten/sui.js/client";
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { queryBragEvents } from "./bragChain";
+import { useCurrentAccount } from "@mysten/dapp-kit-react";
 // @ts-ignore
 import suilogo from "./assets/suilogo.svg";
 // @ts-ignore
 import usdclogo from "./assets/usdclogo.svg";
 //.........................................................................
 //..........
-const urls = [
-  "https://sui.blockpi.network/v1/rpc/public",
-  "https://sui-rpc.publicnode.com",
-];
-const randomUrl = urls[Math.floor(Math.random() * urls.length)];
-const client2 = new SuiClient({ url: randomUrl });
 
 // ......................................................................
 const gamelist = ["Coin Flip", "Blind Box", "Dice"];
@@ -78,12 +72,7 @@ let dictlet = {} as Bet;
 
 async function queryEvents_TeenPatti() {
   try {
-    let res: any = await client2.queryEvents({
-      query: {
-        MoveEventType: `${Package_TeenPatti}<${CoinSui}>`,
-      },
-      limit: 120,
-    });
+    let res: any = await queryBragEvents(`${Package_TeenPatti}<${CoinSui}>`);
     let list: Bet[] = [];
     for (var key in res.data) {
       let dict = {} as Bet; // 使用言
@@ -120,12 +109,7 @@ async function queryEvents_TeenPatti() {
 
 async function queryEvents_TeenPatti_USDC() {
   try {
-    let res: any = await client2.queryEvents({
-      query: {
-        MoveEventType: `${Package_TeenPatti}<${CoinUsdc}>`,
-      },
-      limit: 120,
-    });
+    let res: any = await queryBragEvents(`${Package_TeenPatti}<${CoinUsdc}>`);
     let list: Bet[] = [];
     for (var key in res.data) {
       let dict = {} as Bet; // 使用言

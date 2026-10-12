@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useSignAndExecuteTransactionBlock } from "@mysten/dapp-kit";
-import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { useExecuteTransaction } from "../useExecuteTransaction";
+import { queryBragEvents, getRoom, getCoins, findKioskNFT, findOpenCards } from "../bragChain";
+import { Transaction, type TransactionObjectArgument } from "@mysten/sui/transactions";
 import { bls12_381 } from "@noble/curves/bls12-381";
 // import { updatapoint } from "../pointfunction";
 // @ts-ignore
@@ -9,10 +10,7 @@ import suilogo from "../assets/suilogo8.svg";
 import usdclogo from "../assets/usdclogo.svg";
 // @ts-ignore
 import viplogo from "../assets/vip.gif";
-import { useCurrentAccount } from "@mysten/dapp-kit";
-import {
-  SuiClient,
-} from "@mysten/sui.js/client";
+import { useCurrentAccount } from "@mysten/dapp-kit-react";
 
 const MINcoin = 10000;
 const MAXcoin = 1000000000000000;
@@ -32,12 +30,6 @@ const NFTOB =
   "0xc8544a17c09eb59aff99596bf3e1c9c766b0b13eb7e7c71b613cf0f77c090f6e::cyber___city_citizen::Nft";
 const clockob = "0x6";
 
-const urls = [
-  "https://sui.blockpi.network/v1/rpc/public",
-  "https://sui-rpc.publicnode.com",
-];
-const randomUrl = urls[Math.floor(Math.random() * urls.length)];
-const client = new SuiClient({ url: randomUrl });
 
 // @ts-ignore
 import bjt from "../assets/TeenPattibj.jpg"; // Import your background image
@@ -202,12 +194,7 @@ interface RoomList {
 
 async function queryRoom(type) {
   try {
-    let res: any = await client.queryEvents({
-      query: {
-        MoveEventType: `${Package_TeenPatti}GnumberOpen<${type}>`,
-      },
-      limit: 120,
-    });
+    let res: any = await queryBragEvents(`${Package_TeenPatti}GnumberOpen<${type}>`);
 
     let list: RoomList[] = [];
 
@@ -222,12 +209,7 @@ async function queryRoom(type) {
       list.push(dict);
     }
 
-    let res1: any = await client.queryEvents({
-      query: {
-        MoveEventType: `${Package_TeenPatti}GnumberCont<${type}>`,
-      },
-      limit: 120,
-    });
+    let res1: any = await queryBragEvents(`${Package_TeenPatti}GnumberCont<${type}>`);
 
     let list1: RoomList[] = [];
     for (var key in res1.data) {
@@ -246,12 +228,7 @@ async function queryRoom(type) {
 
     const uniqueList1 = removeDuplicatesByKey(list11, "num");
 
-    let res2: any = await client.queryEvents({
-      query: {
-        MoveEventType: `${Package_TeenPatti}GnumberClose<${type}>`,
-      },
-      limit: 120,
-    });
+    let res2: any = await queryBragEvents(`${Package_TeenPatti}GnumberClose<${type}>`);
     let list2: RoomList[] = [];
 
     for (var key in res2.data) {
@@ -325,15 +302,7 @@ interface AProps {
 }
 
 async function getCointype(addr, Cointype) {
-  try {
-    const { data: coins } = await client.getCoins({
-      owner: addr,
-      coinType: Cointype,
-    });
-    return coins;
-  } catch (error) {
-    console.error("Error callGetGamePlayerAndDiv:", error);
-  }
+  return getCoins(addr, Cointype);
 }
 
 const cardDictionary: StringMap = {
@@ -576,8 +545,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
     }
   }
 
-  const { mutateAsync: signAndExecuteTransactionBlock } =
-    useSignAndExecuteTransactionBlock();
+  const executeTransaction = useExecuteTransaction();
 
   async function getRoomlist() {
     //setItemsRoom([]);
@@ -599,29 +567,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
   }
 
   async function getKioskNFT_(address: string) {
-    // ①
-    const { data: caps } = await client.getOwnedObjects({
-      owner: address,
-      filter: {
-        StructType: "0x2::kiosk::KioskOwnerCap", // KioskOwnerCap
-      },
-      options: { showContent: true }, // fields
-    });
-    if (caps.length > 0) {
-      for (let i = 0; i < caps.length; i++) {
-        // @ts-ignore:
-        const kioskID = caps[i].data.content.fields.for;
-        const suiAfter = await client.getDynamicFields({ parentId: kioskID });
-        if (suiAfter.data && suiAfter.data.length > 0) {
-          for (let y = 0; y < suiAfter.data.length; y++) {
-            if (suiAfter.data[y].objectType == NFTOB) {
-              return [kioskID, suiAfter.data[y].objectId];
-            }
-          }
-        }
-      }
-    }
-    return false;
+    return findKioskNFT(address, NFTOB);
   }
 
   async function getKioskNFT(address: string) {
@@ -1086,17 +1032,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       if (roomNum > 0 && !keep) {
         if (selected == "sui") {
           try {
-            const suiAfter = await client.getDynamicFieldObject({
-              parentId: Gamedata,
-              name: {
-                type: "u64",
-                value: String(roomNum),
-              },
-            });
-            const data = JSON.parse(
-              // @ts-ignore
-              JSON.stringify(suiAfter["data"]["content"]["fields"])
-            );
+            const data = await getRoom(Gamedata, roomNum);
 
             refreshData(data);
           } catch (error) {
@@ -1109,17 +1045,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           }
         } else {
           try {
-            const suiAfter = await client.getDynamicFieldObject({
-              parentId: Gamedata_USDC,
-              name: {
-                type: "u64",
-                value: String(roomNum),
-              },
-            });
-            const data = JSON.parse(
-              // @ts-ignore
-              JSON.stringify(suiAfter["data"]["content"]["fields"])
-            );
+            const data = await getRoom(Gamedata_USDC, roomNum);
 
             refreshData(data);
           } catch (error) {
@@ -1332,42 +1258,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
   async function chaxunjieguo() {
     try {
-      const suiAfter = await client.queryTransactionBlocks({
-        filter: {
-          MoveFunction: {
-            function: "OpenCards",
-            module: "brag",
-            package: Package_Te,
-          },
-        },
-      });
-
-      const list = JSON.parse(JSON.stringify(suiAfter.data));
-
-      for (let i = 0; i < list.length; i++) {
-        let bianhao = list[i]["digest"];
-
-        const suiAfter2 = await client.getTransactionBlock({
-          digest: bianhao,
-          options: {
-            showInput: true,
-          },
-        });
-        if (suiAfter2.transaction) {
-          const transactionData = suiAfter2.transaction.data.transaction as any;
-          if (Number(transactionData.inputs[1].value) == roomNum) {
-            const byteArray = stringToUint8Array(
-              transactionData.inputs[2].value
-            );
-
-            return [byteArray, suiAfter2.transaction.data.sender];
-          }
-        }
-
-        if (i > 10) {
-          break;
-        }
-      }
+      return await findOpenCards(Package_Te, roomNum);
     } catch (error) {
       console.error("Error during transaction query:", error);
     }
@@ -1472,7 +1363,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       try {
         const randomPokerdata = gettRandomPoker();
         const randomKeydata = gettRandomKey();
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
 
         const volcoin = ante * decimals;
         const maxbetcoin = maxbet * decimals;
@@ -1491,7 +1382,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId = tx.gas;
+        let coinObjectId: TransactionObjectArgument = tx.gas;
 
         if (selected == "usdc") {
           let coins;
@@ -1500,11 +1391,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           if (account) {
             coins = await getCointype(account.address, CoinUsdc);
           }
-          coinObjectId = coins[0].coinObjectId;
+          coinObjectId = tx.object(coins[0].objectId);
           if (coins.length > 1) {
             for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].coinObjectId), [
-                tx.object(coins[i].coinObjectId),
+              tx.mergeCoins(tx.object(coins[0].objectId), [
+                tx.object(coins[i].objectId),
               ]);
             }
           }
@@ -1518,23 +1409,18 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           target: `${Package_TeenPatti}create_game`,
           typeArguments: [typeArgument, NFTOB],
           arguments: [
-            tx.pure(Array.from(signedPokerHash)),
-            tx.pure(maxbetcoin),
+            tx.pure.vector("u8", Array.from(signedPokerHash)),
+            tx.pure.u64(maxbetcoin),
             coin,
             data,
             mykiosk,
-            tx.pure(nftid),
+            tx.pure.id(nftid),
           ],
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {
@@ -1573,7 +1459,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       try {
         const randomPokerdata = gettRandomPoker();
         const randomKeydata = gettRandomKey();
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
         const clock = tx.object(clockob);
 
         let join = "join_game";
@@ -1595,7 +1481,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId = tx.gas;
+        let coinObjectId: TransactionObjectArgument = tx.gas;
 
         if (type?.toUpperCase().includes("USDC")) {
           let coins;
@@ -1606,11 +1492,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           } else {
             window.alert(`Link wallet to ${neting}!!`);
           }
-          coinObjectId = coins[0].coinObjectId;
+          coinObjectId = tx.object(coins[0].objectId);
           if (coins.length > 1) {
             for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].coinObjectId), [
-                tx.object(coins[i].coinObjectId),
+              tx.mergeCoins(tx.object(coins[0].objectId), [
+                tx.object(coins[i].objectId),
               ]);
             }
           }
@@ -1627,24 +1513,19 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           target: `${Package_TeenPatti}${join}`,
           typeArguments: [typeArgument, NFTOB],
           arguments: [
-            tx.pure(num),
-            tx.pure(Array.from(signedPokerHash)),
+            tx.pure.u64(num),
+            tx.pure.vector("u8", Array.from(signedPokerHash)),
             coin,
             clock,
             data,
             mykiosk,
-            tx.pure(nftid),
+            tx.pure.id(nftid),
           ],
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {
@@ -1687,7 +1568,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       setLooksui(false);
 
       try {
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
 
         const clock = tx.object(clockob);
 
@@ -1701,17 +1582,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         tx.moveCall({
           target: `${Package_TeenPatti}apply_look_cards`,
           typeArguments: [typeArgument, NFTOB],
-          arguments: [tx.pure(roomNum), clock, data],
+          arguments: [tx.pure.u64(roomNum), clock, data],
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
         if (response.events) {
           if (response.events.length !== 0) {
@@ -1741,7 +1617,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
       try {
         const cardThree = Uint8Array.from(randomPoker.slice(-3));
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
         const clock = tx.object(clockob);
 
         let typeArgument = CoinSui;
@@ -1755,21 +1631,16 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           target: `${Package_TeenPatti}reveal_look_cards`,
           typeArguments: [typeArgument, NFTOB],
           arguments: [
-            tx.pure(roomNum),
-            tx.pure(Array.from(cardThree)),
+            tx.pure.u64(roomNum),
+            tx.pure.vector("u8", Array.from(cardThree)),
             clock,
             data,
           ],
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {
@@ -1799,7 +1670,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       setLooksui(false);
 
       try {
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
         let bet = 0;
         if (lookCard) {
           bet = betsui;
@@ -1810,7 +1681,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId = tx.gas;
+        let coinObjectId: TransactionObjectArgument = tx.gas;
 
         if (selected == "usdc") {
           let coins;
@@ -1819,11 +1690,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           if (account) {
             coins = await getCointype(account.address, CoinUsdc);
           }
-          coinObjectId = coins[0].coinObjectId;
+          coinObjectId = tx.object(coins[0].objectId);
           if (coins.length > 1) {
             for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].coinObjectId), [
-                tx.object(coins[i].coinObjectId),
+              tx.mergeCoins(tx.object(coins[0].objectId), [
+                tx.object(coins[i].objectId),
               ]);
             }
           }
@@ -1834,17 +1705,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         tx.moveCall({
           target: `${Package_TeenPatti}call`,
           typeArguments: [typeArgument, NFTOB],
-          arguments: [tx.pure(roomNum), coin, clock, data],
+          arguments: [tx.pure.u64(roomNum), coin, clock, data],
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {
@@ -1873,13 +1739,13 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       setLooksui(false);
 
       try {
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
         const bet = betRasie * decimals;
         const clock = tx.object(clockob);
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId = tx.gas;
+        let coinObjectId: TransactionObjectArgument = tx.gas;
 
         if (selected == "usdc") {
           let coins;
@@ -1888,11 +1754,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           if (account) {
             coins = await getCointype(account.address, CoinUsdc);
           }
-          coinObjectId = coins[0].coinObjectId;
+          coinObjectId = tx.object(coins[0].objectId);
           if (coins.length > 1) {
             for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].coinObjectId), [
-                tx.object(coins[i].coinObjectId),
+              tx.mergeCoins(tx.object(coins[0].objectId), [
+                tx.object(coins[i].objectId),
               ]);
             }
           }
@@ -1903,17 +1769,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         tx.moveCall({
           target: `${Package_TeenPatti}rasie`,
           typeArguments: [typeArgument, NFTOB],
-          arguments: [tx.pure(roomNum), coin, clock, data],
+          arguments: [tx.pure.u64(roomNum), coin, clock, data],
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {
@@ -1942,7 +1803,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       setLooksui(false);
 
       try {
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
         let bet = 0;
         if (lookCard) {
           bet = betsui * 2;
@@ -1955,7 +1816,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId = tx.gas;
+        let coinObjectId: TransactionObjectArgument = tx.gas;
 
         if (selected == "usdc") {
           let coins;
@@ -1964,11 +1825,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           if (account) {
             coins = await getCointype(account.address, CoinUsdc);
           }
-          coinObjectId = coins[0].coinObjectId;
+          coinObjectId = tx.object(coins[0].objectId);
           if (coins.length > 1) {
             for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].coinObjectId), [
-                tx.object(coins[i].coinObjectId),
+              tx.mergeCoins(tx.object(coins[0].objectId), [
+                tx.object(coins[i].objectId),
               ]);
             }
           }
@@ -1980,9 +1841,9 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           target: `${Package_TeenPatti}applyOpenCards`,
           typeArguments: [typeArgument, NFTOB],
           arguments: [
-            tx.pure(roomNum),
-            tx.pure(Array.from(crds)),
-            tx.pure(Array.from(pkey)),
+            tx.pure.u64(roomNum),
+            tx.pure.vector("u8", Array.from(crds)),
+            tx.pure.vector("u8", Array.from(pkey)),
             coin,
             clock,
             data,
@@ -1990,13 +1851,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {
@@ -2035,7 +1891,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       setLooksui(false);
 
       try {
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
 
         const crds = Uint8Array.from(randomPoker);
         const pkey = bls12_381.getPublicKey(randomKey);
@@ -2052,21 +1908,16 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           target: `${Package_TeenPatti}OpenCards`,
           typeArguments: [typeArgument, NFTOB],
           arguments: [
-            tx.pure(roomNum),
-            tx.pure(Array.from(crds)),
-            tx.pure(Array.from(pkey)),
+            tx.pure.u64(roomNum),
+            tx.pure.vector("u8", Array.from(crds)),
+            tx.pure.vector("u8", Array.from(pkey)),
             data,
           ],
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {
@@ -2101,7 +1952,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       setLooksui(false);
 
       try {
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
         const clock = tx.object(clockob);
 
         let typeArgument = CoinSui;
@@ -2114,17 +1965,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         tx.moveCall({
           target: `${Package_TeenPatti}fold`,
           typeArguments: [typeArgument, NFTOB],
-          arguments: [tx.pure(roomNum), clock, data],
+          arguments: [tx.pure.u64(roomNum), clock, data],
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {
@@ -2161,7 +2007,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       setLooksui(false);
 
       try {
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
 
         const crds = Uint8Array.from(randomPoker);
         const pkey = bls12_381.getPublicKey(randomKey);
@@ -2178,21 +2024,16 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           target: `${Package_TeenPatti}get_fold_bets`,
           typeArguments: [typeArgument, NFTOB],
           arguments: [
-            tx.pure(roomNum),
-            tx.pure(Array.from(crds)),
-            tx.pure(Array.from(pkey)),
+            tx.pure.u64(roomNum),
+            tx.pure.vector("u8", Array.from(crds)),
+            tx.pure.vector("u8", Array.from(pkey)),
             data,
           ],
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {
@@ -2228,7 +2069,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       setLooksui(false);
 
       try {
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
         const clock = tx.object(clockob);
 
         let typeArgument = CoinSui;
@@ -2241,17 +2082,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         tx.moveCall({
           target: `${Package_TeenPatti}get_timeout_bets`,
           typeArguments: [typeArgument, NFTOB],
-          arguments: [tx.pure(roomNum), clock, data],
+          arguments: [tx.pure.u64(roomNum), clock, data],
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {
@@ -2283,7 +2119,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       try {
         const randomPokerdata = gettRandomPoker();
         const randomKeydata = gettRandomKey();
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
         const volcoin = ante * decimals;
 
         const signedPokerHash = bls12_381.sign(
@@ -2300,7 +2136,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId = tx.gas;
+        let coinObjectId: TransactionObjectArgument = tx.gas;
         if (selected == "usdc") {
           let coins;
           typeArgument = CoinUsdc;
@@ -2308,11 +2144,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           if (account) {
             coins = await getCointype(account.address, CoinUsdc);
           }
-          coinObjectId = coins[0].coinObjectId;
+          coinObjectId = tx.object(coins[0].objectId);
           if (coins.length > 1) {
             for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].coinObjectId), [
-                tx.object(coins[i].coinObjectId),
+              tx.mergeCoins(tx.object(coins[0].objectId), [
+                tx.object(coins[i].objectId),
               ]);
             }
           }
@@ -2325,21 +2161,16 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           target: `${Package_TeenPatti}go_on_playing`,
           typeArguments: [typeArgument, NFTOB],
           arguments: [
-            tx.pure(iputRoomNum),
-            tx.pure(Array.from(signedPokerHash)),
+            tx.pure.u64(iputRoomNum),
+            tx.pure.vector("u8", Array.from(signedPokerHash)),
             coin,
             data,
           ],
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {
@@ -2374,7 +2205,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       try {
         const randomPokerdata = gettRandomPoker();
         const randomKeydata = gettRandomKey();
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
         const clock = tx.object(clockob);
 
         const signedPokerHash = bls12_381.sign(
@@ -2392,7 +2223,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId = tx.gas;
+        let coinObjectId: TransactionObjectArgument = tx.gas;
         if (selected == "usdc") {
           let coins;
           typeArgument = CoinUsdc;
@@ -2400,11 +2231,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           if (account) {
             coins = await getCointype(account.address, CoinUsdc);
           }
-          coinObjectId = coins[0].coinObjectId;
+          coinObjectId = tx.object(coins[0].objectId);
           if (coins.length > 1) {
             for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].coinObjectId), [
-                tx.object(coins[i].coinObjectId),
+              tx.mergeCoins(tx.object(coins[0].objectId), [
+                tx.object(coins[i].objectId),
               ]);
             }
           }
@@ -2415,8 +2246,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           target: `${Package_TeenPatti}join_playing`,
           typeArguments: [typeArgument, NFTOB],
           arguments: [
-            tx.pure(iputRoomNum),
-            tx.pure(Array.from(signedPokerHash)),
+            tx.pure.u64(iputRoomNum),
+            tx.pure.vector("u8", Array.from(signedPokerHash)),
             coin,
             clock,
             data,
@@ -2424,13 +2255,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {
@@ -2490,17 +2316,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       if (selected == "usdc") {
         gamedatas = Gamedata_USDC;
       }
-      const suiAfter = await client.getDynamicFieldObject({
-        parentId: gamedatas,
-        name: {
-          type: "u64",
-          value: String(iputRoomNum),
-        },
-      });
-      data = JSON.parse(
-        // @ts-ignore
-        JSON.stringify(suiAfter["data"]["content"]["fields"])
-      );
+      data = await getRoom(gamedatas, iputRoomNum);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -2521,7 +2337,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
       setLooksui(false);
 
       try {
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
@@ -2533,17 +2349,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         tx.moveCall({
           target: `${Package_TeenPatti}leave_game`,
           typeArguments: [typeArgument, NFTOB],
-          arguments: [tx.pure(roomNum), data],
+          arguments: [tx.pure.u64(roomNum), data],
         });
 
         // Sign and execute the transaction block
-        const response = await signAndExecuteTransactionBlock({
-          transactionBlock: tx,
-          options: {
-            showEffects: true,
-            showBalanceChanges: true,
-            showEvents: true,
-          },
+        const response = await executeTransaction({
+          transaction: tx,
         });
 
         if (response.events) {

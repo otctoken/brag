@@ -7,9 +7,10 @@ import {
   useLocation,
 } from "react-router-dom";
 import AnnouncementBar from "./AnnouncementBar";
-import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
+import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { getmyAll } from "./pointfunction";
-import { SuiClient } from "@mysten/sui.js/client";
+import { ConnectButton } from "@mysten/dapp-kit-react/ui";
+import { client } from "./suiClient";
 import Home from "./components/Home";
 import Docs from "./components/Docs";
 import MyTable from "./data";
@@ -27,8 +28,6 @@ import suilogo from "./assets/suilogo.svg";
 import usdclogo from "./assets/usdclogo.svg";
 // @ts-ignore
 import Telegram from "./assets/Telegram.png";
-// @ts-ignore
-import suiwinmeme from "./assets/suiwinmeme.png";
 // @ts-ignore
 import Xpng from "./assets/x.png";
 
@@ -50,9 +49,6 @@ function getAvatarURL(address: string) {
 }
 
 const App: React.FC = () => {
-  const client = new SuiClient({
-    url: "https://rpc-mainnet.suiscan.xyz:443",
-  });
 
   const [avatar, setAvatar] = useState("https://i.imgur.com/q2BJwpV.png");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -119,8 +115,8 @@ const App: React.FC = () => {
       }),
     ]);
 
-    const sui = (parseFloat(suiBal.totalBalance) / 1e9).toFixed(2); // SUI 1
-    const usdc = (parseFloat(usdcBal.totalBalance) / 1e6).toFixed(2); // USDC 1
+    const sui = (parseFloat(suiBal.balance.balance) / 1e9).toFixed(2); // SUI 1
+    const usdc = (parseFloat(usdcBal.balance.balance) / 1e6).toFixed(2); // USDC 1
     return { sui, usdc };
   };
 
@@ -137,8 +133,8 @@ const App: React.FC = () => {
           }),
         ]);
 
-        const sui = (parseFloat(suiBal.totalBalance) / 1e9).toFixed(2); // SUI 1
-        const usdc = (parseFloat(usdcBal.totalBalance) / 1e6).toFixed(2); // USDC 1
+        const sui = (parseFloat(suiBal.balance.balance) / 1e9).toFixed(2); // SUI 1
+        const usdc = (parseFloat(usdcBal.balance.balance) / 1e6).toFixed(2); // USDC 1
         setBalance(sui);
         setBalanceusdc(usdc);
       } catch (error) {
