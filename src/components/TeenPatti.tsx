@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useExecuteTransaction } from "../useExecuteTransaction";
-import { queryBragEvents, getRoom, getCoins, findKioskNFT, findOpenCards } from "../bragChain";
-import { Transaction, type TransactionObjectArgument } from "@mysten/sui/transactions";
+import { queryBragEvents, getRoom, findKioskNFT, findOpenCards } from "../bragChain";
+import { Transaction } from "@mysten/sui/transactions";
+import { toBaseUnits } from "../coinAmount";
 import { bls12_381 } from "@noble/curves/bls12-381";
 // import { updatapoint } from "../pointfunction";
 // @ts-ignore
@@ -299,10 +300,6 @@ interface StringMap {
 
 interface AProps {
   onGetbalan: () => void;
-}
-
-async function getCointype(addr, Cointype) {
-  return getCoins(addr, Cointype);
 }
 
 const cardDictionary: StringMap = {
@@ -1365,8 +1362,8 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const randomKeydata = gettRandomKey();
         const tx = new Transaction();
 
-        const volcoin = ante * decimals;
-        const maxbetcoin = maxbet * decimals;
+        const volcoin = toBaseUnits(ante, decimals);
+        const maxbetcoin = toBaseUnits(maxbet, decimals);
 
         const signedPokerHash = bls12_381.sign(
           Uint8Array.from(randomPokerdata),
@@ -1382,26 +1379,13 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId: TransactionObjectArgument = tx.gas;
 
         if (selected == "usdc") {
-          let coins;
           typeArgument = CoinUsdc;
           Gamedatas = Gamedata_USDC;
-          if (account) {
-            coins = await getCointype(account.address, CoinUsdc);
-          }
-          coinObjectId = tx.object(coins[0].objectId);
-          if (coins.length > 1) {
-            for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].objectId), [
-                tx.object(coins[i].objectId),
-              ]);
-            }
-          }
         }
 
-        const [coin] = tx.splitCoins(coinObjectId, [volcoin]);
+        const coin = tx.coin({ balance: volcoin, type: typeArgument });
         const data = tx.object(Gamedatas); //data
         const mykiosk = tx.object(kiosk);
 
@@ -1481,31 +1465,17 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId: TransactionObjectArgument = tx.gas;
 
         if (type?.toUpperCase().includes("USDC")) {
-          let coins;
           typeArgument = CoinUsdc;
           Gamedatas = Gamedata_USDC;
-          if (account) {
-            coins = await getCointype(account.address, CoinUsdc);
-          } else {
-            window.alert(`Link wallet to ${neting}!!`);
-          }
-          coinObjectId = tx.object(coins[0].objectId);
-          if (coins.length > 1) {
-            for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].objectId), [
-                tx.object(coins[i].objectId),
-              ]);
-            }
-          }
+
           setAnte(bet / 1e6);
         } else {
           setAnte(bet / 1e9);
         }
 
-        const [coin] = tx.splitCoins(coinObjectId, [bet]);
+        const coin = tx.coin({ balance: bet, type: typeArgument });
         const data = tx.object(Gamedatas); //data
         const mykiosk = tx.object(kiosk);
 
@@ -1681,26 +1651,13 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId: TransactionObjectArgument = tx.gas;
 
         if (selected == "usdc") {
-          let coins;
           typeArgument = CoinUsdc;
           Gamedatas = Gamedata_USDC;
-          if (account) {
-            coins = await getCointype(account.address, CoinUsdc);
-          }
-          coinObjectId = tx.object(coins[0].objectId);
-          if (coins.length > 1) {
-            for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].objectId), [
-                tx.object(coins[i].objectId),
-              ]);
-            }
-          }
         }
 
-        const [coin] = tx.splitCoins(coinObjectId, [bet]);
+        const coin = tx.coin({ balance: bet, type: typeArgument });
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}call`,
@@ -1740,31 +1697,18 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
       try {
         const tx = new Transaction();
-        const bet = betRasie * decimals;
+        const bet = toBaseUnits(betRasie, decimals);
         const clock = tx.object(clockob);
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId: TransactionObjectArgument = tx.gas;
 
         if (selected == "usdc") {
-          let coins;
           typeArgument = CoinUsdc;
           Gamedatas = Gamedata_USDC;
-          if (account) {
-            coins = await getCointype(account.address, CoinUsdc);
-          }
-          coinObjectId = tx.object(coins[0].objectId);
-          if (coins.length > 1) {
-            for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].objectId), [
-                tx.object(coins[i].objectId),
-              ]);
-            }
-          }
         }
 
-        const [coin] = tx.splitCoins(coinObjectId, [bet]);
+        const coin = tx.coin({ balance: bet, type: typeArgument });
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}rasie`,
@@ -1816,26 +1760,13 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId: TransactionObjectArgument = tx.gas;
 
         if (selected == "usdc") {
-          let coins;
           typeArgument = CoinUsdc;
           Gamedatas = Gamedata_USDC;
-          if (account) {
-            coins = await getCointype(account.address, CoinUsdc);
-          }
-          coinObjectId = tx.object(coins[0].objectId);
-          if (coins.length > 1) {
-            for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].objectId), [
-                tx.object(coins[i].objectId),
-              ]);
-            }
-          }
         }
 
-        const [coin] = tx.splitCoins(coinObjectId, [bet]);
+        const coin = tx.coin({ balance: bet, type: typeArgument });
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}applyOpenCards`,
@@ -2120,7 +2051,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
         const randomPokerdata = gettRandomPoker();
         const randomKeydata = gettRandomKey();
         const tx = new Transaction();
-        const volcoin = ante * decimals;
+        const volcoin = toBaseUnits(ante, decimals);
 
         const signedPokerHash = bls12_381.sign(
           Uint8Array.from(randomPokerdata),
@@ -2136,25 +2067,12 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId: TransactionObjectArgument = tx.gas;
         if (selected == "usdc") {
-          let coins;
           typeArgument = CoinUsdc;
           Gamedatas = Gamedata_USDC;
-          if (account) {
-            coins = await getCointype(account.address, CoinUsdc);
-          }
-          coinObjectId = tx.object(coins[0].objectId);
-          if (coins.length > 1) {
-            for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].objectId), [
-                tx.object(coins[i].objectId),
-              ]);
-            }
-          }
         }
 
-        const [coin] = tx.splitCoins(coinObjectId, [volcoin]);
+        const coin = tx.coin({ balance: volcoin, type: typeArgument });
         const data = tx.object(Gamedatas); //data
 
         tx.moveCall({
@@ -2212,7 +2130,7 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
           Uint8Array.from(randomPokerdata),
           randomKeydata
         );
-        const bet = ante * decimals;
+        const bet = toBaseUnits(ante, decimals);
         // let publicKey = bls12_381.getPublicKey(randomKey);
 
         if (bet < MINcoin || bet > MAXcoin) {
@@ -2223,24 +2141,11 @@ const TeenPatti: React.FC<AProps> = ({ onGetbalan }) => {
 
         let typeArgument = CoinSui;
         let Gamedatas = Gamedata;
-        let coinObjectId: TransactionObjectArgument = tx.gas;
         if (selected == "usdc") {
-          let coins;
           typeArgument = CoinUsdc;
           Gamedatas = Gamedata_USDC;
-          if (account) {
-            coins = await getCointype(account.address, CoinUsdc);
-          }
-          coinObjectId = tx.object(coins[0].objectId);
-          if (coins.length > 1) {
-            for (let i = 1; i < coins.length; i++) {
-              tx.mergeCoins(tx.object(coins[0].objectId), [
-                tx.object(coins[i].objectId),
-              ]);
-            }
-          }
         }
-        const [coin] = tx.splitCoins(coinObjectId, [bet]);
+        const coin = tx.coin({ balance: bet, type: typeArgument });
         const data = tx.object(Gamedatas); //data
         tx.moveCall({
           target: `${Package_TeenPatti}join_playing`,
