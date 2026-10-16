@@ -5,10 +5,9 @@ const AnnouncementBar: React.FC = () => {
   const [show, setShow] = useState(true);
 
   useEffect(() => {
-    // Reduced-motion users see a brief static announcement. The fallback also
-    // removes the bar if the browser cancels or never dispatches animationend.
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const timeout = window.setTimeout(() => setShow(false), reducedMotion ? 8000 : 21000);
+    // Always play the requested single scroll; remove the bar even if the
+    // browser cancels or never dispatches animationend.
+    const timeout = window.setTimeout(() => setShow(false), 21000);
     return () => window.clearTimeout(timeout);
   }, []);
 

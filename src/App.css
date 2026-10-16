@@ -751,4 +751,4 @@ body { min-width: 320px; font-family: system-ui, sans-serif; }
 @media (max-width: 1400px) { .content, .content.shift { width: 100%; margin: 0; padding: 95px 24px 24px; } }
 @media (max-width: 600px) { .content, .content.shift { padding: 88px 12px 22px; } .app-bar { padding: 0 10px; gap: 6px; } .app-bar .title { font-size: 14px; } .header-right { gap: 4px; } .header-right > .small-image, .header-right > .titleyue { display: none; } .header-right .titleyue { font-size: 11px !important; margin-right: 4px; } .header-right .small-image { margin-right: 3px; } .header-right nav { max-width: 165px; } }
 @media (max-width: 360px) { .app-bar .title { display: none; } .header-right { margin-left: auto; } }
-@media (prefers-reduced-motion: reduce) { .sidebar, .content { transition: none; } .announcement-content { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .sidebar, .content { transition: none; } }
