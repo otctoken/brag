@@ -1,3 +1,18 @@
+// Truncate extra typed/pasted digits; never round a player's stake upward.
+export function twoDecimalInput(value: string, pad = false): string | null {
+  if (!/^\d*(?:\.\d*)?$/.test(value)) return null;
+  if (!value) return '';
+  const [whole, fraction] = value.split('.');
+  if (fraction === undefined && !pad) return whole;
+  return `${whole || '0'}.${pad ? (fraction ?? '').slice(0, 2).padEnd(2, '0') : fraction!.slice(0, 2)}`;
+}
+
+// The first amount with two decimals strictly above the current call amount.
+export function nextTwoDecimalAmount(amount: bigint, scale: number): string {
+  const hundredths = amount / (BigInt(scale) / 100n) + 1n;
+  return `${hundredths / 100n}.${String(hundredths % 100n).padStart(2, '0')}`;
+}
+
 // Convert displayed token units without multiplying floating-point amounts.
 export function toBaseUnits(amount: number | string, scale: number): bigint {
   const decimals = Math.log10(scale);

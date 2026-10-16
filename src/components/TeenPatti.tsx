@@ -10,7 +10,7 @@ import { TOKENS, MODULE, PACKAGE, NFT_TYPE, type TableRef, type Token } from '..
 import { buildGameTransaction } from '../gameTransactions';
 import { newSecret, saveSecret, loadSecret, saveActive, loadActive, type RoundSecret } from '../gameSecrets';
 import { assertAction, defaultNextAnte, callAmount, continuation, formatAmount, gameError, hasSeen, isMyTurn, isSettled, isWaiting, isZero, maxRaise, opponentReveal, seatOf, showdownAmount, signatureOf, type GameAction, type Room } from '../gameRules';
-import { toBaseUnits } from '../coinAmount';
+import { toBaseUnits, twoDecimalInput, nextTwoDecimalAmount } from '../coinAmount';
 import { preserveWalletViewport } from '../walletViewport';
 import '../game.css';
 
@@ -369,7 +369,7 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
             {room.stage < 4 && <>
               <button disabled={readOnly || !ownTurn || !secret || hasSeen(room, address!)} onClick={() => act('apply_look_cards')}>See cards</button>
               <button disabled={readOnly || !ownTurn} onClick={() => act('call')}>Call {amountText(callAmount(room, address!))}</button>
-              <div className="brag-raise"><label>Raise amount<input aria-label="Raise amount" inputMode="decimal" value={raise} placeholder={formatAmount(callAmount(room, address!) + 1n, config.scale)} onChange={e => setRaise(e.target.value)} disabled={readOnly || !ownTurn} /></label><button disabled={readOnly || !ownTurn || !raise} onClick={() => act('rasie')}>Raise</button><small>Above {amountText(callAmount(room, address!))}, up to {amountText(maxRaise(room, address!))}</small></div>
+              <div className="brag-raise"><label>Raise amount<input aria-label="Raise amount" inputMode="decimal" value={raise} placeholder={nextTwoDecimalAmount(callAmount(room, address!), config.scale)} onChange={e => { const value = twoDecimalInput(e.target.value); if (value !== null) setRaise(value); }} onBlur={() => setRaise(twoDecimalInput(raise, true) ?? '')} disabled={readOnly || !ownTurn} /></label><button disabled={readOnly || !ownTurn || !raise} onClick={() => act('rasie')}>Raise</button><small>Above {amountText(callAmount(room, address!))}, up to {amountText(maxRaise(room, address!))}</small></div>
               <button className="brag-showdown" disabled={readOnly || !ownTurn || !secret} onClick={() => act('applyOpenCards')}>Showdown {amountText(showdownAmount(room, address!))}</button>
             </>}
             {room.stage === 6 && <button disabled={readOnly || !ownTurn || !secret} onClick={() => act('reveal_look_cards')}>Reveal for opponent</button>}

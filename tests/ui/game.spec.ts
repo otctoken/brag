@@ -2,6 +2,18 @@ import { test, expect } from '@playwright/test';
 const open=async(page:any,scenario:string)=>page.goto(`/tests/ui/index.html?scenario=${scenario}`);
 const resume=async(page:any)=>page.getByRole('button',{name:'Resume table'}).click();
 
+test('raise input shows two decimals and submits only the displayed amount',async({page})=>{
+  await open(page,'active');await resume(page);
+  const input=page.getByLabel('Raise amount');
+  await expect(input).toHaveAttribute('placeholder','0.51');
+  await input.fill('1.2399');await expect(input).toHaveValue('1.23');
+  await input.fill('2.5');await input.blur();await expect(input).toHaveValue('2.50');
+  await input.fill('3');await input.blur();await expect(input).toHaveValue('3.00');
+  await input.fill('1.2399');
+  await page.getByRole('button',{name:'Raise',exact:true}).click();
+  await expect.poll(()=>page.evaluate(()=>(window as any).__bragTest.state.executions)).toEqual([{action:'rasie',amount:'1230000000',argumentCount:4}]);
+});
+
 for(const [token,amount] of [['sui','1000000000'],['usdc','1000000']]) {
   test(`${token} continuation defaults to one token after a raised round`,async({page})=>{
     await open(page,`raised-${token}`);await resume(page);
