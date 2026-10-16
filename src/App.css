@@ -691,7 +691,7 @@ html,
 
 .announcement-container {
   position: fixed;
-  top: 50px;
+  top: 60px;
 
   left: 0;
   width: 100%;
@@ -711,7 +711,9 @@ html,
 
 .announcement-content {
   white-space: nowrap;
-  animation: scroll-left 20s linear forwards;
+  width: max-content;
+  flex-shrink: 0;
+  animation: scroll-left 20s linear 1 forwards;
   color: #d9f84d;
 
   display: flex;

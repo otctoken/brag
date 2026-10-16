@@ -1,36 +1,32 @@
-import React, { useState } from "react";
-import "./App.css"; // 导入 CSS 样式
+import React, { useEffect, useState } from "react";
+import "./App.css";
 
 const AnnouncementBar: React.FC = () => {
-  const [show, setShow] = useState(true); // 控制公告条显示的状态
+  const [show, setShow] = useState(true);
 
-  // 动画结束时触发隐藏公告条
-  const handleAnimationEnd = () => {
-    setShow(false);
-  };
+  useEffect(() => {
+    // Reduced-motion users see a brief static announcement. The fallback also
+    // removes the bar if the browser cancels or never dispatches animationend.
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const timeout = window.setTimeout(() => setShow(false), reducedMotion ? 8000 : 21000);
+    return () => window.clearTimeout(timeout);
+  }, []);
 
-  if (!show) return null; // 如果公告条隐藏，则返回 null
+  if (!show) return null;
 
   return (
-    <div
-      id="container"
-      className="announcement-container"
-      style={{
-        animation: "neon 3s infinite",
-      }}
-    >
+    <div className="announcement-container">
       <div
-        id="announcement"
         className="announcement-content"
-        onAnimationEnd={handleAnimationEnd} // 监听动画结束事件
+        onAnimationEnd={event => {
+          if (event.target === event.currentTarget && event.animationName === 'scroll-left') setShow(false);
+        }}
       >
         Brag is an exciting two-player gambling game with gameplay nearly identical to the classic British card game
         Three Card Brag, offering thrilling, fun, and exhilarating experiences.
         This game is deployed on SuiNetwork
         and uses a draw-sign-encrypt-verify mechanism to ensure fairness.
         For more details, please refer to the Docs.
-        {/* Play the SUIWIN game to get an NFT airdrop. Limited quantity, first
-        come, first served! */}
       </div>
     </div>
   );
