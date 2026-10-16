@@ -6,4 +6,6 @@ import '../../src/App.css';
 import { state } from './state';
 const client=new QueryClient({defaultOptions:{queries:{retry:false}}});
 (window as any).__bragTest={state,refresh:()=>client.invalidateQueries()};
-createRoot(document.getElementById('root')!).render(<QueryClientProvider client={client}><div style={{maxWidth:1200,margin:'0 auto',padding:12}}><TeenPatti onGetbalan={()=>{}} /></div></QueryClientProvider>);
+const game=<TeenPatti onGetbalan={()=>{}} />;
+const shell=new URLSearchParams(location.search).has('shell');
+createRoot(document.getElementById('root')!).render(<QueryClientProvider client={client}>{shell ? <div className="app"><header className="app-bar">BRAG · Wallet</header><div className="content">{game}</div></div> : <div style={{maxWidth:1200,margin:'0 auto',padding:12}}>{game}</div>}</QueryClientProvider>);

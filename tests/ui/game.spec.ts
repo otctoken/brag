@@ -100,6 +100,7 @@ for(const cancelled of [false,true]) test(`desktop wallet ${cancelled?'cancellat
   await open(page,'active');await resume(page);
   await page.evaluate((cancelled)=>{
     const t=(window as any).__bragTest;t.state.walletJump=true;t.state.walletDelay=800;t.state.failNext=cancelled;
+    document.getElementById('root')!.style.paddingTop='420px';
     const footer=document.createElement('div');footer.style.height='1200px';document.body.append(footer);
   },cancelled);
   const call=page.getByRole('button',{name:/^Call /});
@@ -114,6 +115,27 @@ for(const cancelled of [false,true]) test(`desktop wallet ${cancelled?'cancellat
   await expect.poll(()=>page.evaluate(()=>scrollY)).toBe(before.scroll);
   expect(await page.locator('.brag-table').evaluate(el=>el.getBoundingClientRect().top)).toBe(before.table);
 });
+
+for(const [width,height] of [[1366,768],[1280,720],[1440,900],[1920,1080],[1024,768],[768,1024],[390,844],[430,932]]) {
+  test(`table and all actions fit one screen at ${width}x${height} with the app header`,async({page})=>{
+    await page.setViewportSize({width,height});
+    await page.goto('/tests/ui/index.html?scenario=active&shell=1');await resume(page);
+    await expect(page.getByRole('button',{name:/^Call /})).toBeVisible();
+    const layout=await page.evaluate(()=>{
+      const table=document.querySelector('.brag-table')!.getBoundingClientRect();
+      const controls=document.querySelector('.brag-controls')!.getBoundingClientRect();
+      const timer=document.querySelector('.brag-turn')!.getBoundingClientRect();
+      const card=document.querySelector('.brag-cards img')!.getBoundingClientRect();
+      return {top:table.top,bottom:controls.bottom,timerHeight:timer.height,cardWidth:card.width,overflow:document.documentElement.scrollWidth>innerWidth};
+    });
+    expect(layout.top).toBeGreaterThanOrEqual(60);
+    expect(layout.bottom).toBeLessThanOrEqual(height);
+    expect(layout.timerHeight).toBeLessThan(105);
+    expect(layout.cardWidth).toBeGreaterThanOrEqual(width<=600?78:86);
+    expect(layout.overflow).toBe(false);
+    if(width===1366||width===1024||width===390)await page.screenshot({path:`artifacts/compact-table-${width}.png`,fullPage:true});
+  });
+}
 
 test('wallet completion does not override deliberate scrolling',async({page})=>{
   await page.setViewportSize({width:1440,height:760});

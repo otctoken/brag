@@ -50,22 +50,23 @@
 .brag-seat.is-acting.is-opponent { border-color: #95cfff; background: #95cfff12; }
 .brag-seat-label { color: #a8c79f; letter-spacing: .18em; font-size: 9px; }
 .brag-seat > strong { font-size: 13px; font-weight: 500; }
-.brag-cards { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 105px; }
-.brag-cards img { display: block; width: clamp(55px, 9vw, 76px); height: auto; max-height: 116px; object-fit: contain; filter: drop-shadow(0 5px 7px #0c1b1680); border-radius: 4px; }
+.brag-cards { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 116px; }
+.brag-cards img { display: block; width: 78px; height: 123px; object-fit: contain; filter: drop-shadow(0 5px 7px #0c1b1680); border-radius: 4px; }
 .brag-pot { text-align: center; width: 100%; }
 .brag-pot strong { font-size: clamp(22px, 4vw, 38px); letter-spacing: -.03em; display: block; overflow-wrap: anywhere; }
 .brag-pot p { font-size: 13px; margin: 10px 0; color: #e2eacb; line-height: 1.5; }
-.brag-turn { --turn-color: #b8ed8d; --turn-bg: #132b19; margin: 14px auto 0; padding: 14px 18px; width: min(100%, 360px); border: 2px solid var(--turn-color); border-radius: 14px; background: var(--turn-bg); text-align: left; }
+.brag-turn { --turn-color: #b8ed8d; --turn-bg: #132b19; margin: 8px auto 0; padding: 8px 12px; width: min(100%, 360px); border: 2px solid var(--turn-color); border-radius: 12px; background: var(--turn-bg); text-align: left; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 10px; }
 .brag-turn.is-opponent-turn { --turn-color: #95cfff; --turn-bg: #152b37; }
 .brag-turn.is-urgent { --turn-color: #ffb399; --turn-bg: #3d231c; }
-.brag-turn-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--turn-color); font-weight: 750; font-size: 18px; }
-.brag-turn-direction { font-size: 24px; line-height: 1; }
-.brag-timer { display: flex; align-items: baseline; gap: 10px; min-height: 44px; font-variant-numeric: tabular-nums; color: #eaf1ed; }
-.brag-timer strong { font-size: 32px; min-width: 3ch; color: var(--turn-color); }
-.brag-timer span { font-size: 12px; }
-.brag-time-track { height: 6px; background: #ffffff20; border-radius: 8px; overflow: hidden; }
+.brag-turn-heading { display: flex; align-items: center; gap: 8px; color: var(--turn-color); font-weight: 750; font-size: 16px; }
+.brag-turn-direction { font-size: 20px; line-height: 1; }
+.brag-arrow-horizontal { display: none; }
+.brag-timer { font-variant-numeric: tabular-nums; color: #eaf1ed; }
+.brag-timer strong { font-size: 26px; line-height: 1.15; min-width: 3ch; color: var(--turn-color); text-align: right; }
+.brag-timer span { display: none; }
+.brag-time-track { grid-column: 1 / -1; height: 4px; background: #ffffff20; border-radius: 8px; overflow: hidden; }
 .brag-time-track > div { height: 100%; background: var(--turn-color); }
-.brag-turn p { color: #eaf1ed; font-size: 12px; min-height: 36px; margin: 10px 0 0; }
+.brag-turn p { grid-column: 1 / -1; color: #eaf1ed; font-size: 11px; line-height: 1.4; min-height: 16px; margin: 2px 0 0; }
 .brag-feedback { margin-top: 18px; overflow-anchor: none; }
 .brag-feedback:empty { display: none; }
 .brag-controls { border: 1px solid #3c4a3c; border-radius: 14px; margin-top: 18px; padding: 22px; background: #202b23; display: grid; gap: 16px; }
@@ -76,15 +77,60 @@
 .brag-raise small { grid-column: 1 / -1; color: #b5c1ac; font-size: 11px; overflow-wrap: anywhere; }
 .brag-continue { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 14px; }
 .brag-continue p { grid-column: 1 / -1; }
-@media (min-width: 901px) {
-  .brag-pot { display: flex; align-items: center; justify-content: center; gap: 24px; max-width: 700px; }
-  .brag-pot-total { flex: 1; min-width: 0; }
-  .brag-turn { margin: 0; width: 340px; flex-shrink: 0; }
-  .brag-table { padding: 18px 16px; gap: 12px; }
+.has-active-table .brag-page-heading { margin-bottom: 10px; gap: 8px; }
+.has-active-table .brag-page-heading .brag-eyebrow, .brag-game.has-active-table h1 span { display: none; }
+.has-active-table h1 { font-size: 24px; }
+.has-active-table .brag-table-toolbar { margin-bottom: 10px; gap: 8px; }
+.has-active-table .brag-controls { margin-top: 10px; padding: 12px; gap: 8px; }
+@media (min-width: 601px) {
+  .brag-table { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); min-height: 0; padding: 14px; gap: 10px; border-radius: 60px; justify-items: center; }
+  .brag-table > .brag-seat:first-child { grid-column: 1; grid-row: 1; }
+  .brag-table > .brag-seat:last-child { grid-column: 2; grid-row: 1; }
+  .brag-pot { grid-column: 1 / -1; grid-row: 2; display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .brag-pot-total { min-width: 0; }
+  .brag-turn { margin: 0; width: 320px; }
   .brag-seat { gap: 4px; }
-  .brag-cards { min-height: 90px; }
-  .brag-cards img { width: 60px; max-height: 92px; }
+  .brag-cards img { width: clamp(86px, 11vh, 110px); height: clamp(136px, 17.4vh, 174px); }
+  .brag-arrow-vertical { display: none; }
+  .brag-arrow-horizontal { display: inline; }
+}
+@media (min-width: 901px) {
+  .brag-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(230px, 1.6fr); gap: 8px; }
+  .brag-actions > .brag-raise { order: 1; }
+  .brag-raise { gap: 5px 8px; }
+  .brag-raise label { gap: 4px; }
+}
+@media (min-width: 1101px) {
+  .brag-table { grid-template-columns: minmax(0, 1fr) minmax(240px, .9fr) minmax(0, 1fr); min-height: clamp(260px, calc(100dvh - 370px), 520px); padding: 18px 12px; }
+  .brag-table > .brag-seat:last-child { grid-column: 3; }
+  .brag-pot { grid-column: 2; grid-row: 1; display: block; }
+  .brag-turn { margin: 12px auto 0; width: 100%; }
+  .brag-cards { gap: 4px; }
 }
 @media (max-width: 900px) { .brag-lobby-layout { grid-template-columns: minmax(0, 1fr); } .brag-create { width: 100%; } .brag-create fieldset { grid-template-columns: repeat(2, minmax(0, 1fr)); } .brag-create fieldset > :first-child, .brag-create fieldset > button, .brag-create fieldset > p { grid-column: 1 / -1; } }
 @media (max-width: 480px) { .brag-game h1 span { display: block; margin: 4px 0 0; } .brag-page-heading { margin-bottom: 22px; } .brag-room-grid { gap: 12px; } .brag-create { padding: 18px; } .brag-table { border-width: 5px; border-radius: 50px; padding: 22px 10px; min-height: 480px; } .brag-controls { padding: 16px; } .brag-continue { grid-template-columns: minmax(0, 1fr); } .brag-continue p { grid-column: auto; } .brag-game .brag-continue button { width: 100%; } .brag-actions > button { flex-basis: 120px; } }
+@media (max-width: 600px) {
+  .has-active-table .brag-table { min-height: 0; padding: 8px; gap: 8px; border-width: 5px; border-radius: 28px; }
+  .brag-seat { display: grid; width: 100%; grid-template-columns: minmax(0, 1fr) auto; gap: 4px; padding: 4px; align-items: center; }
+  .brag-seat > strong, .brag-seat > span { font-size: 11px; overflow-wrap: anywhere; text-align: center; }
+  .brag-seat:first-child > .brag-cards { grid-column: 2; grid-row: 1 / 3; }
+  .brag-seat:last-child { grid-template-columns: auto minmax(0, 1fr); }
+  .brag-seat:last-child > .brag-cards { grid-column: 1; grid-row: 1 / 3; }
+  .brag-cards { gap: 0; }
+  .brag-cards img + img { margin-left: -12px; }
+  .brag-pot-total { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 12px; }
+  .brag-pot-total > .brag-eyebrow { margin-bottom: 0 !important; }
+  .brag-pot-total > p { flex-basis: 100%; margin: 0; }
+  .brag-turn { margin-top: 4px; }
+  .brag-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .brag-game .brag-actions > button { padding: 8px 6px; font-size: 12px; }
+  .brag-actions > .brag-danger { order: 2; }
+  .brag-actions > .brag-raise { order: 3; grid-column: span 2; gap: 4px 6px; }
+  .brag-actions > .brag-showdown { order: 4; }
+  .brag-actions > button:only-child { grid-column: 1 / -1; }
+  .brag-raise label { gap: 4px; font-size: 11px; }
+  .brag-raise input { padding: 8px; }
+  .brag-raise small { font-size: 10px; }
+  .brag-controls > .brag-muted { font-size: 11px; line-height: 1.4; }
+}
 @media (prefers-reduced-motion: reduce) { .brag-game *, .brag-game *::before, .brag-game *::after { animation: none !important; transition: none !important; } }

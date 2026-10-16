@@ -328,7 +328,7 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
     {digest && <a className="brag-tx" href={`https://suiscan.xyz/mainnet/tx/${digest}`} target="_blank" rel="noreferrer">View last confirmed transaction ↗</a>}
   </div>;
 
-  return <section className="brag-game">
+  return <section className={`brag-game ${active ? 'has-active-table' : ''}`}>
     <div className="brag-page-heading"><div><p className="brag-eyebrow">SUI MAINNET · TWO PLAYER POKER</p><h1>BRAG <span>Play your hand.</span></h1></div>
       <button className="brag-secondary" onClick={refresh} disabled={lobbyBusy}>↻ Refresh</button></div>
     {!active && feedback}
@@ -342,7 +342,7 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
           <div className="brag-pot"><div className="brag-pot-total"><span className="brag-eyebrow">{settled ? 'ROUND SETTLED' : waiting ? 'WAITING TABLE' : 'TOTAL POT'}</span><strong>{settled ? 'Payout complete' : amountText(room.balance)}</strong>
             {(settled || waiting) && <p role="status">{settled ? `${short(winner)} won this round` : waiting ? 'Open to anyone — share this table number' : ownTurn ? 'Your turn' : seat ? 'Waiting for your opponent' : 'Round in progress'}</p>}</div>
             {room.stage < 10 && <div className={`brag-turn ${ownTurn ? 'is-your-turn' : 'is-opponent-turn'} ${urgent ? 'is-urgent' : ''}`} aria-label="Turn countdown">
-              <div className="brag-turn-heading" role="status"><span>{ownTurn ? 'Your turn' : seat ? "Opponent's turn" : `Player ${actingSeat}'s turn`}</span><span className="brag-turn-direction" aria-hidden="true">{actingSeat === (seat || 1) ? '↓' : '↑'}</span></div>
+              <div className="brag-turn-heading" role="status"><span>{ownTurn ? 'Your turn' : seat ? "Opponent's turn" : `Player ${actingSeat}'s turn`}</span><span className="brag-turn-direction" aria-hidden="true"><span className="brag-arrow-vertical">{actingSeat === (seat || 1) ? '↓' : '↑'}</span><span className="brag-arrow-horizontal">{actingSeat === (seat || 1) ? '→' : '←'}</span></span></div>
               <div className="brag-timer" role="timer" aria-live="off" aria-label={`${turnOwner} time remaining`}><strong>{clockSynced ? `${seconds}s` : '—'}</strong><span>{clockSynced ? seconds > 0 ? `${turnOwner} time remaining` : `${turnOwner} deadline passed` : 'Syncing clock…'}</span></div>
               <div className="brag-time-track" aria-hidden="true"><div style={{ width: `${clockSynced ? Math.min(100, seconds * 100000 / timing.data!.countdown) : 0}%` }} /></div>
               <p>{!clockSynced ? 'Waiting for chain clock' : seconds === 0 ? ownTurn ? 'Your time is up — the opponent can claim timeout' : timeoutReady ? 'Opponent timed out — claim winnings below' : 'Turn deadline passed' : ownTurn ? turnHint : 'Please wait for the other player'}</p>
@@ -361,7 +361,7 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
               <button disabled={readOnly || !ownTurn || !secret || hasSeen(room, address!)} onClick={() => act('apply_look_cards')}>See cards</button>
               <button disabled={readOnly || !ownTurn} onClick={() => act('call')}>Call {amountText(callAmount(room, address!))}</button>
               <div className="brag-raise"><label>Raise amount<input aria-label="Raise amount" inputMode="decimal" value={raise} placeholder={formatAmount(callAmount(room, address!) + 1n, config.scale)} onChange={e => setRaise(e.target.value)} disabled={readOnly || !ownTurn} /></label><button disabled={readOnly || !ownTurn || !raise} onClick={() => act('rasie')}>Raise</button><small>Above {amountText(callAmount(room, address!))}, up to {amountText(maxRaise(room, address!))}</small></div>
-              <button disabled={readOnly || !ownTurn || !secret} onClick={() => act('applyOpenCards')}>Showdown {amountText(showdownAmount(room, address!))}</button>
+              <button className="brag-showdown" disabled={readOnly || !ownTurn || !secret} onClick={() => act('applyOpenCards')}>Showdown {amountText(showdownAmount(room, address!))}</button>
             </>}
             {room.stage === 6 && <button disabled={readOnly || !ownTurn || !secret} onClick={() => act('reveal_look_cards')}>Reveal for opponent</button>}
             {room.stage === 4 && <button disabled={readOnly || !ownTurn || !secret} onClick={() => act('OpenCards')}>Reveal & settle</button>}
