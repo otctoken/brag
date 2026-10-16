@@ -4,6 +4,7 @@ import { fromBase64, normalizeStructTag } from '@mysten/sui/utils';
 import { graphql } from '@mysten/sui/graphql/schema';
 import { client } from './suiClient';
 import { historyClient } from './historyClient';
+import { bls12_381 } from '@noble/curves/bls12-381';
 
 // Layouts follow contract/brag.move. BCS avoids transport-specific JSON shapes.
 export const PokerData = bcs.struct('PokerData', {
@@ -108,10 +109,10 @@ export async function queryBragEvents(eventType: string, limit = 120, signal?: A
   return { data };
 }
 
-export async function getRoom(parentId: string, room: number | string) {
+export async function getRoom(parentId: string, room: number | string, signal?: AbortSignal) {
   const { object } = await client.getDynamicObjectField({
     parentId, name: { type: 'u64', bcs: bcs.u64().serialize(room).toBytes() },
-    include: { content: true },
+    include: { content: true }, signal,
   });
   return PokerData.parse(object.content);
 }
@@ -159,7 +160,8 @@ export async function findKioskNFT(owner: string, nftType: string): Promise<[str
 }
 
 // Resolve arguments from the Move call instead of assuming fixed PTB input positions.
-export function readOpenCards(transaction: SuiClientTypes.TransactionData, packageId: string, room: number) {
+export function readOpenCards(transaction: SuiClientTypes.TransactionData, packageId: string, room: number | string, match?: { sender: string; signature: number[] }) {
+  if (match && transaction.sender !== match.sender) return;
   for (const command of transaction.commands) {
     if (!('MoveCall' in command)) continue;
     const call = command.MoveCall;
@@ -170,26 +172,36 @@ export function readOpenCards(transaction: SuiClientTypes.TransactionData, packa
     const cardsInput = transaction.inputs[cardsArg.Input];
     if (!roomInput || !cardsInput || !('Pure' in roomInput) || !('Pure' in cardsInput)) continue;
     if (bcs.u64().parse(fromBase64(roomInput.Pure.bytes)) !== String(room)) continue;
-    return [bcs.vector(bcs.u8()).parse(fromBase64(cardsInput.Pure.bytes)), transaction.sender] as const;
+    const cards = bcs.vector(bcs.u8()).parse(fromBase64(cardsInput.Pure.bytes));
+    if (match) {
+      const keyArg = call.arguments[2];
+      const keyInput = keyArg && 'Input' in keyArg ? transaction.inputs[keyArg.Input] : null;
+      if (!keyInput || !('Pure' in keyInput)) continue;
+      try {
+        const key = bcs.vector(bcs.u8()).parse(fromBase64(keyInput.Pure.bytes));
+        if (!bls12_381.verify(Uint8Array.from(match.signature), Uint8Array.from(cards), Uint8Array.from(key))) continue;
+      } catch { continue; }
+    }
+    return [cards, transaction.sender] as const;
   }
 }
 
-export async function findOpenCards(packageId: string, room: number) {
+export async function findOpenCards(packageId: string, room: number | string, match?: { sender: string; signature: number[] }) {
   let before: string | null = null;
   let checked = 0;
   do {
     const page = await historyClient.listTransactions({
       filter: { function: `${packageId}::brag::OpenCards` },
-      order: 'descending', before, limit: 12 - checked, include: { transaction: true },
+      order: 'descending', before, limit: Math.min(50, (match ? 120 : 12) - checked), include: { transaction: true },
     });
     for (const result of page.transactions) {
       checked++;
       if (result.$kind !== 'Transaction') continue;
-      const cards = readOpenCards(result.Transaction.transaction, packageId, room);
+      const cards = readOpenCards(result.Transaction.transaction, packageId, room, match);
       if (cards) return cards;
     }
     if (!page.hasNextPage) break;
     if (!page.endCursor || page.endCursor === before) throw new Error('Transaction cursor did not advance');
     before = page.endCursor;
-  } while (checked < 12);
+  } while (checked < (match ? 120 : 12));
 }

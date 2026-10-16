@@ -155,3 +155,14 @@ test('failed transactions throw before the UI handles events as success', () => 
     status: { success: false, error: { message: 'MoveAbort' } },
   } } as any), /Transaction failed.*MoveAbort/);
 });
+
+test('settlement history cannot mix a previous round at the same table number', async () => {
+  const { newSecret, signature, publicKey } = await import('../src/gameSecrets');
+  const current = newSecret(), previous = newSecret();
+  const tx = new Transaction(); tx.setSender('0x9');
+  tx.moveCall({ target: `${packageId}::brag::OpenCards`, arguments: [tx.pure.u64(42), tx.pure.vector('u8',previous.cards),tx.pure.vector('u8',publicKey(previous)),tx.object('0x4')] });
+  const data = tx.getData();
+  assert.equal(readOpenCards(data,packageId,42,{sender:normalizeSuiAddress('0x9'),signature:signature(current)}),undefined);
+  assert.deepEqual(readOpenCards(data,packageId,42,{sender:normalizeSuiAddress('0x9'),signature:signature(previous)})?.[0],previous.cards);
+  assert.equal(readOpenCards(data,packageId,42,{sender:normalizeSuiAddress('0x8'),signature:signature(previous)}),undefined);
+});

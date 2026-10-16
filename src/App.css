@@ -730,3 +730,23 @@ html,
     transform: translateX(-100%);
   }
 }
+
+/* Shared shell: reserve the actual sidebar width, never fixed desktop margins. */
+*, *::before, *::after { box-sizing: border-box; }
+body { min-width: 320px; font-family: system-ui, sans-serif; }
+.app { min-height: 100dvh; }
+.app-bar { padding: 0 20px; gap: 14px; left: 0; right: 0; }
+.app-bar .title { font-size: 18px; flex: 1; min-width: 0; }
+.header-right { flex-shrink: 0; gap: 8px; }
+.header-right > div { width: auto !important; }
+.content, .content.shift { width: calc(100% - 180px); min-width: 0; max-width: 1600px; margin: 0 auto 0 180px; padding: 100px 28px 30px; }
+.sidebar a:focus-visible { outline: 2px solid #b8ed8d; outline-offset: -3px; }
+.content-data { padding-top: 24px; min-width: 0; }
+.table-container { overflow-x: auto; max-width: 100%; }
+.table-container table { min-width: 760px; }
+.menu-button { min-width: 44px; min-height: 44px; }
+.sidebar-scrim { position: fixed; inset: 60px 0 0; background: #0008; border: 0; z-index: 998; }
+@media (max-width: 1400px) { .content, .content.shift { width: 100%; margin: 0; padding: 95px 24px 24px; } }
+@media (max-width: 600px) { .content, .content.shift { padding: 88px 12px 22px; } .app-bar { padding: 0 10px; gap: 6px; } .app-bar .title { font-size: 14px; } .header-right { gap: 4px; } .header-right > .small-image, .header-right > .titleyue { display: none; } .header-right .titleyue { font-size: 11px !important; margin-right: 4px; } .header-right .small-image { margin-right: 3px; } .header-right nav { max-width: 165px; } }
+@media (max-width: 360px) { .app-bar .title { display: none; } .header-right { margin-left: auto; } }
+@media (prefers-reduced-motion: reduce) { .sidebar, .content { transition: none; } .announcement-content { animation: none; } }

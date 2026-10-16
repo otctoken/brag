@@ -1,61 +1,85 @@
 # BRAG
 
-React + Vite frontend for the BRAG Move contract on Sui mainnet.
+React + Vite frontend for the BRAG Move game on Sui mainnet.
 
 ## Run
 
-Node.js 22 or newer is required by Sui SDK 2.x.
+Node.js 22 or newer is required.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-## Validate
+The contract remains `0x93a36744eff6ee002ef32948866098eae032f277e7e702133dd35dc7cbfe1681::brag`.
+SUI/USDC game objects and the NFT type are centralized in `src/gameConfig.ts`.
+No Move source or deployed contract was changed by the frontend update.
+
+## Continuing a game and public tables
+
+- After settlement (`stage` 11 or 12), either participant can fund the next round with `go_on_playing`.
+- That transaction clears the other seat and sets `stage` 10. The empty seat is public: the previous opponent or any other wallet can join. It is not reserved for a rematch.
+- The frontend re-reads the table before continuing. If another participant already opened the next round, it joins using **the current `bet`**, not `min_bet`. If the wallet is already seated, it resumes without paying again.
+- Both empty-seat positions use `join_playing`, including newly created tables. Its seven arguments include the kiosk and NFT ID required by the contract.
+- The lobby reads current dynamic objects, paginates them and batches object reads. Historical `GnumberClose` events no longer permanently hide a table that reopened later.
+- **Back to lobby** is navigation only. The table remains available. **Close table & refund stake** calls `leave_game`, which deletes the entire waiting table and returns its stake to its owner. Closing a settled table also deletes it. An active round must settle or time out first.
+- `My tables` and a token-specific table-number input support recovery after refresh or navigation. A closed table is reported explicitly rather than silently resetting to table zero.
+
+## Reliability and private cards
+
+- The chain determines stages, seats and available actions; polling continues after settlement. Refetches are isolated by token/table and are cancelled when appropriate.
+- Stakes, limits, call and showdown amounts use bigint base units. Decimal inputs and displays preserve the full token precision.
+- Countdown configuration comes from `GameData`; time is synchronized to Sui's Clock rather than trusting a fixed 60-second browser timer. Timeout eligibility is checked again before submission.
+- New decks use cryptographic randomness. Secrets are persisted **before signing**, indexed by mainnet/wallet/token/commitment, so a cancelled next round cannot overwrite an existing round's cards.
+- Legacy `randomKey` / `randomPoker` storage is migrated only if its signature matches the on-chain commitment. Missing/corrupt storage does not crash rendering; funding is blocked if durable storage is unavailable.
+- Wallet changes remount the game session. Rapid clicks and concurrent tabs are guarded. Cancellation preserves the visible table. Lost submission responses retain the signed transaction digest and block further payments until checked (or the signed epoch validity expires and the node confirms absence).
+- Confirmed execution remains successful if a subsequent read/indexing wait times out. No transaction is automatically resubmitted.
+- Historical showdown cards must match the opponent and this round's BLS commitment. History searches are bounded to the latest 120 OpenCards transactions; older results may remain face-down, without affecting chain payouts or continued play.
+
+Private decks remain in browser local storage. Keep that browser's data until the round settles. These are game secrets, not wallet private keys; the frontend never stores wallet signing keys. Changing devices cannot reconstruct a deck that was never published.
+
+## Layout
+
+The lobby and table use responsive grids, wrapping controls, readable cards, 44px minimum action targets and reduced-motion support. The sidebar collapses on smaller screens; bet-history scrolling is contained within its table. Browser checks cover 320, 390, 768 and 1440px widths.
+
+## Validation
 
 ```sh
 npm run typecheck
 npm test
 npm run build
+npx playwright install chromium
+npm run test:ui
 ```
 
-## Sui 2.x / gRPC migration
+To use an already installed Edge on Windows:
 
-The application pins `@mysten/sui` to `2.36.0` and `@mysten/dapp-kit-react` to `2.1.40`, including the lockfile.
-
-Current-state reads and transaction execution share the gRPC client in `src/suiClient.ts`:
-
-```ts
-import { SuiGrpcClient } from '@mysten/sui/grpc';
-
-export const client = new SuiGrpcClient({
-  network: 'mainnet',
-  baseUrl: 'https://fullnode.mainnet.sui.io:443',
-});
+```powershell
+$env:PLAYWRIGHT_CHANNEL = 'msedge'
+$env:NO_PROXY = '127.0.0.1,localhost'
+npm run test:ui
 ```
 
-- Wallet connection uses `DAppKitProvider` with this same mainnet client.
-- Transactions use `Transaction` and explicit `u64`, `ID` and `vector<u8>` arguments. The wallet signs; the application submits the signed bytes through gRPC, checks transaction failure, and waits for availability before updating the UI.
-- All seven funded game actions use `tx.coin({ balance, type })` for SUI and USDC. Coin selection, address balances and any required coin merging are resolved by the SDK during wallet serialization, rather than by the page. Displayed token amounts convert to exact bigint base units before creating payment coins.
-- Balance reads consume the new nested balance response. Coin, owned-object and dynamic-field reads paginate.
-- Room objects use `getDynamicObjectField` with a BCS-encoded u64 key. Room and event payloads are decoded using the layouts in `contract/brag.move`.
-- Historical events (bet history and room discovery) and OpenCards transaction searches use the official GraphQL indexer configured in `src/historyClient.ts`. Events and timestamps arrive together in paginated queries, newest-first. OpenCards recovery reads the Move call arguments instead of relying on fixed input offsets.
-- The old `@mysten/sui.js`, legacy dApp Kit, random JSON-RPC endpoints and JSON-RPC calls have been removed.
+Browser tests run against an isolated Vite fixture on port 4174 with simulated wallets and chain responses. They exercise actual component clicks and transaction construction, including continuation races, rejection, duplicate clicks, deleted tables, persisted unconfirmed submissions and device widths. Fixture aliases are only in `tests/ui/vite.config.ts`; production uses the real wallet and RPC.
 
-## Historical records
+Optional read-only integration checks:
 
-The public fullnode can return an empty list for old events even though the indexer still has those records. History therefore uses `https://graphql.mainnet.sui.io/graphql`; it does not use the fullnode's historical list APIs. Optionally set `VITE_SUI_GRAPHQL_URL` at build time to use another compatible, browser-accessible mainnet GraphQL indexer. Do not put private API keys in Vite environment variables.
+```sh
+npx tsx tests/check-mainnet.mts
+# Start the real app on port 4175 before running the following Edge check:
+npm run dev -- --host 127.0.0.1 --port 4175
+# In another terminal:
+npx tsx tests/check-browser.mts
+```
 
-The table loads immediately, refreshes every 15 seconds, and displays the latest 120 SUI/USDC events combined. Rows are identified by transaction digest **and event sequence**, so multiple events from one transaction are preserved. Query failures show a retry message and preserve already-loaded rows; an empty successful result shows “No bets found” instead of an invented `0x0` record. `Multiplier` remains `--` because the contract's `Gvol` event does not contain a multiplier.
+No real wallet transaction is signed or submitted by these checks. Production wallet prompts and economic execution should still be verified by the operator before release.
 
-## Validation and limitations
+## RPC and history
 
-The 2026-10-15 `tx.coin` update passes 38 offline tests, TypeScript checking and the production build. Payment tests execute all seven page handlers for both SUI and USDC, including both join targets and blind/seen betting rules. SDK serialization is exercised for SUI gas fallback, address balances, paginated USDC coins and insufficient funds. These tests do not sign transactions or execute games on mainnet.
+`@mysten/sui` is pinned to 2.36.0 and `@mysten/dapp-kit-react` to 2.1.40. Wallet connection, current state reads and transaction submission share the gRPC client in `src/suiClient.ts`. Historical events use the GraphQL indexer in `src/historyClient.ts`.
 
-Automated tests cover BCS payload decoding, indexed-history routing and backward pagination, GraphQL failures, event-level deduplication, token amount formatting, kiosk child IDs, transaction-input decoding and failed-transaction handling. Read-only mainnet checks verified balances and decoding of room 2 under the configured SUI game object.
+Optional build-time variables are shown in `.env.example`. Use compatible **mainnet** endpoints. Vite environment values are public in the browser; do not put private API keys in them. A dedicated provider can reduce public endpoint rate limits. Query errors preserve existing data and show retry information rather than claiming that no tables exist.
 
-On 2026-10-12, the corrected indexed-history query returned 30 real bet events for the configured contract. The latest returned event was on 2026-03-07, with a payout of 1.99 SUI (transaction `EsF82tUXs6wSXkBv1t3StyXAZMpBKizB86hrVt7qCgr4`). Indexer freshness and historical coverage remain provider-dependent. There is no JSON-RPC fallback.
+Bet history merges the latest 120 SUI/USDC events, deduplicated by digest and event sequence. `Multiplier` remains `--` because the contract's event does not contain that value.
 
-No wallet was connected and no real-money transaction was signed or submitted during verification. Actual wallet signing and contract execution still need an end-to-end check by the operator. The Move contract and its existing game rules were not changed.
-
-Official references: [SuiGrpcClient](https://sdk.mystenlabs.com/sui/clients/grpc), [JSON-RPC migration](https://sdk.mystenlabs.com/sui/migrations/sui-2.0/json-rpc-migration).
+Official references: [Sui gRPC client](https://sdk.mystenlabs.com/sui/clients/grpc), [Sui 2.0 migration](https://sdk.mystenlabs.com/sui/migrations/sui-2.0/json-rpc-migration).

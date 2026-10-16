@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -50,10 +50,12 @@ function getAvatarURL(address: string) {
 
 const App: React.FC = () => {
 
-  const [avatar, setAvatar] = useState("https://i.imgur.com/q2BJwpV.png");
+  const [avatar, setAvatar] = useState(logo);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth > 1400);
   const account = useCurrentAccount();
+  const addressRef = useRef(account?.address);
+  addressRef.current = account?.address;
 
   const [balance, setBalance] = useState<string>("");
   const [balanceusdc, setBalanceusdc] = useState<string>("");
@@ -68,10 +70,11 @@ const App: React.FC = () => {
           try {
             if (account) {
               const { sui, usdc } = await getbalan(account.address);
+              if (addressRef.current !== account.address) return;
               setBalance(sui);
               setBalanceusdc(usdc);
 
-              if (account.chains[0].includes(neting)) {
+              if (account.chains.some(chain => chain === 'sui:mainnet')) {
                 console.log("Link wallet!!!");
               } else {
                 window.alert(`Link wallet to ${neting}!!`);
@@ -89,6 +92,7 @@ const App: React.FC = () => {
           fetchData();
         } else {
           setBalance("");
+          setBalanceusdc("");
           setPoint("");
         }
       } catch (error) {
@@ -100,7 +104,7 @@ const App: React.FC = () => {
     if (account) {
       setAvatar(getAvatarURL(account.address));
     } else {
-      setAvatar("https://i.imgur.com/q2BJwpV.png");
+      setAvatar(logo);
     }
   }, [account?.address]);
 
@@ -135,13 +139,11 @@ const App: React.FC = () => {
 
         const sui = (parseFloat(suiBal.balance.balance) / 1e9).toFixed(2); // SUI 1
         const usdc = (parseFloat(usdcBal.balance.balance) / 1e6).toFixed(2); // USDC 1
+        if (addressRef.current !== account.address) return;
         setBalance(sui);
         setBalanceusdc(usdc);
       } catch (error) {
         console.error("Failed to fetch balance:", error);
-        alert(
-          "Unable to fetch balance. Please check your network connection and try again."
-        );
       }
     } else {
       console.log("Account is not available");
@@ -163,21 +165,24 @@ const App: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+
   return (
     <div className="app">
       <AnnouncementBar />
       <header className="app-bar">
         {!isLargeScreen && (
-          <button className="menu-button" onClick={handleDrawerToggle}>
+          <button className="menu-button" aria-label="Toggle navigation" aria-expanded={mobileOpen} onClick={handleDrawerToggle}>
             ☰
           </button>
         )}
         <h1 className="title">
-          Welcome To BRAG! Provably Fair Blockchain casino games!
+          BRAG · On-chain poker
         </h1>
         <div className="header-right">
           <img
             src={avatar}
+            onError={(event) => { event.currentTarget.src = logo; }}
             loading="lazy"
             alt="Small"
             className="small-image"
@@ -191,7 +196,7 @@ const App: React.FC = () => {
           </h1>
           <div
             style={{
-              display: "flex",
+              display: account ? "flex" : "none",
               flexDirection: "column",
               alignItems: "center",
               width: "100%", // 1
@@ -257,6 +262,7 @@ const App: React.FC = () => {
           </nav>
         </div>
       </header>
+      {mobileOpen && !isLargeScreen && <button className="sidebar-scrim" aria-label="Close navigation" onClick={() => setMobileOpen(false)} />}
       <div className={`sidebar ${mobileOpen || isLargeScreen ? "open" : ""}`}>
         <img src={logo} loading="lazy" alt="Logo" className="logo" />
         <nav>
@@ -337,7 +343,7 @@ const App: React.FC = () => {
           <Route path="/Docs" element={<Docs />} />
           <Route
             path="/brag"
-            element={<TeenPatti onGetbalan={getbalangolbal} />}
+            element={<TeenPatti key={account?.address ?? 'disconnected'} onGetbalan={getbalangolbal} />}
           />
           <Route
             path="/PointsRebate"
