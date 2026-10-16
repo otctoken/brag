@@ -4,7 +4,8 @@ import type { Transaction } from '@mysten/sui/transactions';
 import { state, A, Z } from './state';
 export function useExecuteTransaction(){return async({transaction}:{transaction:Transaction})=>{
   state.attempts++;
-  await new Promise(resolve=>setTimeout(resolve,100));
+  if(state.walletJump){window.scrollTo(0,0);window.dispatchEvent(new Event('focus'));}
+  await new Promise(resolve=>setTimeout(resolve,state.walletDelay));
   if(state.failNext){state.failNext=false;throw new Error('User rejected request');}
   const data=transaction.getData(), call=data.commands.find(c=>c.MoveCall)?.MoveCall!;
   const action=call.function;
@@ -21,6 +22,7 @@ export function useExecuteTransaction(){return async({transaction}:{transaction:
     const r=state.room!,first=r.player1===Z;
     state.room={...r,stage:0,player1:first?A:r.player1,player2:first?r.player2:A,sigcards1:first?sig:r.sigcards1,sigcards2:first?r.sigcards2:sig,balance:String(BigInt(r.balance)+BigInt(amount)),time:String(Date.now()),action:false};
   }
+  if(action==='call')state.room={...state.room!,action:!state.room!.action,time:String(Date.now())};
   if(action==='leave_game')state.room=null;
   return {digest:'offline-test-confirmation',events:[]};
 };}

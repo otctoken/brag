@@ -76,3 +76,55 @@ test('unconfirmed payment survives reload and prevents another funded transactio
   await expect(page.getByRole('button',{name:'Check transaction',exact:true})).toBeEnabled();
   expect(await page.evaluate(()=>(window as any).__bragTest.state.attempts)).toBe(0);
 });
+
+test('countdown identifies each actor, highlights their seat, and warns only on your last ten seconds',async({page})=>{
+  await open(page,'active');await resume(page);
+  const timer=page.getByRole('timer');
+  await expect(timer).toHaveAccessibleName('Your time remaining');
+  await expect(page.locator('.brag-seat.is-acting')).toContainText('You');
+  await page.evaluate(()=>{const t=(window as any).__bragTest;t.state.room.time=String(Date.now()-55000);t.refresh();});
+  await expect(page.locator('.brag-turn')).toHaveClass(/is-urgent/);
+  await page.evaluate(()=>{const t=(window as any).__bragTest;t.state.room.action=true;t.refresh();});
+  await expect(timer).toHaveAccessibleName('Opponent time remaining');
+  await expect(page.locator('.brag-turn')).not.toHaveClass(/is-urgent/);
+  await expect(page.locator('.brag-seat.is-acting')).toContainText('OPPONENT');
+  await expect(page.getByText("Opponent's turn",{exact:true})).toBeVisible();
+  await page.evaluate(()=>{const t=(window as any).__bragTest;t.state.room.time=String(Date.now()-61000);t.refresh();});
+  await expect(page.getByText('Opponent timed out — claim winnings below')).toBeVisible();
+  await expect(page.getByRole('button',{name:'Claim timeout winnings'})).toBeEnabled();
+  await page.screenshot({path:'artifacts/opponent-countdown.png',fullPage:true});
+});
+
+for(const cancelled of [false,true]) test(`desktop wallet ${cancelled?'cancellation':'confirmation'} preserves table and scroll position`,async({page})=>{
+  await page.setViewportSize({width:1440,height:760});
+  await open(page,'active');await resume(page);
+  await page.evaluate((cancelled)=>{
+    const t=(window as any).__bragTest;t.state.walletJump=true;t.state.walletDelay=800;t.state.failNext=cancelled;
+    const footer=document.createElement('div');footer.style.height='1200px';document.body.append(footer);
+  },cancelled);
+  const call=page.getByRole('button',{name:/^Call /});
+  await call.scrollIntoViewIfNeeded();
+  const before=await page.evaluate(()=>({scroll:scrollY,table:document.querySelector('.brag-table')!.getBoundingClientRect().top}));
+  expect(before.scroll).toBeGreaterThan(0);
+  await call.click();
+  await expect.poll(()=>page.evaluate(()=>scrollY)).toBe(before.scroll);
+  expect(await page.locator('.brag-table').evaluate(el=>el.getBoundingClientRect().top)).toBe(before.table);
+  if(cancelled)await expect(page.getByRole('alert')).toContainText('cancelled');
+  else await expect(page.getByText("Opponent's turn",{exact:true})).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>scrollY)).toBe(before.scroll);
+  expect(await page.locator('.brag-table').evaluate(el=>el.getBoundingClientRect().top)).toBe(before.table);
+});
+
+test('wallet completion does not override deliberate scrolling',async({page})=>{
+  await page.setViewportSize({width:1440,height:760});
+  await open(page,'active');await resume(page);
+  await page.evaluate(()=>{(window as any).__bragTest.state.walletDelay=800;const footer=document.createElement('div');footer.style.height='1600px';document.body.append(footer);});
+  await page.getByRole('button',{name:/^Call /}).click();
+  const before=await page.evaluate(()=>scrollY);
+  await page.mouse.wheel(0,250);
+  await expect.poll(()=>page.evaluate(()=>scrollY)).toBeGreaterThan(before+100);
+  const chosen=await page.evaluate(()=>scrollY);
+  await expect(page.locator('.brag-turn-heading')).toContainText("Opponent's turn");
+  await page.waitForTimeout(100);
+  expect(await page.evaluate(()=>scrollY)).toBe(chosen);
+});

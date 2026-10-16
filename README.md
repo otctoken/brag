@@ -42,6 +42,8 @@ Private decks remain in browser local storage. Keep that browser's data until th
 
 The lobby and table use responsive grids, wrapping controls, readable cards, 44px minimum action targets and reduced-motion support. The sidebar collapses on smaller screens; bet-history scrolling is contained within its table. Browser checks cover 320, 390, 768 and 1440px widths.
 
+The countdown names the acting player, highlights their seat and shows a time bar. Your turn is green, the opponent's turn is blue, and your final ten seconds use a warning color. Transaction feedback sits below the table controls so wallet requests do not push the table down. Wallet return restores the previous scroll position unless the player deliberately scrolls or navigates away. Browser regressions simulate popup focus changes, successful confirmation and cancellation; real extension behavior still depends on the wallet.
+
 ## Validation
 
 ```sh

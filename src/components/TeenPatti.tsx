@@ -11,6 +11,7 @@ import { buildGameTransaction } from '../gameTransactions';
 import { newSecret, saveSecret, loadSecret, saveActive, loadActive, type RoundSecret } from '../gameSecrets';
 import { assertAction, callAmount, continuation, formatAmount, gameError, hasSeen, isMyTurn, isSettled, isWaiting, isZero, maxRaise, opponentReveal, seatOf, showdownAmount, signatureOf, type GameAction, type Room } from '../gameRules';
 import { toBaseUnits } from '../coinAmount';
+import { preserveWalletViewport } from '../walletViewport';
 import '../game.css';
 
 const cardImages = import.meta.glob('../assets/pokerpng/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
@@ -58,8 +59,9 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
   const [tick, setTick] = useState(0);
   const [storageVersion, setStorageVersion] = useState(0);
   const locked = useRef(false);
+  const viewport = useRef<ReturnType<typeof preserveWalletViewport> | null>(null);
   const mounted = useRef(true);
-  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; viewport.current?.cancel(); }; }, []);
 
   const suiLobby = useQuery({ queryKey: ['brag-lobby', 'sui'], queryFn: ({ signal }) => listTables('sui', signal), refetchInterval: 12000, retry: 1 });
   const usdcLobby = useQuery({ queryKey: ['brag-lobby', 'usdc'], queryFn: ({ signal }) => listTables('usdc', signal), refetchInterval: 12000, retry: 1 });
@@ -100,7 +102,12 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
   const indices = otherReveal.length === 55 ? otherReveal.slice(52) : otherReveal;
   const myCards = secret && indices.length === 3 ? indices.map(i => secret!.cards[i]) : [];
   const otherCards = secret && otherReveal.length === 55 ? secret.cards.slice(52).map(i => otherReveal[i]) : [];
-  const opponent = room ? seat === 1 ? room.player2 : room.player1 : '0x0';
+  const opponent = room ? seat === 2 ? room.player1 : room.player2 : '0x0';
+  const actingSeat = room?.action ? 2 : 1;
+  const turnOwner = seat ? ownTurn ? 'Your' : 'Opponent' : `Player ${actingSeat}`;
+  const clockSynced = Boolean(timing.data && !timing.isError);
+  const urgent = ownTurn && clockSynced && seconds <= 10;
+  const turnHint = room?.stage === 6 ? 'Reveal cards for the other player' : room?.stage === 4 ? 'Reveal cards and settle' : room?.stage === 5 ? 'Claim fold winnings' : 'Choose your next move';
   const winner = room && settled ? room.stage === 11 ? room.player1 : room.player2 : '';
 
   useEffect(() => {
@@ -124,6 +131,7 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
   }, [pending, room?.stage, seat]);
 
   function selectTable(table: TableRef | null) {
+    if (table?.number !== active?.number || table?.token !== active?.token) viewport.current?.cancel();
     setActive(table); setError(''); setNotice('');
     try { if (address) saveActive(localStorage, address, table); } catch { /* Room discovery remains available. */ }
   }
@@ -136,6 +144,8 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
     if (locked.current) return;
     if (!address) { setError('Connect your wallet to play.'); return; }
     if (!recovering && unconfirmed) { setError('Check the previous transaction before sending another one.'); return; }
+    viewport.current?.cancel();
+    viewport.current = active ? preserveWalletViewport() : null;
     locked.current = true; setPending(label); setError(''); setNotice('');
     const perform = async () => {
       try {
@@ -151,6 +161,7 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
       finally {
         if (mounted.current) { setPending(''); setStorageVersion(value => value + 1); refresh(); }
         locked.current = false;
+        viewport.current?.finish();
       }
     };
     // Coordinate wallet actions across tabs as well as rapid clicks in this tab.
@@ -158,9 +169,10 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
       try {
         await navigator.locks.request(`brag:wallet:${address}`, { ifAvailable: true }, async lock => {
           if (lock) await perform();
-          else { locked.current = false; setPending(''); setError('Another tab is sending a game transaction. Wait for it to finish.'); }
+          else { viewport.current?.cancel(); locked.current = false; setPending(''); setError('Another tab is sending a game transaction. Wait for it to finish.'); }
         });
       } catch (cause) {
+        viewport.current?.cancel();
         locked.current = false;
         if (mounted.current) { setPending(''); setError(gameError(cause)); }
       }
@@ -308,26 +320,35 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
     </article>;
   }
 
-  return <section className="brag-game">
-    <div className="brag-page-heading"><div><p className="brag-eyebrow">SUI MAINNET · TWO PLAYER POKER</p><h1>BRAG <span>Play your hand.</span></h1></div>
-      <button className="brag-secondary" onClick={refresh} disabled={lobbyBusy}>↻ Refresh</button></div>
+  const feedback = <div className="brag-feedback" aria-label="Transaction updates">
     {error && <div className="brag-message brag-error" role="alert">{error}<button className="brag-secondary" onClick={refresh}>Refresh state</button></div>}
     {notice && <p className="brag-message" role="status">{notice}</p>}
     {pending && <p className="brag-message" role="status" aria-live="polite">{pending} Keep this page open.</p>}
     {unconfirmed && <div className="brag-message" role="status">A signed transaction is awaiting confirmation. New transactions are paused to prevent duplicate stakes.<button disabled={Boolean(pending)} onClick={checkSubmission}>Check transaction</button><a href={`https://suiscan.xyz/mainnet/tx/${unconfirmed.digest}`} target="_blank" rel="noreferrer">View transaction ↗</a></div>}
     {digest && <a className="brag-tx" href={`https://suiscan.xyz/mainnet/tx/${digest}`} target="_blank" rel="noreferrer">View last confirmed transaction ↗</a>}
+  </div>;
+
+  return <section className="brag-game">
+    <div className="brag-page-heading"><div><p className="brag-eyebrow">SUI MAINNET · TWO PLAYER POKER</p><h1>BRAG <span>Play your hand.</span></h1></div>
+      <button className="brag-secondary" onClick={refresh} disabled={lobbyBusy}>↻ Refresh</button></div>
+    {!active && feedback}
     {active ? <>
       <div className="brag-table-toolbar"><span>Table #{active.number} <b className="brag-token">{config.symbol}</b></span><button className="brag-secondary" disabled={Boolean(pending)} onClick={() => selectTable(null)}>Back to lobby</button></div>
       {roomQuery.isPending && <p className="brag-message" role="status">Loading table…</p>}
       {roomQuery.isError && <p className="brag-message brag-error" role="alert">{isMissingRoom(roomQuery.error) ? 'This table was closed on chain. Return to the lobby or create a new table.' : 'Unable to refresh this table. Previous state is shown; actions are paused until connection recovers.'}</p>}
       {room && <>
         <div className="brag-table">
-          <div className="brag-seat"><span className="brag-seat-label">{seat ? 'OPPONENT' : 'PLAYER 1'}</span><strong title={opponent}>{short(opponent)}</strong><Cards values={otherCards} label="Opponent cards" /></div>
-          <div className="brag-pot"><span className="brag-eyebrow">{settled ? 'ROUND SETTLED' : waiting ? 'WAITING TABLE' : 'TOTAL POT'}</span><strong>{settled ? 'Payout complete' : amountText(room.balance)}</strong>
-            <p role="status">{settled ? `${short(winner)} won this round` : waiting ? 'Open to anyone — share this table number' : ownTurn ? 'Your turn' : seat ? 'Waiting for your opponent' : 'Round in progress'}</p>
-            {room.stage < 10 && <span className="brag-timer">{timing.isError || !timing.data ? 'Syncing clock…' : seconds > 0 ? `${seconds}s remaining` : 'Turn deadline passed'}</span>}
+          <div className={`brag-seat ${room.stage < 10 && actingSeat === (seat === 2 ? 1 : 2) ? 'is-acting is-opponent' : ''}`}><span className="brag-seat-label">{seat ? 'OPPONENT' : 'PLAYER 2'}</span><strong title={opponent}>{short(opponent)}</strong><Cards values={otherCards} label="Opponent cards" /></div>
+          <div className="brag-pot"><div className="brag-pot-total"><span className="brag-eyebrow">{settled ? 'ROUND SETTLED' : waiting ? 'WAITING TABLE' : 'TOTAL POT'}</span><strong>{settled ? 'Payout complete' : amountText(room.balance)}</strong>
+            {(settled || waiting) && <p role="status">{settled ? `${short(winner)} won this round` : waiting ? 'Open to anyone — share this table number' : ownTurn ? 'Your turn' : seat ? 'Waiting for your opponent' : 'Round in progress'}</p>}</div>
+            {room.stage < 10 && <div className={`brag-turn ${ownTurn ? 'is-your-turn' : 'is-opponent-turn'} ${urgent ? 'is-urgent' : ''}`} aria-label="Turn countdown">
+              <div className="brag-turn-heading" role="status"><span>{ownTurn ? 'Your turn' : seat ? "Opponent's turn" : `Player ${actingSeat}'s turn`}</span><span className="brag-turn-direction" aria-hidden="true">{actingSeat === (seat || 1) ? '↓' : '↑'}</span></div>
+              <div className="brag-timer" role="timer" aria-live="off" aria-label={`${turnOwner} time remaining`}><strong>{clockSynced ? `${seconds}s` : '—'}</strong><span>{clockSynced ? seconds > 0 ? `${turnOwner} time remaining` : `${turnOwner} deadline passed` : 'Syncing clock…'}</span></div>
+              <div className="brag-time-track" aria-hidden="true"><div style={{ width: `${clockSynced ? Math.min(100, seconds * 100000 / timing.data!.countdown) : 0}%` }} /></div>
+              <p>{!clockSynced ? 'Waiting for chain clock' : seconds === 0 ? ownTurn ? 'Your time is up — the opponent can claim timeout' : timeoutReady ? 'Opponent timed out — claim winnings below' : 'Turn deadline passed' : ownTurn ? turnHint : 'Please wait for the other player'}</p>
+            </div>}
           </div>
-          <div className="brag-seat"><Cards values={myCards} label="Your cards" /><strong>{seat ? 'You' : 'Your seat is open'}</strong><span className="brag-muted">{seat ? short(address!) : 'Join a waiting table to play'}{seat && (seat === 1 ? room.vip_p1 : room.vip_p2) ? ' · VIP' : ''}</span></div>
+          <div className={`brag-seat ${room.stage < 10 && actingSeat === (seat || 1) ? 'is-acting is-you' : ''}`}><Cards values={myCards} label="Your cards" /><strong>{seat ? 'You' : 'PLAYER 1'}</strong><span className="brag-muted">{seat ? short(address!) : short(room.player1)}{seat && (seat === 1 ? room.vip_p1 : room.vip_p2) ? ' · VIP' : ''}</span></div>
         </div>
         <div className="brag-controls">
           {seat > 0 && !secret && room.stage < 10 && <p className="brag-message brag-error">This browser does not have the cards committed for this round. Use the original browser to reveal or settle. Do not start another round to replace them.</p>}
@@ -352,6 +373,7 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
           {room.stage < 10 && <p className="brag-muted">An active round continues on chain if you leave this page. Return before your turn expires.</p>}
         </div>
       </>}
+      {feedback}
     </> : <>
       <div className="brag-lobby-layout">
         <div className="brag-lobby-main"><div className="brag-section-heading"><h2>Open tables</h2><div className="brag-filters" aria-label="Filter tables">{(['all', 'sui', 'usdc'] as const).map(value => <button key={value} className={filter === value ? 'is-selected' : 'brag-secondary'} onClick={() => setFilter(value)} aria-pressed={filter === value}>{value.toUpperCase()}</button>)}</div></div>

@@ -10,4 +10,4 @@ if(scenario==='active'){base.stage=0;base.time=String(Date.now());base.balance='
 if(scenario==='lobby'){base.stage=10;base.player1=B;base.player2=Z;base.balance=base.bet;}
 if(scenario==='cancel'){}
 try {saveSecret(localStorage,A,'sui',deck);}catch{}
-export const state={address:scenario==='guest'?undefined:A,room:base as Room|null,scenario,attempts:0,executions:[] as {action:string;amount:string;argumentCount:number}[],failNext:scenario==='cancel',networkError:false};
+export const state={address:scenario==='guest'?undefined:A,room:base as Room|null,scenario,attempts:0,executions:[] as {action:string;amount:string;argumentCount:number}[],failNext:scenario==='cancel',networkError:false,walletJump:false,walletDelay:100};
