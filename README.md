@@ -18,6 +18,7 @@ No Move source or deployed contract was changed by the frontend update.
 ## Continuing a game and public tables
 
 - After settlement (`stage` 11 or 12), either participant can fund the next round with `go_on_playing`.
+- The next-round ante input resets to 1 SUI or 1 USDC, rather than carrying over the last round's raised bet. It remains editable and must satisfy the table's on-chain minimum and maximum.
 - That transaction clears the other seat and sets `stage` 10. The empty seat is public: the previous opponent or any other wallet can join. It is not reserved for a rematch.
 - The frontend re-reads the table before continuing. If another participant already opened the next round, it joins using **the current `bet`**, not `min_bet`. If the wallet is already seated, it resumes without paying again.
 - Both empty-seat positions use `join_playing`, including newly created tables. Its seven arguments include the kiosk and NFT ID required by the contract.

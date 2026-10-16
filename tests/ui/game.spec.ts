@@ -2,6 +2,16 @@ import { test, expect } from '@playwright/test';
 const open=async(page:any,scenario:string)=>page.goto(`/tests/ui/index.html?scenario=${scenario}`);
 const resume=async(page:any)=>page.getByRole('button',{name:'Resume table'}).click();
 
+for(const [token,amount] of [['sui','1000000000'],['usdc','1000000']]) {
+  test(`${token} continuation defaults to one token after a raised round`,async({page})=>{
+    await open(page,`raised-${token}`);await resume(page);
+    await expect(page.getByLabel('Next-round ante')).toHaveValue('1');
+    await page.getByRole('button',{name:'Continue · open next round'}).click();
+    await expect(page.getByText('Open to anyone — share this table number')).toBeVisible();
+    expect(await page.evaluate(()=>(window as any).__bragTest.state.executions)).toEqual([{action:'go_on_playing',amount,argumentCount:4}]);
+  });
+}
+
 test('continue preserves room number, opens either seat in lobby, and survives reload',async({page})=>{
   await open(page,'settled');await resume(page);
   await page.getByLabel('Next-round ante').fill('3');

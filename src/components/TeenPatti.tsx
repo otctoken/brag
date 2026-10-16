@@ -119,7 +119,7 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
   // Re-render countdown from the chain clock, including after a backgrounded tab wakes.
   void tick; void storageVersion;
   useEffect(() => {
-    if (room && settled) setNextAnte(formatAmount(room.bet, config.scale));
+    if (room && settled) setNextAnte('1');
     setRaise('');
   }, [active?.token, active?.number, room?.stage, room?.bet]);
   useEffect(() => {
