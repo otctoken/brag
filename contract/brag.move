@@ -31,11 +31,11 @@ module brag::brag {
         balance: Balance<T>,
         fee:u8,
         vip_fee:u8,
-        countdown:u64,//11
+        countdown:u64,//修改它不得小于10秒
         // min:u64,
         // max:u64,
-        gamenumber:u64,//11
-        //ingame:bool,//11
+        gamenumber:u64,//每桌+1
+        //ingame:bool,//建立牌桌为TURE，删除牌桌为flsae  //admin可以删除单人的桌子使用WLOCK，也可删除2玩家其中一人超时的桌子  //A玩家对方超时，A玩家可操作让玩家获胜
     }
 
     
@@ -152,7 +152,7 @@ module brag::brag {
         });
     }
 
-// 11
+// 校验牌函数
     fun verification_cards52(list: &vector<u8>): bool {
         let mut j: u8 = 1;
         while (j < 53) {
@@ -190,30 +190,30 @@ module brag::brag {
         return true
     }
 
-    //11
+    //比牌函数
     fun get_high_cards(hand1: vector<u8>, hand2: vector<u8>): u8 {
-        // 11
+        // 处理特殊情况：1视为14
         let value1 = get_values(hand1);
         let value2 = get_values(hand2);
         let mut values1 = handle_special_case(value1);
         let mut values2 = handle_special_case(value2);
-        // 11
+        // 对两个手牌的牌值进行排序（从小到大）
         sort3(&mut values1);
         sort3(&mut values2);
-        // 11
+        // 从最高牌开始逐个比较
         let mut i = 2;
         while (i >= 0) {
             if (values1[i] > values2[i]) {
-                return 1 // hand1 11
+                return 1 // hand1 更大
             } else if (values1[i] < values2[i]) {
-                return 2 // hand2 11
+                return 2 // hand2 更大
             };
             if (i == 0) {
                 break
             };
             i = i - 1;
         };
-        // 11
+        // 如果所有牌都相等，返回0
         return 0
     }
 
@@ -242,17 +242,17 @@ module brag::brag {
             let is_flush = suits[0] == suits[1] && suits[1] == suits[2];
             let is_straight = (values[2] - values[0] == 2 && values[2] - values[1] == 1) || 
                             (values[0] == 1 && values[1] == 12 && values[2] == 13); // A, Q, K
-            // 11
+            // 检查是否是同花顺 (同花且顺子)
             if (is_flush && is_straight) {
             5
-            } else if (is_straight) { // 11
+            } else if (is_straight) { // 检查是否是顺子 (顺子)
             4
-            }else if (is_flush) {  // 11
+            }else if (is_flush) {  // 检查是否是清一色 (同花)
             3
-            }else if (values[0] == values[1] || values[1] == values[2] || values[0] == values[2]) { // 11
+            }else if (values[0] == values[1] || values[1] == values[2] || values[0] == values[2]) { // 检查是否是对子 (两张相同的牌)
             2
             }else{
-            1 // 11
+            1 // 高牌 (其他情况)
             }
         }
         
@@ -286,17 +286,17 @@ module brag::brag {
 
 
     fun sort3(v: &mut vector<u8>) {
-        // 11
+        // 比较并交换第1和第2个元素
         if (v[0] > v[1]) {
             vector::swap(v, 0, 1);
         };
 
-        // 11
+        // 比较并交换第2和第3个元素
         if (v[1] > v[2]) {
             vector::swap(v, 1, 2);
         };
 
-        // 11
+        // 再次比较并交换第1和第2个元素，确保排序正确
         if (v[0] > v[1]) {
             vector::swap(v, 0, 1);
         };
@@ -316,17 +316,17 @@ module brag::brag {
         let type1 = get_cards_type(hand1);
         let type2 = get_cards_type(hand2);
         if (type1 > type2) {
-            1 // hand1 11
+            1 // hand1 更大
         } else if (type1 < type2) {
-            2 // hand2 11
+            2 // hand2 更大
         }else{
             if(type1 == 2){
                 let pair1 =  get_pair_value(hand1);
                 let pair2 =  get_pair_value(hand2);
                 if (pair1 > pair2) {
-                    1 // hand1 11
+                    1 // hand1 更大
                 } else if (pair1 < pair2) {
-                    2 // hand2 11
+                    2 // hand2 更大
                 }else{
                     get_high_cards(hand1,hand2)
                 }
@@ -337,7 +337,7 @@ module brag::brag {
 
      }
 
-             //111
+             /// 实现一个类似于 sub_vector 的功能
     fun sub_vector(a: &vector<u8>, start: u64, length: u64): vector<u8> {
         let mut result = vector::empty<u8>();
         let mut i = start;
@@ -369,7 +369,7 @@ module brag::brag {
         cards
     }
    
-    //11..................................................................................................................................
+    //开房间  开房者说话...........................................................................................................................................
     public entry fun create_game<T,G:store + key>(sigcards:vector<u8>,max_bet:u64,coin_v: Coin<T>,game_data: &mut GameData<T,G>,kiosk:&Kiosk,nft_id:ID,ctx: &mut TxContext) {//开房.......................
         let coin_value = coin::value(&coin_v);
         assert!(coin_value <= max_bet, EBetVol);
@@ -383,13 +383,13 @@ module brag::brag {
         let pokerdata = PokerData {
             id: object::new(ctx),
             balance: coin::into_balance(coin_v),
-            player1:ctx.sender(), //11
+            player1:ctx.sender(), //1为说话
             player2:@0x0,
             sigcards1: sigcards,
             sigcards2: vector::empty<u8>(),
             revealcards1:vector::empty<u8>(),
             revealcards2:vector::empty<u8>(),
-            stage:10,               //0 1
+            stage:10,               //0 都没看牌 1  1看牌  2 2 看牌 3  都看牌  5有弃牌，4比牌 6已发放奖励
             bet:coin_value,
             min_bet:coin_value,
             max_bet:max_bet,
@@ -406,7 +406,7 @@ module brag::brag {
         });
     }
 
-    //111
+    //加入房间
     public entry fun join_game<T,G:store + key>(gamenumber: u64,sigcards:vector<u8>,coin_v: Coin<T>,clock: &Clock,game_data: &mut GameData<T,G>,kiosk:&Kiosk,   nft_id:ID,ctx: &TxContext) {
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         let coin_value = coin::value(&coin_v);
@@ -415,7 +415,7 @@ module brag::brag {
         // assert!(revealcard.length==2,ERev);
         pk_data.player2 = ctx.sender();
         pk_data.sigcards2 = sigcards;
-        pk_data.stage=0;               //0 1
+        pk_data.stage=0;               //0 都没看牌 1  1看牌  2 2 看牌 3  都看牌  5有弃牌，4比牌   11，12已发放奖励    10游戏准备阶段
         pk_data.time = clock.timestamp_ms();
         if(kiosk::has_item_with_type<G>(kiosk, nft_id) && kiosk::owner(kiosk) == ctx.sender()){
             pk_data.vip_p2 = true;
@@ -425,7 +425,7 @@ module brag::brag {
             result:gamenumber,
         });
     }
-    //11
+    //申请看牌
     fun apply_look_cards_(b:bool,revealcards:vector<u8>,clock:u64,stage:&mut u8,time:&mut u64,action:&mut bool){
         assert!(action != b, EAction);
         assert!(vector::length(&revealcards) < 1, ERevealcards);
@@ -443,7 +443,7 @@ module brag::brag {
             apply_look_cards_(false,pk_data.revealcards1,clock.timestamp_ms(),&mut pk_data.stage,&mut pk_data.time,&mut pk_data.action);
         };
     }
-    //11
+    //揭示牌
     fun reveal_look_cards_(b:bool,revealcards:vector<u8>,clock:u64,revealcards_:&mut vector<u8>,stage:&mut u8,time:&mut u64,action:&mut bool){
         assert!(action != b, EAction);
         assert!(stage == 6, EStage);
@@ -467,7 +467,7 @@ module brag::brag {
         };
         
     }
-    //11
+    //跟注
     fun call_(b:bool,revealcards:vector<u8>,coinv:u64,bet:u64,clock:u64,time:&mut u64,action:&mut bool){
         assert!(action != b, EAction);
         if(vector::length(&revealcards) < 1){
@@ -498,7 +498,7 @@ module brag::brag {
     }
 
 
-    //11
+    //加注
     fun rasie_(b:bool,revealcards:vector<u8>,coinv:u64,max:u64,clock:u64,bet:&mut u64,time:&mut u64,action:&mut bool){
         assert!(action != b, EAction);
         if(vector::length(&revealcards) < 1){
@@ -533,7 +533,7 @@ module brag::brag {
     }
 
 
-    //11 applyOpenCards
+    //申请比牌  applyOpenCards
 
     fun applyOpenCards_(b:bool,revealcards:vector<u8>,sigcards:vector<u8>,public_key:vector<u8>,
         opencards:vector<u8>,coinv:u64,clock: u64,bet:u64,revealcards_:&mut vector<u8>,stage:&mut u8,time:&mut u64,action:&mut bool){
@@ -583,7 +583,7 @@ module brag::brag {
             expendORincome:false,
         });
     }
-    //11
+    //被比牌
 
     fun OpenCards_<T>(
         num: u8,
@@ -635,7 +635,7 @@ module brag::brag {
             let coin_p = coin::split(&mut coinp, coin_vp, ctx);
             transfer::public_transfer(coin_p,shend);
             if(num==1){
-                *stage = 11; //11
+                *stage = 11; //这里控制继续游戏 11 玩家1胜利  12玩家2胜利
                 *time = 0;
             }else{
                 *stage = 12;
@@ -657,7 +657,7 @@ module brag::brag {
             let coin_p = coin::split(&mut coinp, coin_vp, ctx);
             transfer::public_transfer(coin_p,adder);
             if(num==1){
-                *stage = 12; //1
+                *stage = 12; //这里控制继续游戏
                 *time = 0;
             }else{
                 *stage = 11;
@@ -671,7 +671,7 @@ module brag::brag {
         };
         let value = coin::value(&coinp);
         let left_fee = coin::split(&mut coinp, value, ctx);
-        coin::destroy_zero(coinp); // 1 0 coin
+        coin::destroy_zero(coinp); // 必须销毁 0 coin
         left_fee
     }
     public entry fun OpenCards<T,G>(gamenumber: u64,opencards:vector<u8>,public_key:vector<u8>,game_data: &mut GameData<T,G>,ctx: &mut TxContext) {//领取弃牌奖励方必须验证否则失败
@@ -698,7 +698,7 @@ module brag::brag {
     
 
 
-        //1
+        //弃牌
     fun fold_(b:bool,clock: u64,stage:&mut u8,time:&mut u64,action:&mut bool){
         assert!(action != b, EAction);
         *time = clock;
@@ -718,7 +718,7 @@ module brag::brag {
 
 
 
-    //1
+    //获取放弃筹码
     fun get_fold_bets_<T>(b:bool,action:bool,sigcards:vector<u8>,public_key:vector<u8>,
         opencards:vector<u8>,coinp:Coin<T>,revealcards_:vector<u8>,cvaluep:u64,
         stage:&mut u8,time:&mut u64,sand:address){
@@ -781,7 +781,7 @@ module brag::brag {
             coinp,pk_data.revealcards2,cvaluep,&mut pk_data.stage,&mut pk_data.time,ctx.sender());
         }
     }
-    //................................................
+    //...................................这里开始可以领取弃牌超时奖励了，任何一种都必须保持诚实...............
     public entry fun get_timeout_bets<T,G>(gamenumber: u64,clock: &Clock,game_data: &mut GameData<T,G>,ctx: &mut TxContext){
         let PokerData<T>{
             id,
@@ -845,8 +845,8 @@ module brag::brag {
         });
     }
 
-    //...............................
-    public entry fun go_on_playing<T,G>(gamenumber: u64,sigcards:vector<u8>,coin_v: Coin<T>,game_data: &mut GameData<T,G>,ctx: &TxContext) {//....................
+    //继续游戏...................................
+    public entry fun go_on_playing<T,G>(gamenumber: u64,sigcards:vector<u8>,coin_v: Coin<T>,game_data: &mut GameData<T,G>,ctx: &TxContext) {//继续.......................
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         assert!(ctx.sender() == pk_data.player1 || ctx.sender() == pk_data.player2, EPlayer);
         assert!(pk_data.stage == 11 || pk_data.stage == 12, EStage);
@@ -893,7 +893,7 @@ module brag::brag {
             maxvol:pk_data.max_bet,
         });
     }
-    //.........................
+    //加入继续游戏..............................
     public entry fun join_playing<T,G:store + key>(gamenumber: u64,sigcards:vector<u8>,coin_v: Coin<T>,clock: &Clock,game_data: &mut GameData<T,G>,kiosk:&Kiosk,nft_id:ID,ctx: &TxContext) {
         let pk_data: &mut PokerData<T> = dof::borrow_mut(&mut game_data.id,gamenumber);
         let coin_value = coin::value(&coin_v);
@@ -918,14 +918,14 @@ module brag::brag {
                 pk_data.vip_p1 = vip;
             };
         };
-        pk_data.stage=0;               //0 10
+        pk_data.stage=0;               //0 都没看牌 1  1看牌  2 2 看牌 3  都看牌  5有弃牌，4比牌   11，12已发放奖励    10游戏准备阶段
         pk_data.time = clock.timestamp_ms();
         coin::put(&mut pk_data.balance, coin_v);
         emit(GnumberClose<T>{
             result:gamenumber,
         });
     }
-    //.........
+    //销毁.....离开房间........................通用..........
     public entry fun leave_game<T,G>(gamenumber: u64,game_data: &mut GameData<T,G>,ctx: &mut TxContext){
         let PokerData<T>{
             id,
