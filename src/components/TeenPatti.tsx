@@ -9,7 +9,7 @@ import { getTiming, isMissingRoom, listTables, type LobbyTable } from '../gameLo
 import { TOKENS, MODULE, PACKAGE, NFT_TYPE, type TableRef, type Token } from '../gameConfig';
 import { buildGameTransaction } from '../gameTransactions';
 import { newSecret, saveSecret, loadSecret, saveActive, loadActive, type RoundSecret } from '../gameSecrets';
-import { assertAction, callAmount, continuation, formatAmount, gameError, hasSeen, isMyTurn, isSettled, isWaiting, isZero, maxRaise, opponentReveal, seatOf, showdownAmount, signatureOf, type GameAction, type Room } from '../gameRules';
+import { assertAction, defaultNextAnte, callAmount, continuation, formatAmount, gameError, hasSeen, isMyTurn, isSettled, isWaiting, isZero, maxRaise, opponentReveal, seatOf, showdownAmount, signatureOf, type GameAction, type Room } from '../gameRules';
 import { toBaseUnits } from '../coinAmount';
 import { preserveWalletViewport } from '../walletViewport';
 import '../game.css';
@@ -119,9 +119,9 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
   // Re-render countdown from the chain clock, including after a backgrounded tab wakes.
   void tick; void storageVersion;
   useEffect(() => {
-    if (room && settled) setNextAnte('1');
-    setRaise('');
-  }, [active?.token, active?.number, room?.stage, room?.bet]);
+    if (room && settled) setNextAnte(defaultNextAnte(room, config.scale));
+  }, [active?.token, active?.number, room?.stage, room?.min_bet, room?.max_bet]);
+  useEffect(() => { setRaise(''); }, [active?.token, active?.number, room?.stage, room?.bet]);
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
       if (pending || (room && seat && room.stage < 10)) { event.preventDefault(); event.returnValue = ''; }
@@ -255,11 +255,13 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
   }
   function continueRound() {
     if (!active) return;
-    void run('Preparing next round…', async () => {
+    void run('Checking table before opening wallet…', async () => {
       const data = await fresh(active);
       const action = continuation(data, address!);
       if (action === 'resume') { setNotice('This round is already open. Your seat has been restored.'); return; }
       const amount = action === 'join_playing' ? BigInt(data.bet) : toBaseUnits(nextAnte, TOKENS[active.token].scale);
+      if (action === 'go_on_playing' && (amount < BigInt(data.min_bet) || amount > BigInt(data.max_bet))) throw new Error(`Wallet not opened: this table requires ${formatAmount(data.min_bet, config.scale)}–${formatAmount(data.max_bet, config.scale)} ${config.symbol}. Adjust the next-round ante and try again.`);
+      setPending('Waiting for wallet / confirmation…');
       await submit(action, active, data, amount);
     });
   }
@@ -321,7 +323,7 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
   }
 
   const feedback = <div className="brag-feedback" aria-label="Transaction updates">
-    {error && <div className="brag-message brag-error" role="alert">{error}<button className="brag-secondary" onClick={refresh}>Refresh state</button></div>}
+    {error && !(settled && seat > 0) && <div className="brag-message brag-error" role="alert">{error}<button className="brag-secondary" onClick={refresh}>Refresh state</button></div>}
     {notice && <p className="brag-message" role="status">{notice}</p>}
     {pending && <p className="brag-message" role="status" aria-live="polite">{pending} Keep this page open.</p>}
     {unconfirmed && <div className="brag-message" role="status">A signed transaction is awaiting confirmation. New transactions are paused to prevent duplicate stakes.<button disabled={Boolean(pending)} onClick={checkSubmission}>Check transaction</button><a href={`https://suiscan.xyz/mainnet/tx/${unconfirmed.digest}`} target="_blank" rel="noreferrer">View transaction ↗</a></div>}
@@ -354,7 +356,14 @@ export default function TeenPatti({ onGetbalan }: { onGetbalan: () => void }) {
           {seat > 0 && !secret && room.stage < 10 && <p className="brag-message brag-error">This browser does not have the cards committed for this round. Use the original browser to reveal or settle. Do not start another round to replace them.</p>}
           {waiting && <p className="brag-muted">{seat ? 'Your stake is on the table. Returning to the lobby keeps this seat open; closing the table refunds your stake.' : `Join for ${amountText(room.bet)}. The empty seat is available to everyone.`}</p>}
           {waiting && !seat && <button disabled={readOnly} onClick={() => join(active)}>Join for {amountText(room.bet)}</button>}
-          {settled && seat > 0 && <div className="brag-continue"><label>Next-round ante<input aria-label="Next-round ante" inputMode="decimal" value={nextAnte} onChange={e => setNextAnte(e.target.value)} disabled={Boolean(pending)} /></label><button disabled={readOnly} onClick={continueRound}>Continue · open next round</button><p className="brag-muted">Min {amountText(room.min_bet)} · Max {amountText(room.max_bet)}. If another player has already opened the next round, you join at their current ante.</p></div>}
+          {settled && seat > 0 && <div className="brag-continue"><label>Next-round ante<input aria-label="Next-round ante" inputMode="decimal" value={nextAnte} onChange={e => setNextAnte(e.target.value)} disabled={Boolean(pending)} /></label><button disabled={readOnly} aria-busy={Boolean(pending)} onClick={continueRound}>Continue · open next round</button>
+            <div className="brag-continue-status" aria-live="polite">
+              {error && <p className="brag-message brag-error" role="alert">{error}</p>}
+              {pending && <p role="status">{pending}</p>}
+              {!pending && unconfirmed && <p>Check the previous signed transaction below before starting another round.</p>}
+              {!pending && !unconfirmed && !address && <p>Connect your wallet to continue.</p>}
+            </div>
+            <p className="brag-muted">Min {amountText(room.min_bet)} · Max {amountText(room.max_bet)}. {defaultNextAnte(room, config.scale) !== '1' && `This table does not allow 1 ${config.symbol}; its permitted starting amount is shown above. `}If another player has already opened the next round, you join at their current ante.</p></div>}
           {waiting && !seat && <p className="brag-muted">If your previous opponent continued, this joins their next round. A new player can also take this seat.</p>}
           {seat > 0 && room.stage < 10 && <div className="brag-actions">
             {room.stage < 4 && <>

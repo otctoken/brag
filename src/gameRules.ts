@@ -22,6 +22,11 @@ export function formatAmount(amount: string | bigint, scale: number) {
   return `${n / unit}${fraction ? `.${fraction}` : ''}`;
 }
 
+export function defaultNextAnte(room: Room, scale: number) {
+  const unit = BigInt(scale), minimum = BigInt(room.min_bet), maximum = BigInt(room.max_bet);
+  return formatAmount(unit < minimum ? minimum : unit > maximum ? maximum : unit, scale);
+}
+
 // Continue always uses fresh state: either open another round, fill its empty
 // seat, or resume a round already started by another transaction/tab.
 export function continuation(room: Room, address: string): 'go_on_playing' | 'join_playing' | 'resume' {
@@ -66,6 +71,7 @@ export function assertAction(action: GameAction, room: Room, address: string, am
 
 export function gameError(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
+  if (message.startsWith('Wallet not opened:')) return message;
   if (/reject|cancel|denied by user/i.test(message)) return 'Wallet request cancelled. Your table and cards are unchanged.';
   if (/insufficient|gas balance/i.test(message)) return 'Insufficient balance. Keep some SUI for gas, including when playing with USDC.';
   if (/MoveAbort|abort.*code|object.*version|stale/i.test(message)) return 'The table changed before the transaction completed. Refresh, check the current turn and try again.';

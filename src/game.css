@@ -77,6 +77,8 @@
 .brag-raise small { grid-column: 1 / -1; color: #b5c1ac; font-size: 11px; overflow-wrap: anywhere; }
 .brag-continue { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 14px; }
 .brag-continue p { grid-column: 1 / -1; }
+.brag-continue-status { grid-column: 1 / -1; font-size: 13px; color: #f2d98c; }
+.brag-continue-status:empty { display: none; }
 .has-active-table .brag-page-heading { margin-bottom: 10px; gap: 8px; }
 .has-active-table .brag-page-heading .brag-eyebrow, .brag-game.has-active-table h1 span { display: none; }
 .has-active-table h1 { font-size: 24px; }

@@ -12,6 +12,25 @@ for(const [token,amount] of [['sui','1000000000'],['usdc','1000000']]) {
   });
 }
 
+for(const [token,scale] of [['sui',1000000000],['usdc',1000000]] as const) {
+  test(`${token} table created with four tokens continues at its minimum, not last raised bet`,async({page})=>{
+    await open(page,`raised-${token}`);
+    await page.evaluate(scale=>{const t=(window as any).__bragTest;t.state.room.min_bet=String(4*scale);t.refresh();},scale);
+    await resume(page);
+    await expect(page.getByLabel('Next-round ante')).toHaveValue('4');
+    await expect(page.getByText(`This table does not allow 1 ${token.toUpperCase()}`,{exact:false})).toBeVisible();
+    await page.getByLabel('Next-round ante').fill('1');
+    await page.getByRole('button',{name:'Continue · open next round'}).click();
+    await expect(page.locator('.brag-continue').getByRole('alert')).toContainText(`this table requires 4–10 ${token.toUpperCase()}`);
+    expect(await page.evaluate(()=>(window as any).__bragTest.state.attempts)).toBe(0);
+    // Editing back to a valid amount reaches the wallet executor once.
+    await page.getByLabel('Next-round ante').fill('4');
+    await page.getByRole('button',{name:'Continue · open next round'}).click();
+    await expect(page.getByText('Open to anyone — share this table number')).toBeVisible();
+    expect(await page.evaluate(()=>(window as any).__bragTest.state.executions)).toEqual([{action:'go_on_playing',amount:String(4*scale),argumentCount:4}]);
+  });
+}
+
 test('continue preserves room number, opens either seat in lobby, and survives reload',async({page})=>{
   await open(page,'settled');await resume(page);
   await page.getByLabel('Next-round ante').fill('3');
