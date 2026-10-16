@@ -126,12 +126,18 @@ for(const [width,height] of [[1366,768],[1280,720],[1440,900],[1920,1080],[1024,
       const controls=document.querySelector('.brag-controls')!.getBoundingClientRect();
       const timer=document.querySelector('.brag-turn')!.getBoundingClientRect();
       const card=document.querySelector('.brag-cards img')!.getBoundingClientRect();
-      return {top:table.top,bottom:controls.bottom,timerHeight:timer.height,cardWidth:card.width,overflow:document.documentElement.scrollWidth>innerWidth};
+      const seats=[...document.querySelectorAll('.brag-seat')].map(el=>el.getBoundingClientRect());
+      return {seatCenters:seats.map(r=>r.x+r.width/2),seatY:seats.map(r=>r.y),top:table.top,bottom:controls.bottom,timerHeight:timer.height,cardHeight:card.height,cardWidth:card.width,overflow:document.documentElement.scrollWidth>innerWidth};
     });
     expect(layout.top).toBeGreaterThanOrEqual(60);
     expect(layout.bottom).toBeLessThanOrEqual(height);
     expect(layout.timerHeight).toBeLessThan(105);
-    expect(layout.cardWidth).toBeGreaterThanOrEqual(width<=600?78:86);
+    expect(layout.cardWidth).toBeGreaterThanOrEqual(width<=600?78:width>=901?72:86);
+    if(width>=901){
+      expect(layout.cardHeight).toBeLessThanOrEqual(142);
+      expect(layout.seatCenters[0]).toBeCloseTo(layout.seatCenters[1],0);
+      expect(layout.seatY[1]).toBeGreaterThan(layout.seatY[0]+layout.cardHeight);
+    }
     expect(layout.overflow).toBe(false);
     if(width===1366||width===1024||width===390)await page.screenshot({path:`artifacts/compact-table-${width}.png`,fullPage:true});
   });

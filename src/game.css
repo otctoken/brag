@@ -100,12 +100,23 @@
   .brag-raise { gap: 5px 8px; }
   .brag-raise label { gap: 4px; }
 }
-@media (min-width: 1101px) {
-  .brag-table { grid-template-columns: minmax(0, 1fr) minmax(240px, .9fr) minmax(0, 1fr); min-height: clamp(260px, calc(100dvh - 370px), 520px); padding: 18px 12px; }
-  .brag-table > .brag-seat:last-child { grid-column: 3; }
-  .brag-pot { grid-column: 2; grid-row: 1; display: block; }
-  .brag-turn { margin: 12px auto 0; width: 100%; }
-  .brag-cards { gap: 4px; }
+@media (min-width: 901px) {
+  .has-active-table { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; }
+  .has-active-table > * { grid-column: 1 / -1; }
+  .has-active-table .brag-page-heading { grid-column: 1; grid-row: 1; }
+  .has-active-table .brag-table-toolbar { grid-column: 2; grid-row: 1; }
+  .brag-table { grid-template-columns: minmax(0, 1fr); padding: 8px 16px; gap: 6px; }
+  .brag-table > .brag-seat:first-child { grid-column: 1; grid-row: 1; }
+  .brag-table > .brag-seat:last-child { grid-column: 1; grid-row: 3; }
+  .brag-pot { grid-column: 1; grid-row: 2; }
+  .brag-seat { display: grid; grid-template-columns: auto auto; justify-content: center; column-gap: 12px; row-gap: 4px; padding: 4px 8px; }
+  .brag-seat:first-child > .brag-cards { grid-column: 1 / -1; grid-row: 2; }
+  .brag-seat:last-child > .brag-cards { grid-column: 1 / -1; grid-row: 1; }
+  .brag-seat > strong, .brag-seat > span { line-height: 18px; }
+  .brag-cards { min-height: 0; gap: 6px; }
+  .brag-cards img { width: clamp(72px, calc((100dvh - 520px) * .325), 92px); height: clamp(110px, calc((100dvh - 520px) / 2), 142px); }
+  .brag-arrow-horizontal { display: none; }
+  .brag-arrow-vertical { display: inline; }
 }
 @media (max-width: 900px) { .brag-lobby-layout { grid-template-columns: minmax(0, 1fr); } .brag-create { width: 100%; } .brag-create fieldset { grid-template-columns: repeat(2, minmax(0, 1fr)); } .brag-create fieldset > :first-child, .brag-create fieldset > button, .brag-create fieldset > p { grid-column: 1 / -1; } }
 @media (max-width: 480px) { .brag-game h1 span { display: block; margin: 4px 0 0; } .brag-page-heading { margin-bottom: 22px; } .brag-room-grid { gap: 12px; } .brag-create { padding: 18px; } .brag-table { border-width: 5px; border-radius: 50px; padding: 22px 10px; min-height: 480px; } .brag-controls { padding: 16px; } .brag-continue { grid-template-columns: minmax(0, 1fr); } .brag-continue p { grid-column: auto; } .brag-game .brag-continue button { width: 100%; } .brag-actions > button { flex-basis: 120px; } }
